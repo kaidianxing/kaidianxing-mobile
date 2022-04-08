@@ -1,0 +1,152 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+/* 颜色变量 */
+
+/* 行为相关颜色 */
+
+$uni-color-primary: #ff3c29;
+$uni-color-success: #4cd964;
+$uni-color-warning: #f0ad4e;
+$uni-color-error: #dd524d;
+
+/* 文字基本颜色 */
+
+$uni-text-color: #212121; //基本色
+$uni-text-color-inverse: #fff; //反色
+$uni-text-color-grey: #969696; //辅助灰色，如加载更多的提示信息
+$uni-text-color-placeholder: #808080;
+$uni-text-color-disable: #ccc;
+
+/* 背景颜色 */
+
+$uni-bg-color: #ffffff;
+$uni-bg-color-grey: #f5f5f5;
+$uni-bg-color-hover: #f1f1f1; //点击状态颜色
+$uni-bg-color-mask: rgba(0, 0, 0, 0.7); //遮罩颜色
+$uni-primary-background: #FFF3F5;
+
+/* 边框颜色 */
+
+$uni-border-color: #e6e7eb;
+
+/* 尺寸变量 */
+
+/* 文字尺寸 */
+
+$uni-font-size-sm: 24upx;
+$uni-font-size-base: 28upx;
+$uni-font-size-lg: 32upx;
+
+/* 图片尺寸 */
+
+$uni-img-size-sm: 40upx;
+$uni-img-size-base: 52upx;
+$uni-img-size-lg: 80upx;
+
+/* Border Radius */
+
+$uni-border-radius-sm: 4upx;
+$uni-border-radius-base: 6upx;
+$uni-border-radius-lg: 12upx;
+$uni-border-radius-circle: 50%;
+
+/* 水平间距 */
+
+$uni-spacing-row-sm: 10px;
+$uni-spacing-row-base: 20upx;
+$uni-spacing-row-lg: 30upx;
+
+/* 垂直间距 */
+
+$uni-spacing-col-sm: 8upx;
+$uni-spacing-col-base: 16upx;
+$uni-spacing-col-lg: 24upx;
+
+/* 透明度 */
+
+$uni-opacity-disabled: 0.3; // 组件禁用态的透明度
+
+/* 文章场景相关 */
+
+$uni-color-title: #2c405a; // 文章标题颜色
+$uni-font-size-title: 40upx;
+$uni-color-subtitle: #555555; // 二级标题颜色
+$uni-font-size-subtitle: 36upx;
+$uni-color-paragraph: #3f536e; // 文章段落颜色
+$uni-font-size-paragraph: 30upx;
+
+@function rpx($n) {
+    @return $n/307 * 375 + rpx;
+}
+
+@function px2rpx($n) {
+    @return $n * 2 + rpx;
+}
+
+@mixin font-12-17 {
+    font-size: px2rpx(12);
+    line-height: px2rpx(17);
+}
+
+@mixin font-14-16 {
+    font-size: px2rpx(14);
+    line-height: px2rpx(16);
+}
+
+@mixin font-16-22 {
+    font-size: px2rpx(16);
+    line-height: px2rpx(22);
+}
+
+@mixin font-18-25 {
+    font-size: px2rpx(18);
+    line-height: px2rpx(25);
+}
+
+@mixin vertical-align-center($align: center) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: $align;
+    flex-shrink: 0;
+}
+
+@mixin icon-center($size: 24rpx, $color: #000) {
+    width: $size;
+    height: $size;
+    text-align: center;
+    font-size: $size;
+    line-height: $size;
+    color: $color;
+}
+
+$bg-color: #f3f5f9; // 窗口背景色
+
+$color-primary: #1a66ff;
+$color2-primary: #edf3ff;
+
+$color-warning: #ff661a;
+$color-warning-disabled: #FFD1BA;
+$color2-warning: #ffe0d1;
+
+$color-success: #3dc637;
+$color2-success: #d8f4d7;
+
+$color-danger: #fb1732;
+$color2-danger: #ffdae3;
+
+$color-w1: #212121;
+$color-w2: #56595b;
+$color-w3: #81878e;
+$color-w4: #aab3bd;
+$color-w5: #bec8ce;
+$color-link: #518def;
+$color-line: #e6e7eb;

@@ -1,0 +1,314 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+<template>
+    <div>
+        <div class="seckill">
+            <div class="seckill-img-box">
+                <img :src="$utils.staticMediaUrl('seckill/banner.png')" class="seckill-img" />
+                <div class="count-down" v-if="type === 'activity'">
+                    <div class="seckill-surplus" v-if="isFinish">该活动已结束</div>
+                    <div class="seckill-surplus" v-else-if="!isPreheat(activeInfo)">距活动结束</div>
+                    <div class="seckill-surplus" v-else-if="isPreheat(activeInfo)">距活动开始</div>
+                    <div class="seckill-count" v-if="countTime && !isFinish">
+                        <span class="text">{{countTime[0]}}天</span>
+                        <span class="time">{{countTime[1]}}</span>
+                        <span class="colon">:</span>
+                        <span class="time">{{countTime[2]}}</span>
+                        <span class="colon">:</span>
+                        <span class="time">{{countTime[3]}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="goods">
+            <block v-if="type === 'goods'">
+                <goods :list="list" type="seckill">
+                    <template v-slot:seckillCountdown="{data}">
+                        <div class="activity-time">
+                            <span class="text">{{data.isPreheat?'距开始':'距结束'}}</span>
+                            <span class="time">{{data.countTime[0]}}</span>
+                            <span class="colon">天</span>
+                            <span class="time">{{data.countTime[1]}}</span>
+                            <span class="colon">:</span>
+                            <span class="time">{{data.countTime[2]}}</span>
+                            <span class="colon">:</span>
+                            <span class="time">{{data.countTime[3]}}</span>
+                        </div>
+                    </template>
+                </goods>
+            </block>
+            <block v-else>
+                <goods :list="list" type="seckill"></goods>
+            </block>
+            <!--加载更多  -->
+            <page-loading v-if="list.length != count" :loadingType="loadingType"></page-loading>
+            <block v-if="!loading && count <= 0">
+                <!-- 缺省页 -->
+                <view class='default-page flex-column'>
+                    <view class="bg">
+                        <image :src="$utils.staticMediaUrl('default/search.png')"></image>
+                    </view>
+                    <view class='default-text'>没找到相关宝贝</view>
+                </view>
+            </block>
+        </div>
+    </div>
+</template>
+
+<script>
+import Goods from "./components/GoodsList";
+export default {
+    components: {
+        Goods,
+    },
+     data() {
+            return {
+                type: 'activity', // activity 一个活动 // goods // 以商品选择的活动-多个商品多个活动
+                goodsID: '',
+                list: [],
+                page: 1,
+                loading: false,
+                count: 0,
+                reqesting: false,
+                activityId: '',
+                countTime: ["0","23","59","59"],
+                activeInfo: {},
+                isFinish: false
+            };
+        },
+         computed: {
+            loadingType() {
+                let loadingType = 0;
+                if (this.loading) {
+                    loadingType = 1
+                } else if (this.list.length == this.count && this.count > 0 && this.loading == false) {
+                    loadingType = 2
+                }
+                return loadingType
+            },
+        },
+        created() {
+        },
+        onLoad(){
+            if (this.$Route.query.type === 'activity') {
+                this.activityId = this.$Route.query.id;
+            } else if (this.$Route.query.type === 'goods') {
+                this.goodsID = this.$Route.query.goodsID;
+            }
+            this.type = this.$Route.query.type
+        },
+        onShow() {
+            this.reset()
+        },
+        methods: {
+            getList() {
+                if (!this.reqesting) {
+                    this.reqesting = true;
+                    let obj = {
+                        page: this.page,
+                        get_activity: 1,
+                        activity_type: 'seckill'
+                    };
+                    if (this.type === 'activity') {
+                        obj.activity_id=this.activityId
+                    } else {
+                        obj.id = this.goodsID
+                    }
+                    this.loading = true;
+                    this.$api.goodApi.goodList(obj).then(res => {
+                        if(res.error == 0){
+                            if (res.list.length > 0) {
+                                this.type === 'goods'&&res.list.forEach(item => {
+                                    item.countTime = ["0","23","59","59"];
+                                    item.seckillData = item?.activities?.seckill || item?.activities?.preheat_activity
+                                    item.isPreheat = this.isPreheat(item.seckillData)
+                                    this.cutdownTime(item.seckillData, item)
+                                });
+                                this.list = this.list.concat(res.list);
+                            }
+                            this.page = this.page + 1;
+                            this.loading = false;
+                            this.count = res.total;
+                            this.graceLazyload.load(0, this);
+                            this.reqesting = false
+                        }
+                    }).catch(res=>{
+                        this.reqesting = false
+                    }).finally(rej => {
+                        setTimeout(() => { //解决loading关不掉的bug
+                            uni.hideLoading()
+                        }, 100)
+                    })
+                }
+            },
+            getActivity(){
+                // uni.showLoading()
+                this.$api.goodApi.getActivity({activity_id:this.activityId}).then(res=>{
+                    if(res.error == 0){
+                        this.activeInfo = res;
+                        this.isFinish = (res.status<0);
+                        if(!this.isFinish) {
+                            this.getList()
+                            this.cutdownTime(this.activeInfo, this)
+                        } else {
+                            this.$Router.replace('/kdxGoods/activity/expire')
+                        }
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                }).finally(()=>{
+                    // uni.hideLoading()
+                })
+            },
+            isPreheat(activeInfo){
+                // console.log(activeInfo,'isPreheat>>>>>');
+                if (activeInfo.start_time) {
+                    let {is_preheat,start_time} = activeInfo;
+                    if(!start_time) {
+                        return false
+                    }
+                    let begin_time = new Date(Date.parse(start_time.replace(/-/g, "/"))).getTime()
+                    return is_preheat =='1' && begin_time > Date.now()
+                }
+            },
+            reset() {
+                this.list = [];
+                this.page = 1;
+                this.type === 'activity'&&this.getActivity();
+                this.type === 'goods'&&this.getList();
+                setTimeout(() => {
+                    uni.stopPullDownRefresh();
+                }, 1000);
+            },
+            cutdownTime(activeInfo, item){
+
+                // console.log(activeInfo,'..........');
+
+                let {start_time,end_time} = activeInfo;
+                let endTime = this.isPreheat(activeInfo)?start_time: end_time;
+                let formatTime = new Date(Date.parse(endTime.replace(/-/g, "/"))).getTime()
+
+                if((formatTime-Date.now()>0)) {
+                    let time = formatTime/1000;
+                    this.startCount(time, item)
+                }
+            
+            },
+            startCount(time, item){
+                item.countTime = this.$utils.countDown(time, false);
+                let timer = setInterval(()=>{
+                    item.countTime = this.$utils.countDown(time, false);
+
+                    if(item.countTime == false) {
+                        clearInterval(timer)
+                        this.reset()
+                    }
+
+                },1000)
+
+                this.$once('hook:beforeDestroy',()=> {
+                    clearInterval(timer)
+                })
+            },
+        },
+        onPullDownRefresh() {
+            // uni.showLoading({
+            //     title: '加载中'
+            // });
+           this.reset()
+        },
+        onReachBottom() {
+            if (this.list.length == this.count && this.page > 1) return;
+            this.getList()
+        },
+        onPageScroll(e) {
+            this.graceLazyload.load(e.scrollTop, this);
+        },
+};
+</script>
+
+<style lang="scss" scoped>
+.seckill {
+    position: relative;
+    height: px2rpx(193);
+    .seckill-img {
+        height: px2rpx(173);
+        width: px2rpx(375);
+    }
+
+    .count-down {
+        position: absolute;
+        left: px2rpx(12);
+        bottom: px2rpx(0);
+        height: px2rpx(40);
+        width: px2rpx(351);
+        background: #ffffff;
+        border-radius: 6px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .seckill-surplus {
+            font-size: px2rpx(12);
+            line-height: px2rpx(17);
+            color: #212121;
+        }
+
+        .seckill-count {
+            display: flex;
+            align-items: center;
+            height: px2rpx(16);
+            color: #fff;
+
+            .time {
+                width: px2rpx(16);
+                height: px2rpx(16);
+                line-height: px2rpx(16);
+                text-align: center;
+                background-color: #ff3c29;
+                color: #ffffff;
+                font-size: px2rpx(12);
+                border-radius: px2rpx(2);
+            }
+
+            .text {
+                margin-left: px2rpx(8);
+                margin-right: px2rpx(6);
+                font-size: px2rpx(12);
+                color: #212121;
+            }
+
+            .colon {
+                margin: 0 px2rpx(2);
+                line-height: px2rpx(16);
+                color: #ff3c29;
+            }
+        }
+    }
+
+    .activity-time {
+        width: fit-content;
+        margin-top: px2rpx(4);
+        padding: 0 px2rpx(4);
+        line-height: px2rpx(14);
+        font-size: px2rpx(10);
+        border: 1px solid $uni-color-primary;
+        border-radius: px2rpx(2);
+        >span {
+            color: $uni-color-primary;
+        }
+    }
+}
+
+.goods {
+    margin-top: px2rpx(8);
+    padding: 0 px2rpx(12);
+}
+</style>

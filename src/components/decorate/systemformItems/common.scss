@@ -1,0 +1,147 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+.flex-column {
+    flex-direction: column;
+}
+.space-between {
+    justify-content: space-between;
+}
+.font-text {
+    color: #CCCCCC;
+}
+.font-title {
+    font-size: px2rpx(14);
+    line-height: px2rpx(20);
+}
+.flex1 {
+    flex: 1;
+}
+.item-input {
+    border: none;
+    font-size: px2rpx(14);
+    line-height: px2rpx(20);
+    width: 100%;
+    resize: none;
+
+    &.box {
+        height: px2rpx(20);
+        color: #CCCCCC;
+    }
+    &::placeholder {
+        color: #CCCCCC;
+    }
+}
+.item-input-textarea {
+    height: 56px;
+}
+.border-bottom {
+    border-bottom: 1px solid #E6E7EB;
+}
+
+.form-templates {
+    padding: px2rpx(16) px2rpx(12) 0 px2rpx(12);
+    .templates-box {
+        &.flex-column {
+            .item-content {
+                padding-top: px2rpx(8);
+            }
+        }
+        .templates-item-box {
+            //padding: px2rpx(14) 0;
+            margin-left: px2rpx(24);
+            border-bottom: 1px solid #E6E7EB;
+            .item-icon {
+                font-size: px2rpx(14);
+                //padding-right: px2rpx(12);
+                flex-shrink: 0;
+                color: #969696;
+                display: contents;
+                i {
+                    font-size: px2rpx(14);
+                }
+            }
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+        .templates-item {
+            //padding: px2rpx(14) 0;
+            //display: flex;
+            //flex-wrap: nowrap;
+            color: #212121;
+            .item-label {
+                min-width: px2rpx(80);
+                font-size: px2rpx(14);
+                line-height: px2rpx(20);
+                word-break: break-all;
+                .item-required {
+                    color: #ff1f2c;
+                    margin-left: px2rpx(5);
+                }
+            }
+            .item-tip {
+                font-size: px2rpx(12);
+                line-height: px2rpx(17);
+                padding-top: px2rpx(4);
+                color: #969696;
+                word-break: break-all;
+            }
+            .item-content {
+                line-height: px2rpx(20);
+                //height: 20px;
+                flex: 1;
+                display: flex;
+                font-size: px2rpx(14);
+                color: #212121;
+                margin-top: px2rpx(8);
+                border: px2rpx(1) solid #E6E7EB;
+                border-radius: px2rpx(2);
+                padding: px2rpx(10) px2rpx(12);
+                .item-input {
+
+                }
+                .item-icon {
+                    font-size: px2rpx(14);
+                    //padding-right: px2rpx(12);
+                    flex-shrink: 0;
+                    color: #969696;
+                    i {
+                        font-size: px2rpx(14);
+                    }
+                }
+            }
+        }
+        &.template-date-range {
+            margin-top: px2rpx(10);
+            border: px2rpx(1) solid #E6E7EB;
+            border-radius: px2rpx(2);
+            .templates-item-box {
+                margin-left: 0;
+                .templates-item {
+                    padding: px2rpx(10) px2rpx(12);
+                }
+            }
+        }
+    }
+    /deep/ .item-placeholder {
+        color: #CCCCCC;
+        flex: 1;
+        cursor: pointer;
+        font-size: px2rpx(14);
+        word-break: break-all;
+    }
+    /deep/ .textarea-placeholder,
+    /deep/ .input-placeholder {
+        color: #CCCCCC;
+        font-size: px2rpx(14);
+    }
+}
+

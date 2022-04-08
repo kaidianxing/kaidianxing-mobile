@@ -1,0 +1,16 @@
+{
+  "esModuleInterop": true,
+  "allowSyntheticDefaultImports": true,
+  "compilerOptions": {
+    "types": [
+      "uni-app",
+      "html5plus",
+      "miniprogram-api-typings/types/lib.wx.api.d.ts",
+      "mini-types/types/api"
+    ],
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}

@@ -1,0 +1,439 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+<template>
+<theme-content>
+    <div>
+        <div
+            v-for="(val,index) in info.items"
+            :key="index"
+        >
+                <!-- 满金额包邮 -->
+                <div
+                    v-if="val.classify== 'full_free_dispatch'"
+                    class="active-list active-list-new "
+                >
+                    <div class="label  ">包邮</div>
+                    <div class="content">
+                        全场满
+                        <i class="number-color  ">￥{{val.value}}</i>包邮
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-gouwuche1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+                <!-- 单品满件数 -->
+                <div
+                    v-if="val.classify== 'single_full_unit_num'"
+                    class="active-list active-list-new "
+                >
+                    <div class="label  ">包邮</div>
+                    <div class="content">
+                        单商品满
+                        <i class="number-color  ">{{val.value}}件</i>包邮
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-gouwuche1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+                <!-- 单品满金额 -->
+                <div
+                    v-if="val.classify== 'single_full_quota_price'"
+                    class="active-list active-list-new "
+                >
+                    <div class="label  ">包邮</div>
+                    <div class="content">
+                        单商品满
+                        <i class="number-color  ">￥{{val.value}}</i>包邮
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-gouwuche1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+                <!-- 全国包邮 -->
+                <div
+                    v-if="val.classify== 'all_dispatch'"
+                    class="active-list active-list-new "
+                >
+                    <div class="label  ">包邮</div>
+                    <div class="content">该商品支持全国包邮</div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-gouwuche1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+
+                <!-- 满减 -->
+                <div
+                    v-if="val.type == 'full'"
+                    class="active-list active-list-new "
+                >
+                    <div class="label  ">满减</div>
+                    <div class="content">
+                        全场满
+                        <i class="number-color ">￥{{val.enough}}</i>立减
+                        <i class="number-color ">￥{{val.deduct}}</i>
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-liwu1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+
+                <div
+                    v-if="val.type=='score' &&val.deduction_type!='0'"
+                    class="active-list active-list-new"
+                >
+                    <div class="label ">{{credit_text}}</div>
+                    <div class="content">
+                        <span v-if="val.deduction_type=='1'">支持{{credit_text}}抵扣</span>
+                        <span v-if="val.deduction_type=='2'">
+                        支持{{credit_text}}抵扣
+                        <i class="number-color">{{val.deduction_price}}</i>元
+                    </span>
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-jifen1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle"></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+                <div
+                    v-if="val.type =='balance'"
+                    class="active-list active-list-new"
+                >
+                    <div class="label ">{{balance_text}}</div>
+                    <div class="content">
+                        <span v-if="val.deduction_type=='1'">支持{{balance_text}}抵扣</span>
+                        <span v-if="val.deduction_type=='2'">
+                        支持{{balance_text}}抵扣
+                        <i class="number-color ">{{val.deduction_price}}</i>元
+                    </span>
+                    </div>
+                    <!--底部图标-->
+                    <div class="active-icon">
+                        <i class="iconfont-def icon-def-jinqian1-1 "></i>
+                    </div>
+                    <!--头部大圆-->
+                    <div class="header-large-circle "></div>
+                    <!--头部小圆-->
+                    <div class="header-small-circle "></div>
+                    <!--头部小圆-->
+                    <ul class="broken">
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+        </div>
+    </div>
+</theme-content>
+</template>
+
+<script>
+export default {
+    props: {
+        info: {
+            type: Object,
+            default: () => { }
+        }
+    },
+    data() {
+        return {
+            balance_text: '余额',
+            credit_text: '积分',
+        }
+    },
+    beforeMount() {
+        if (this.sessionStorage) {
+            this.balance_text = this.$store.state.setting.systemSetting.balance_text
+            this.credit_text = this.$store.state.setting.systemSetting.credit_text
+        }
+    },
+    methods: {
+    },
+}
+</script>
+
+
+<style lang="scss" scoped>
+.item {
+    &:last-child {
+        .active-list {
+            margin-bottom: 48rpx;
+        }
+    }
+}
+.active-list {
+    margin-bottom: 32rpx;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.active-list-new {
+    position: relative;
+    margin-bottom: px2rpx(8);
+    height: px2rpx(64);
+    background-color: $uni-primary-background;
+    border-radius: px2rpx(6);
+    overflow: hidden;
+}
+
+.label-tag {
+    font-size: px2rpx(10);
+    height: px2rpx(16);
+    line-height: px2rpx(10);
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    border: px2rpx(0.5) solid $uni-color-primary;
+    color: $uni-color-primary;
+    border-radius: px2rpx(8);
+    padding: px2rpx(3) px2rpx(8);
+    margin: px2rpx(4) px2rpx(8) px2rpx(4) 0;
+}
+.label {
+    font-size: px2rpx(16);
+    line-height: px2rpx(22);
+    font-weight: bold;
+    color: $uni-color-primary;
+    text-align: center;
+    width: px2rpx(76);
+    padding: 0 px2rpx(21);
+    flex-shrink: 0;
+}
+.content {
+    padding-left: px2rpx(12);
+    font-size: px2rpx(12);
+}
+.full-reduce {
+    .icon-m-right {
+        font-size: px2rpx(14);
+        padding: 0 px2rpx(12);
+        color: $uni-color-primary
+    }
+}
+.full-reduce-content {
+    flex: 1 ;
+    .activity-rules {
+        font-size: px2rpx(12);
+        line-height: px2rpx(16);
+        color: $color-w1;
+        .price {
+            color: $uni-color-primary;
+        }
+    }
+    .activity-time {
+        font-size: px2rpx(10);
+        line-height: px2rpx(14);
+        color: $uni-text-color-grey;
+        padding-top: 2px;
+    }
+}
+.active-icon {
+    position: absolute;
+    left: px2rpx(-4) ;
+    bottom: px2rpx(-4);
+    color: $uni-color-primary;
+    opacity: 0.1;
+    > i {
+        font-size: px2rpx(30);
+    }
+}
+.header-large-circle {
+    position: absolute;
+    top: px2rpx(8);
+    left: px2rpx(60);
+    width: px2rpx(8);
+    height: px2rpx(8);
+    border-radius: 100%;
+    background-color: $uni-color-primary;
+    opacity: 0.1;
+}
+.header-small-circle {
+    position: absolute;
+    top: px2rpx(16);
+    left: px2rpx(55);
+    width: px2rpx(4);
+    height: px2rpx(4);
+    background-color: $uni-color-primary;
+    opacity: 0.1;
+}
+.broken {
+    position: absolute;
+    left: px2rpx(76);
+    top: 0;
+    width: px2rpx(1);
+    li {
+        background-color: #ffffff;
+        height: px2rpx(2);
+        width: px2rpx(1);
+        margin-top: px2rpx(2);
+    }
+}
+.number-color {
+    color: $uni-color-primary;
+}
+</style>

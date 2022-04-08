@@ -1,0 +1,535 @@
+{
+	"pages": [{
+		"path": "pages/index/index",
+		"style": {
+			"navigationBarTitleText": "加载中...",
+			"enablePullDownRefresh": true
+		}
+	}],
+	"subPackages": [{
+			"root": "kdxGoods",
+			"pages": [{
+					"path": "goodList/index",
+					"style": {
+						"navigationBarTitleText": "商品列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "categoryList/index",
+					"style": {
+						"navigationBarTitleText": "商品分类"
+					}
+				},
+				{
+					"path": "detail/index",
+					"style": {
+						"navigationBarTitleText": "加载中..."
+					}
+				},
+				{
+					"path": "search/index",
+					"style": {
+						"navigationBarTitleText": "商品搜索"
+					}
+				},
+				{
+					"path": "detail/allComments",
+					"style": {
+						"navigationBarTitleText": "全部评价"
+					}
+				},
+				{
+					"path": "activity/seckillList",
+					"style": {
+						"navigationBarTitleText": "秒杀"
+					}
+				},
+				{
+					"path": "activity/expire",
+					"style": {
+						"navigationBarTitleText": "活动已结束"
+					}
+				},
+				{
+					"path": "invalid/index",
+					"style": {
+						"navigationBarTitleText": "加载中..."
+					}
+				}
+			]
+		},
+		{
+			/* 购物车 */
+			"root": "kdxCart",
+			"pages": [{
+				"path": "index",
+				"style": {
+					"navigationBarTitleText": "我的购物车"
+				}
+			}]
+		},
+		{
+			/* 订单 */
+			"root": "kdxOrder",
+			"pages": [{
+					"path": "create",
+					"style": {
+						"navigationBarTitleText": "确认订单"
+					}
+				},
+				{
+					"path": "remarkBuyer",
+					"style": {
+						"navigationBarTitleText": "买家留言"
+					}
+				},
+				{
+					"path": "invoice",
+					"style": {
+						"navigationBarTitleText": "发票信息"
+					}
+				},
+				{
+					"path": "alipay",
+					"style": {
+						"navigationBarTitleText": "支付宝支付"
+					}
+				},
+				{
+					"path": "paySuccess",
+					"style": {
+						"navigationBarBackgroundColor": "#FF4029",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "订单详情",
+						"navigationBarBackgroundColor": "#FF4029",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "订单列表"
+					}
+				},
+				{
+					"path": "package/list",
+					"style": {
+						"navigationBarTitleText": "查看物流"
+					}
+				},
+				{
+					"path": "package/detail",
+					"style": {
+						"navigationBarTitleText": "查看物流"
+					}
+				},
+				{
+					"path": "comment/list",
+					"style": {
+						"navigationBarTitleText": "待评价商品"
+					}
+				},
+				{
+					"path": "comment/index",
+					"style": {
+						"navigationBarTitleText": "评价"
+					}
+				},
+				{
+					"path": "refund/list",
+					"style": {
+						"navigationBarTitleText": "售后列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "refund/start",
+					"style": {
+						"navigationBarTitleText": "选择售后类型"
+					}
+				},
+				{
+					"path": "refund/action",
+					"style": {
+						"navigationBarTitleText": "仅退款"
+					}
+				},
+				{
+					"path": "refund/detail",
+					"style": {
+						"navigationBarTitleText": "售后详情",
+						"navigationBarBackgroundColor": "#FF4029",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
+					"path": "refund/express",
+					"style": {
+						"navigationBarTitleText": "填写快递单号"
+					}
+				},
+				{
+					"path": "refund/expressChoose",
+					"style": {
+						"navigationBarTitleText": "选择快递公司"
+					}
+				},
+				{
+					"path": "refund/expressInfo",
+					"style": {
+						"navigationBarTitleText": "查看物流"
+					}
+				}
+			]
+		},
+		{
+			/* 个人中心 */
+			"root": "kdxMember",
+			"pages": [{
+					"path": "address/list",
+					"style": {
+						"navigationBarTitleText": "地址管理",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "address/index",
+					"style": {
+						"navigationBarTitleText": "地址管理"
+					}
+				},
+				{
+					"path": "index/index",
+					"style": {
+						"navigationBarTitleText": "加载中..."
+					}
+				},
+				{
+					"path": "memberInfo/index",
+					"style": {
+						"navigationBarTitleText": "会员资料"
+					}
+				},
+				{
+					"path": "memberInfo/changeNickname",
+					"style": {
+						"navigationBarTitleText": "修改昵称"
+					}
+				},
+				{
+					"path": "level/index",
+					"style": {
+						"navigationBarTitleText": "等级说明"
+					}
+				},
+				{
+					"path": "balance/index",
+					"style": {
+						"navigationBarTitleText": "账户余额"
+					}
+				},
+				{
+					"path": "recharge/index",
+					"style": {
+						"navigationBarTitleText": "余额充值"
+					}
+				},
+				{
+					"path": "withdraw/index",
+					"style": {
+						"navigationBarTitleText": "余额提现"
+					}
+				},
+				{
+					"path": "detail/index",
+					"style": {
+						"navigationBarTitleText": "积分明细",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "credit/index",
+					"style": {
+						"navigationBarTitleText": "积分明细"
+					}
+				},
+				{
+					"path": "rules/index",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "detail/redpacketDetail",
+					"style": {
+						"navigationBarTitleText": "红包明细",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "record/index",
+					"style": {
+						"navigationBarTitleText": "提现记录"
+					}
+				},
+				{
+					"path": "mine/collection/index",
+					"style": {
+						"navigationBarTitleText": "我的收藏",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "mine/pug/index",
+					"style": {
+						"navigationBarTitleText": "我的足迹"
+					}
+				},
+				{
+					"path": "coupon/list/index",
+					"style": {
+						"navigationBarTitleText": "优惠券领取中心"
+					}
+				},
+				{
+					"path": "password/index",
+					"style": {
+						"navigationBarTitleText": "修改密码"
+					}
+				},
+				{
+					"path": "bindTel/change",
+					"style": {
+						"navigationBarTitleText": "更换绑定手机"
+					}
+				},
+				{
+					"path": "bindTel/index",
+					"style": {
+						"navigationBarTitleText": "更换绑定手机"
+					}
+				},
+				{
+					"path": "bindTel/mobile",
+					"style": {
+						"navigationBarTitleText": "绑定手机号"
+					}
+				},
+				{
+					"path": "bindTel/hadBound",
+					"style": {
+						"navigationBarTitleText": "更换绑定手机"
+					}
+				},
+				{
+					"path": "coupon/detail/index",
+					"style": {
+						"navigationBarTitleText": "优惠券详情",
+						"navigationBarBackgroundColor": "#FF4029",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
+					"path": "coupon/goods/index",
+					"style": {
+						"navigationBarTitleText": "商品列表"
+					}
+				},
+				{
+					"path": "coupon/paySuccess/index",
+					"style": {
+						"navigationBarTitleText": "领取成功",
+						"navigationBarBackgroundColor": "#FF4029",
+						"navigationBarTextStyle": "white"
+					}
+				}
+			]
+		},
+		{
+			"root": "kdxLogin",
+			"pages": [{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "登录"
+					}
+				},
+				{
+					"path": "register",
+					"style": {
+						"navigationBarTitleText": "注册"
+					}
+				},
+				{
+					"path": "forget",
+					"style": {
+						"navigationBarTitleText": "密码找回"
+					}
+				},
+				{
+					"path": "setPass",
+					"style": {
+						"navigationBarTitleText": "设置登录密码"
+					}
+				},
+				{
+					"path": "resetPass",
+					"style": {
+						"navigationBarTitleText": "重置登录密码"
+					}
+				},
+				{
+					"path": "dealWechat",
+					"style": {
+						"navigationBarTitleText": "微信认证"
+					}
+				}
+			]
+		},
+		{
+			"root": "kdxCommission",
+			"pages": [{
+					"path": "default",
+					"style": {
+						"navigationBarTitleText": "分销中心"
+					}
+				},
+				{
+					"path": "apply/index"
+				},
+				{
+					"path": "withdraw/index",
+					"style": {
+						"navigationBarTitleText": "佣金提现"
+					}
+				},
+				{
+					"path": "withdraw/list"
+				},
+				{
+					"path": "order/list",
+					"style": {
+						"navigationBarTitleText": "分销订单"
+					}
+				},
+				{
+					"path": "downLine"
+				},
+				{
+					"path": "statistics"
+				},
+				{
+					"path": "ranking"
+				},
+				{
+					"path": "toAccount"
+				},
+				{
+					"path": "level"
+				},
+				{
+					"path": "index/index",
+					"style": {
+						"navigationBarTitleText": "分销中心"
+					}
+				}
+			]
+		},
+		{
+			"root": "kdxOthers",
+			"pages": [{
+					"path": "followPoster",
+					"style": {
+						"navigationBarTitleText": "关注"
+					}
+				},
+				{
+					"path": "notice/detail",
+					"style": {
+						"navigationBarTitleText": "详情"
+					}
+				},
+				{
+					"path": "webview"
+				},
+				{
+					"path": "close/close",
+					"style": {
+						"navigationBarTitleText": "商城打烊"
+					}
+				},
+				{
+					"path": "pluginsInvalid",
+					"style": {
+						"navigationBarTitleText": "应用已过期"
+					}
+				},
+				{
+					"path": "form/success",
+					"style": {
+						"navigationBarTitleText": "提交成功"
+					}
+				},
+				{
+					"path": "paySuccess",
+					"style": {
+						"navigationBarTitleText": "支付成功"
+					}
+				},
+				{
+					"path": "middle/wxapp",
+					"style": {
+						"navigationBarTitleText": "小程序跳转"
+					}
+				}
+			]
+		}
+    ],
+    "globalStyle": {
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": " ",
+        "navigationBarBackgroundColor": "#fff",
+        "backgroundColor": "#F8F8F8",
+        "backgroundColorTop": "#F4F5F6",
+        "backgroundColorBottom": "#F4F5F6",
+        "enablePullDownRefresh": true,
+        "usingComponents": {
+            // #ifdef MP-WEIXIN
+            "painter": "/wxcomponents/painter/painter"
+            // #endif
+            // #ifdef MP-TOUTIAO
+            "painter": "/ttcomponents/painter/painter"
+            // #endif
+        }
+    // #ifndef MP-TOUTIAO
+    },
+    // #endif
+    // #ifdef MP-TOUTIAO
+    }
+    // #endif
+
+    // #ifndef MP-TOUTIAO
+    "preloadRule": {
+        "pages/index/index": {
+            "network": "all",
+            "packages": [
+                "kdxGoods",
+                "kdxMember"
+            ]
+        },
+        "kdxGoods/detail/index": {
+            "network": "all",
+            "packages": [
+                "kdxCart"
+            ]
+        }
+    }
+    // #endif
+//    "workers": "wxcomponents/worker"
+}
+

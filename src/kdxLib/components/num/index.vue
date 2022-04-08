@@ -1,0 +1,107 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+<!--
+ * @Description: 数量增加删除
+ * @Autor: 青岛开店星信息技术有限公司
+-->
+<template>
+  <div :class="classes" :style="style">
+    <div @click="doNum(0)">
+      <slot name="left" />
+    </div>
+    <input
+      @blur="ch"
+      type="number"
+      class="txt"
+      v-model="num"
+      :minlength="min"
+      :maxlength="max"
+    />
+    <div @click="doNum(1)">
+      <slot name="right" />
+    </div>
+  </div>
+</template>
+<script>
+// 工具
+import PublicMixin from "../../lib/PublicMixin.js";
+
+const NAME = "Num";
+
+export default {
+  name: NAME,
+  mixins: [PublicMixin],
+  props: {
+    min: {
+      type: Number,
+      default: 1,
+    },
+    max: {
+      type: Number,
+      default: 10,
+    },
+  },
+  computed: {
+    classes() {
+      return ["kdx-num-wrap", ...this.classNames].join(" ");
+    },
+    style() {
+      return `${this.styles}`;
+    },
+  },
+  methods: {
+    doNum(flg = 0) {
+      if (!flg) {
+        this.min < this.num && --this.num;
+      } else {
+        this.max > this.num && ++this.num;
+      }
+      // 发射
+      this.emit(this.num);
+    },
+    ch(e) {
+      console.log("tag", "");
+      let str = e.target.value;
+      let temp = "";
+
+      for (let i = 0; i < str.length; i++) {
+        if (str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) {
+          temp += str.charAt(i);
+        }
+      }
+      console.log(temp, "king----->>>");
+      this.num = temp;
+      
+      // 判断是否越界
+      if(this.num < this.min){
+        this.num = this.min;
+      }else if(this.num > this.max){
+        this.num = this.max;
+      }
+
+      // 发射
+      this.emit(this.num);
+    },
+    emit(num = 0) {
+      if (this.nextVal != num) {
+        this.$emit("on-change", num);
+      }
+
+      this.nextVal = num;
+    },
+  },
+  data() {
+    return {
+      num: this.min,
+    };
+  },
+};
+</script>

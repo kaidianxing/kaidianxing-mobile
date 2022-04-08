@@ -1,0 +1,64 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+@each $theme, $primary, $subcolor in (default, #ff3c29, #212121),
+    (yellow, #f9d72a, #fff9da), (pink, #fb496f, #fee2e4),
+    (green, #19b038, #dcf1e1), (purple, #8150f2, #ece3fc),
+    (blue, #277cf4, #d2e6f9), (black, #2a2a2e, #e8e9ef)
+{
+    .theme-#{$theme} {
+        .theme-primary-color {
+            color: $primary!important;
+         
+            &::before {
+                color: $primary!important;
+            }
+        }
+
+        .theme-primary-bgcolor {
+            background: $primary!important;
+        }
+
+        
+        .theme-primary-border {
+            border-color: $primary!important;
+        }
+
+        .theme-sub-color {
+            color: $subcolor!important;
+        }
+        .theme-sub-bgcolor {
+            background: $subcolor!important;
+        }
+
+        .theme-sub-border {
+            border-color: $subcolor!important;
+        }
+    }
+}
+
+// 主题色规格特殊定义
+.theme-default {
+    .theme-spec-bgcolor {
+        background-color: #FFF3F5!important;
+    }
+}
+
+//[class^=theme-] {
+    .theme-primary-price { // 主题色价格
+        color: #ff3c29!important;
+    }
+//}
+
+//.theme-black {
+//    .theme-primary-price {
+//        color: #2a2a2e!important;
+//    }
+//}

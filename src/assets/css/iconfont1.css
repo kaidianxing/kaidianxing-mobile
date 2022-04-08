@@ -1,0 +1,313 @@
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
+@font-face {font-family: "iconfont";
+  src: url('https://at.alicdn.com/t/font_1872121_xxkupf2vsz.eot?t=1598508728747'); /* IE9 */
+  src: url('https://at.alicdn.com/t/font_1872121_xxkupf2vsz.eot?t=1598508728747#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('https://at.alicdn.com/t/font_1872121_xxkupf2vsz.woff?t=1598508728747') format('woff'),
+  url('https://at.alicdn.com/t/font_1872121_xxkupf2vsz.ttf?t=1598508728747') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('https://at.alicdn.com/t/font_1872121_xxkupf2vsz.svg?t=1598508728747#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iconyongjinpaiming2:before {
+  content: "\f5e8";
+}
+
+.iconwodexiaxian2:before {
+  content: "\f5e9";
+}
+
+.iconwodexiaxian1:before {
+  content: "\f5ea";
+}
+
+.iconerweima1:before {
+  content: "\f5eb";
+}
+
+.iconerweima2:before {
+  content: "\f5ec";
+}
+
+.iconyongjinpaiming1:before {
+  content: "\f5ed";
+}
+
+.icondaishouhuo2:before {
+  content: "\f5d9";
+}
+
+.icontuihuanhuodingdan1:before {
+  content: "\f5da";
+}
+
+.iconwodedingdan1:before {
+  content: "\f5db";
+}
+
+.iconfenxiaozhongxin1:before {
+  content: "\f5dc";
+}
+
+.icondaifahuo1:before {
+  content: "\f5dd";
+}
+
+.icongerenziliao1:before {
+  content: "\f5de";
+}
+
+.iconwanchengdingdan2:before {
+  content: "\f5df";
+}
+
+.icontuihuanhuodingdan2:before {
+  content: "\f5ce";
+}
+
+.iconwodedingdan2:before {
+  content: "\f5e1";
+}
+
+.iconfenxiaozhongxin2:before {
+  content: "\f5e2";
+}
+
+.iconwanchengdingdan1:before {
+  content: "\f5e3";
+}
+
+.icondaishouhuo1:before {
+  content: "\f5e4";
+}
+
+.iconwodexiaodian2:before {
+  content: "\f5e5";
+}
+
+.icongerenziliao2:before {
+  content: "\f5e6";
+}
+
+.iconwodexiaodian1:before {
+  content: "\f5e7";
+}
+
+.iconchengweifenxiaoshang2:before {
+  content: "\f5ee";
+}
+
+.iconchongzhi1:before {
+  content: "\eeed";
+}
+
+.icondaifukuan2:before {
+  content: "\eeec";
+}
+
+.icondaifukuan1:before {
+  content: "\f5d5";
+}
+
+.icondaifahuo2:before {
+  content: "\f5d6";
+}
+
+.iconchengweifenxiaoshang1:before {
+  content: "\f5d7";
+}
+
+.iconchongzhi2:before {
+  content: "\f5d8";
+}
+
+.iconxinpinshangshi2:before {
+  content: "\eeeb";
+}
+
+.iconxinpinshangshi1:before {
+  content: "\eeea";
+}
+
+.iconxianshiqianggou2:before {
+  content: "\eede";
+}
+
+.icontuijianshangpin2:before {
+  content: "\eedd";
+}
+
+.iconxianshiqianggou1:before {
+  content: "\eedc";
+}
+
+.icontuijianshangpin1:before {
+  content: "\eedb";
+}
+
+.iconshangchengshouye1:before {
+  content: "\f5c8";
+}
+
+.iconshangchengshouye2:before {
+  content: "\f5c9";
+}
+
+.iconremaishangpin2:before {
+  content: "\f5ca";
+}
+
+.iconremaishangpin1:before {
+  content: "\eeda";
+}
+
+.iconquanbushangpin2:before {
+  content: "\f5c4";
+}
+
+.iconquanbushangpin1:before {
+  content: "\f5c5";
+}
+
+.icongouwuche1:before {
+  content: "\f5c6";
+}
+
+.icongouwuche2:before {
+  content: "\f5c7";
+}
+
+.icongonggaomianban1:before {
+  content: "\f5c2";
+}
+
+.icongonggaomianban2:before {
+  content: "\f5c3";
+}
+
+.iconfenleidaohang1:before {
+  content: "\f5c0";
+}
+
+.iconfenleidaohang2:before {
+  content: "\f5c1";
+}
+
+.iconcuxiaoshangpin2:before {
+  content: "\f5bc";
+}
+
+.iconbaoyou2:before {
+  content: "\f5bd";
+}
+
+.iconcuxiaoshangpin1:before {
+  content: "\f5be";
+}
+
+.iconbaoyou1:before {
+  content: "\f5bf";
+}
+
+.iconzuji2:before {
+  content: "\f5ba";
+}
+
+.iconzuji1:before {
+  content: "\f5bb";
+}
+
+.iconyuetixian2:before {
+  content: "\f5b6";
+}
+
+.iconyuemingxi1:before {
+  content: "\f5b7";
+}
+
+.iconyuemingxi2:before {
+  content: "\f5b8";
+}
+
+.iconyuetixian1:before {
+  content: "\f5b9";
+}
+
+.iconyouhuiquanzhongxin1:before {
+  content: "\f5b4";
+}
+
+.iconyouhuiquanzhongxin2:before {
+  content: "\f5b5";
+}
+
+.iconxiaofeipaihang2:before {
+  content: "\f5b3";
+}
+
+.iconxiaofeipaihang1:before {
+  content: "\f5b2";
+}
+
+.iconwodeshoucang2:before {
+  content: "\f5b0";
+}
+
+.iconwodeshoucang1:before {
+  content: "\f5ae";
+}
+
+.iconjifenpaihang2:before {
+  content: "\f5af";
+}
+
+.iconjifenpaihang1:before {
+  content: "\f5b1";
+}
+
+.iconhuiyuan2:before {
+  content: "\f5aa";
+}
+
+.iconhuiyuan1:before {
+  content: "\f5ab";
+}
+
+.icondizhiguanli1:before {
+  content: "\f5ac";
+}
+
+.icondizhiguanli2:before {
+  content: "\f5ad";
+}
+
+.iconchongzhijilu2:before {
+  content: "\f5a8";
+}
+
+.iconchongzhijilu1:before {
+  content: "\f5a9";
+}
+
+.iconbangzhuzhongxin2:before {
+  content: "\f5a6";
+}
+
+.iconbangzhuzhongxin1:before {
+  content: "\f5a7";
+}
