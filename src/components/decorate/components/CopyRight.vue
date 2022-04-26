@@ -10,17 +10,9 @@
  */
 <template>
     <!--自定义首页与会员中心页面版权设置-->
-    <div class="diyCopyright"  @click="toCopyRightUrl">
-        <div style="padding: 16rpx 24rpx 0;" :class="{'diyCopyRow': copyright.style_model === '2', 'diyCopyCol': copyright.style_model === '3'}">
-            <block v-if="copyright.style_model != '1'">
-                <img class="logo" mode="heightFix" :src="$utils.mediaUrl(copyRightData.logo, '', logoType)" alt="">
-            </block>
-            <!--链接跳转-->
-            <div>{{copyRightData.message}}</div>
-            <!--富文本-->
-            <div v-if="copyRightData.message_switch==='20' && copyright.advanced_copyright === '1'">
-                <my-rich-text :content='copyRightData.message_vip'></my-rich-text>
-            </div>
+    <div class="diyCopyright" >
+        <div style="padding: 16rpx 24rpx 0;" >
+            <p>青岛开店星信息技术有限公司版权所有</p>
         </div>
     </div>
 </template>
@@ -37,22 +29,8 @@
         },
         computed: {
             ...mapState('setting',{
-                copyright: state => state.systemSetting?.core_settings?.copyright,
                 logo: state => state.systemSetting?.basic?.logo
             }),
-            copyRightData() {
-                let result = {},
-                    key = `style${this.copyright.style_model}`;
-                result = {
-                    ...this.copyright[key],
-                    logo: (this.copyright[key]?.logo_switch === '10' && this.copyright?.advanced_copyright === '0')?this.logo : (this.copyright[key]?.logo_switch === '20' && this.copyright?.advanced_copyright === '1' ? this.copyright[key]?.logo : this.logo)
-                };
-                return result
-            },
-            // 店铺独立存储时，logo拼接的类型
-            logoType() {
-                return 1 === +this.copyright?.advanced_copyright && 20 === +this.copyRightData?.logo_switch ? 'manage' : '';
-            }
         },
         created() {
         },
@@ -89,6 +67,7 @@
 
 <style lang="scss" scoped>
     .diyCopyright {
+        font-size: px2rpx(12);
         .logo {
             min-width: 60rpx;
             width: 100rpx;

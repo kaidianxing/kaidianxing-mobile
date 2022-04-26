@@ -25,3 +25,5 @@ yarn-error.log*
 node_modules
 jsconfig.json
 
+/package-lock.json
+
