@@ -19,7 +19,7 @@ var config = {
 };
 
 // window.wxDebug = false;
-console.log(config);
+// console.log(config);
 
 /*
 *  with_live （小程序直播为true时请在以下路径内打开 playerPlugin 注释）

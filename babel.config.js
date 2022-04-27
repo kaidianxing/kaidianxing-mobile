@@ -30,7 +30,6 @@ if (process.env.UNI_PLATFORM === 'app-plus' && process.env.UNI_USING_V8) {
 
 process.UNI_LIBRARIES = process.UNI_LIBRARIES || ['@dcloudio/uni-ui']
 process.UNI_LIBRARIES.forEach(libraryName => {
-  console.log('oooooooooooooooooooooooooooooooooooooooooooooo',libraryName)
   plugins.push([
     'import',
     {
