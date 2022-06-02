@@ -18,7 +18,8 @@
         }
     },
     "mp-weixin": {
-        "appid": "wxd2ad09702a67c833",
+//        "appid": "wxd2ad09702a67c833",
+        "appid": "wx472d07ee99340b3b",
         "usingShopPlugin": true,
         "uniStatistics": {
             "enable": false

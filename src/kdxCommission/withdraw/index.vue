@@ -38,7 +38,7 @@
                 </div>
                 <input-list v-if="payInfo.content == '支付宝'" :list="inputList" @input="handleInput"></input-list>
             </div>
-            <div class="submit" @click="submit">{{params.withdraw}}</div>
+            <!--<div class="submit" @click="submit">{{params.withdraw}}</div>-->
             <!-- 支付弹窗 -->
             <pay-picker
                 :hasWeixin="true"
@@ -47,6 +47,14 @@
                 :payList="payList"
                 @confirmPay="confirmPay"></pay-picker>
         </div>
+        <template slot="foot">
+            <view class="collectionBorder">
+                <!--                <div class="submit" @click="submit">{{params.withdraw}}</div>-->
+
+                <btn type="do" size="middle"  @btn-click="submit">{{params.withdraw}}</btn>
+                <subscribe v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId" :subStyle="`top:16rpx;left:0;padding:0 24rpx;width:calc(100% - 48rpx);`" @success="success" @error="error"></subscribe>
+            </view>
+        </template>
     </page-box>
 </template>
 
@@ -54,11 +62,14 @@
     import InputList from '../components/InputList'
     import payPicker from '@/components/picker/payPicker'
     import PageMixin from '@/common/PageMixin.js'
+    import Subscribe from '@/components/wechat/Subscribe'
+
     export default {
         mixins: [PageMixin],
         components: {
             InputList,
-            payPicker
+            payPicker,
+            Subscribe
         },
         data() {
             let balance_text = this.$store.state.setting.systemSetting.balance_text || '余额'
@@ -111,13 +122,30 @@
                         icon: 'icon-m-zhifubao1 iconfont-m-',
                         type: 30
                     }
-                }
+                },
+                subTemplateId: [], //公众号订阅模板
+                showSubscribe: true, //公众号订阅按钮
             }
         },
         computed: {
             params() {
                 return this.$store.state.commissionSet.commissionSetting
             }
+        },
+        created() {
+            // #ifdef H5
+            if(this.$utils.is_weixin()) {
+                let noticeIds = this.$store.state.setting?.noticeTemId;
+                let type_code = ['commission_buyer_commission_pay', 'commission_buyer_withdraw_apply_fail', 'commission_buyer_child_pay'];
+                if(noticeIds && type_code.length) {
+                    type_code.map((item)=> {
+                        if(noticeIds[item]) {
+                            this.subTemplateId?.push(noticeIds[item])
+                        }
+                    })
+                }
+            }
+            // #endif
         },
         methods: {
             clickItem(idx) {
@@ -213,7 +241,16 @@
             },
             handleInput(data) {
                 this.inputList[data.index].content = data.value
-            }
+            },
+            // 公众号订阅消息事件
+            success() {
+                this.showSubscribe = false;
+                this.submit()
+            },
+            error() {
+                this.showSubscribe = false;
+                this.submit()
+            },
         },
         beforeMount() {
             this.balance_text = this.$store.state.setting.systemSetting.balance_text || '余额'
@@ -381,5 +418,11 @@
         color: $uni-text-color;
         font-size: 28rpx;
     }
+}
+.collectionBorder {
+    border-top: 1px solid #E6E7EB;
+    padding: px2rpx(7) px2rpx(12);
+    background: #fff;
+    position: relative;
 }
 </style>

@@ -66,7 +66,7 @@ axios.setConfig((config) => {
 axios.interceptor.request(
     (config, cancel) => {
         inviter_id = sessionStorage.getItem('inviter-id') || inviter_id
-        config.header['session-id'] = localStorage.getItem('session-id') || '';
+        config.header['Session-id'] = localStorage.getItem('session-id') || '';
 
         // 添加分销商邀请id
         if (inviter_id) {
@@ -79,7 +79,7 @@ axios.interceptor.request(
         // }
 
         config.header['client-type'] = client_type
-        // #ifdef H5 
+        // #ifdef H5
         if (process.env.NODE_ENV == "development" && process.env.VUE_APP_PLATFORM == "h5") {
             // config.baseUrl = 'api/client'
             // config.baseUrl = '/api/shop'

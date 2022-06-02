@@ -32,7 +32,8 @@ export default {
         showCity: '', // 用户选中自己位置
         wapUrl: '', // h5地址
         theme_color: 'default', // 主题色
-        wxSignUrl: ''
+        wxSignUrl: '',
+        noticeTemId: []
     },
     mutations: {
         setAvatar(state, url) {
@@ -86,7 +87,11 @@ export default {
                 return;
             }
             state.wxSignUrl = wxSignUrl;
-        }
+        },
+        // 设置消息提醒模板
+        setNoticeTemId(state, data) {
+            state.noticeTemId = data ?? []
+        },
     },
     actions: {
         getSysSetting(ctx) {
@@ -175,6 +180,22 @@ export default {
                 })
             })
         },
+        // 获取消息订阅模板信息
+        getWxappIds(ctx) {
+            return new Promise((resolve, reject) => {
+
+                api.othersApi.getWxappNoticeTemId({errorToast: false}).then(res => {
+                    if (res.error == 0) {
+                        ctx.commit('setNoticeTemId', res.data)
+                        resolve(res)
+                    } else {
+                        resolve(res.message)
+                    }
+                }).catch((err) => {
+                    reject(err)
+                })
+            })
+        }
     },
     getters: {
         // 判断上传小程序时是否勾选了插件

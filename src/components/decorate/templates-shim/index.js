@@ -9,18 +9,26 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 import getSessionId from '@/common/request/getSessionId'
-import { localStorage } from 'mp-storage'
+import {localStorage} from 'mp-storage'
 import store from '@/store'
-import { openLiver } from '@/common/util'
-import { hasBindBySence } from '@/common/helper/user';
+import {openLiver} from '@/common/util'
+import {hasBindBySence} from '@/common/helper/user';
+
 /**
  * 注意组件名称等于文件名，等于组件id
  */
 let handler = {};
 handler.banner = {
     clickImg(data) {
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
+
         if (data.linkurl) {
-            this.$Router.auto(data.linkurl,{wxappid: data.wxappid})
+            this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
             return;
         }
 
@@ -68,7 +76,7 @@ handler.blockgroup = {
 
 handler.coupon = {
     receiveCoupon(data) {
-        if(data.pick_type =='1'){
+        if (data.pick_type == '1') {
             this.$Router.auto({
                 path: '/kdxMember/coupon/detail/index',
                 query: {
@@ -115,7 +123,7 @@ handler.fixedsearch = {
     clickLeftIcon(data) {
         if (data.params.leftnav == 1) {//图标
             if (data.params.lefticonlink) {
-                this.$Router.auto(data.params.lefticonlink,{wxappid: data.params.lefticon_wxappid})
+                this.$Router.auto(data.params.lefticonlink, {wxappid: data.params.lefticon_wxappid})
             }
         } else {//图片
             if (data.params.leftimglink) {
@@ -144,12 +152,23 @@ handler.fixedsearch = {
 handler.icongroup = {
     clickItem(data) {
         if (data.linkurl) {
-            this.$Router.auto(data.linkurl,{wxappid: data.wxappid})
+            this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
         }
     }
 }
 handler.gotop = {
     clickGoTop(data) {
+        // #ifdef MP-WEIXIN
+        if (data.params.gotopclick == 1 && !data.params?.linkurl) {
+            checkToLive({
+                keyLink: data.params.keyLink || '',
+                noticeId: data.params.noticeId || '',
+                linkurl_name: data.params.linkurl_name
+            })
+            return
+        }
+        // #endif
+
         if (data.params.gotopclick == 1 && data.params.linkurl) {
             this.$Router.auto({
                 path: data.params.linkurl
@@ -165,14 +184,14 @@ handler.gotop = {
 }
 handler.listmenu = {
     clickSubtitle(data) {
-        this.$Router.auto(data.linkurl,{wxappid:data.wxappid})
+        this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
     }
 }
 
 handler.logout = {
     logout() {
         this.localStorage.setItem('session-id', '')
-        this.sessionStorage.setItem('promiser','')
+        this.sessionStorage.setItem('promiser', '')
         getSessionId().then(res => {
             if (res) {
                 this.$store.commit('login/setLogin', false)
@@ -210,7 +229,7 @@ handler.member = {
             path: '/kdxMember/credit/index',
         })
     },
-    coupon(){
+    coupon() {
         this.$Router.auto({
             path: '/kdxMember/coupon/list/index',
             query: {
@@ -226,6 +245,16 @@ handler.member = {
 }
 handler.menu = {
     clickItem(data) {
+        // #ifdef MP-WEIXIN
+        if (!data?.item.linkurl) {
+            checkToLive({
+                keyLink: data.item?.keyLink || '',
+                noticeId: data.item?.noticeId || '',
+                linkurl_name: data?.item?.linkurl_name || ''
+            })
+            return
+        }
+        // #endif
         if (data.item.linkurl == 'wx_service') {
             // #ifdef H5
 
@@ -251,13 +280,14 @@ handler.menu = {
 
 handler.menu2 = {
     clickItem(data) {
+        console.log(data,'data---111')
         if (data.item.linkurl) {
             this.$Router.auto(data.item.linkurl, {wxappid: data.item.wxappid})
         }
     }
 }
 handler.notice = {
-    clickNotice({ params = {}, item = {} }) {
+    clickNotice({params = {}, item = {}}) {
         if (params.noticedata == '1') {
             if (item.linkurl) {
                 this.$Router.auto(item.linkurl, {wxappid: item.wxappid})
@@ -289,6 +319,12 @@ handler.notice = {
 
 handler.picture = {
     clickItem(data) {
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
         if (data.linkurl) {
             this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
         }
@@ -296,8 +332,14 @@ handler.picture = {
 }
 handler.pictures = {
     clickItem(data) {
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
         if (data.linkurl) {
-            this.$Router.auto(data.linkurl,{wxappid: data.wxappid})
+            this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
         }
     }
 }
@@ -309,20 +351,26 @@ handler.search = {
     }
 }
 handler.tabbar = {
-    clickItem({ data, key }) {
-        this.$decorator.getModule('tabbar').setCurIndex(data,key)
-        this.$decorator.getModule('tabbar').getTabGoods(data,this.$Route)
+    clickItem({data, key}) {
+        this.$decorator.getModule('tabbar').setCurIndex(data, key)
+        this.$decorator.getModule('tabbar').getTabGoods(data, this.$Route)
     }
 }
 handler.title = {
     clickSubtitle(data) {
-        if (data.linkurl) {
-            this.$Router.auto(data.linkurl,{wxappid: data.wxappid})
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
+        if (!checkWxService(data.linkurl) && data.linkurl.length > 0) {
+            this.$Router.auto(data.linkurl, {wxappid: data.wxappid})
         }
     }
 }
 handler.topmenu = {
-    toPage(data){
+    toPage(data) {
         this.$Router.auto({
             path: data.value.linkurl
         })
@@ -336,7 +384,7 @@ handler.goods = {
             this.$Router.auto({
                 path: '/kdxGoods/detail/index',
                 query: {
-                    goods_id:gid
+                    goods_id: gid
                 }
             })
         }
@@ -344,31 +392,37 @@ handler.goods = {
 }
 handler.followbar = {
     clickBtn(data) {
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
         if (data.linkurl) {//点击跳转链接
             this.$Router.auto(data.linkurl, {wxappid: data.wxappid});
         }
     },
     close({showtype}) {
-        if(showtype == '2'){
-            const seven_day = 7 * 24 * 60 * 60 *1000;
+        if (showtype == '2') {
+            const seven_day = 7 * 24 * 60 * 60 * 1000;
             const time = new Date().getTime()
             const outdate_time = time + seven_day
             let userId = this.$store.state.login.userInfo.id
-            if(userId) {
+            if (userId) {
                 localStorage.setItem(`bar_closetime${userId}`, outdate_time)
             }
         }
-        
+
         this.$decorator.getPage(this.$Route).setPageInfo({
             followbar: {
                 show: false
             }
-        },'templates-shim/index/close')
+        }, 'templates-shim/index/close')
     }
 }
 
 handler.liver = {
-    clickItem({ data, item }) {
+    clickItem({data, item}) {
         openLiver({
             liverId: item.id,
             broadId: item.broadcast_room_id
@@ -379,6 +433,12 @@ handler.liver = {
 
 handler.cube = {
     clickItem(data) {
+        // #ifdef MP-WEIXIN
+        if (!data.linkurl) {
+            checkToLive(data)
+            return
+        }
+        // #endif
         if (data.linkurl) {
             this.$Router.auto(data.linkurl, {wxappid: data.wxappid});
         }
@@ -397,8 +457,8 @@ handler.seckill = {
         }
 
     },
-    clickMore(data){
-        if(data.type){
+    clickMore(data) {
+        if (data.type) {
             this.$Router.auto({
                 path: '/kdxGoods/activity/seckillList',
                 query: data
@@ -428,16 +488,16 @@ handler.customer = {
         } else { // 客服
             // 判断商户权限
             if (data.params.customer === 'rr') {
-                let merchant = this.$decorator.getPage(this.$decorator.getPageType(this.$Route.path))?.detailInfo?.merchant_service||['renxinyun'];
-                if (!(merchant&&merchant.includes('renxinyun'))) {
+                let merchant = this.$decorator.getPage(this.$decorator.getPageType(this.$Route.path))?.detailInfo?.merchant_service || ['renxinyun'];
+                if (!(merchant && merchant.includes('renxinyun'))) {
                     uni.showToast({
-                        title:'暂未开启',
+                        title: '暂未开启',
                         icon: 'none'
                     });
                     return
                 }
             }
-            this.$Router.auto(data.params.link_url,{wxappid: data.params.wxappid})
+            this.$Router.auto(data.params.link_url, {wxappid: data.params.wxappid})
         }
     }
 };
@@ -467,9 +527,135 @@ handler.credit = {
         })
     },
 }
+/**
+ * 视频号交易组件点击事件 - 视频号直播
+ * @param data 必须采用data.keyLink   data.linkurl_name 格式
+ * @param data 传参时有的data默认(data.item.keyLink  or data.params.keyLink )不是这种格式需要传的时候处理下
+ */
+const checkToLive = async function (data = {
+    keyLink: '',
+    noticeId: '',
+    linkurl_name: ''
+}) { //必须传此格式
+
+    if (data?.keyLink == 'videoRam') {
+        // 直接进入直播间
+        wxTransLiveAppoint(data)
+        return;
+    }
+    if (data?.keyLink == 'videoLive') {
+        Object.assign({}, data, await formatParam(data));
+        Object.assign({}, data, await formatLive(data));
+        // 预约直播
+        if (data?.appoint && data?.live_status != 2) {
+            wxAppoint(data?.noticeId)
+        }
+        // 进入直播间
+        if (!data?.appoint && data?.live || data?.live_status == 2) {
+            wxGoLive(data?.linkurl_name)
+        }
+        return;
+    }
+}
+const formatLive = function (item) {
+    return new Promise(resolve => {
+        wx.getChannelsLiveInfo({
+            finderUserName: item?.linkurl_name,
+            success: (res) => {
+                item.live = true;
+                item.live_status = res.status
+                resolve(item)
+            },
+            fail: (res) => {
+                item.live = false;
+                resolve(item)
+            }
+        })
+    })
+}
+
+const formatParam = function (item) {
+    return new Promise((resolve) => {
+        // if (!wx.getChannelsLiveNoticeInfo) return
+        wx.getChannelsLiveNoticeInfo({
+            finderUserName: item?.linkurl_name || item?.link_url_name,
+            success: (res) => {
+                if (res.reservable) {
+                    // 是否可预约
+                    item.appoint = true;
+                    item.noticeId = res.noticeId
+                } else {
+                    item.appoint = false;
+                }
+                resolve(item)
+            },
+            fail: (res) => {
+                item.appoint = false;
+                resolve(item)
+            }
+        })
+    })
+}
+// 处理小程序自定义交易组件 - 视频号直播
+const wxTransLiveAppoint = function (data) {
+    let noticeId = data?.linkurl_name, video_id = data?.video_id;
+    if (noticeId) {
+        if (video_id) {
+            wx.openChannelsActivity({
+                        finderUserName: noticeId,
+                        feedId: video_id,
+                        success: (res) => {
+                        },
+                        fail: (res) => {
+                        }
+                    }
+            )
+        }
+    }
+}
+
+// 预约直播
+const wxAppoint = function (noticeId) {
+    noticeId && wx.reserveChannelsLive({
+        noticeId
+    })
+}
+// 进入直播间
+const wxGoLive = function (finderUserName) {
+    finderUserName && wx.openChannelsLive({
+        finderUserName
+    })
+}
+
+
+const checkWxService = function (url) {//判断是否为小程序客服   小程序客服需要通过button激活
+    let isService = false
+    if (url == 'wx_service') {
+        isService = true
+        // #ifdef H5
+        if (store.state.shopWxCode) {
+            store.commit('changeWxCode', {
+                status: true
+            })
+        } else {
+            store.dispatch('getWxCode').then(res => {
+                if (res) {
+                    store.commit('changeWxCode', {
+                        status: true
+                    })
+                }
+            })
+        }
+        // #endif
+        return isService
+    }
+    return isService
+}
+
+
 export default function (event) {
-    if(store.state.decorate.pageQuery.previewId){
-        uni.showToast({ title:'预览模式',icon: 'none'})
+    if (store.state.decorate.pageQuery.previewId) {
+        uni.showToast({title: '预览模式', icon: 'none'})
         return
     }
     if (event?.target) {
@@ -479,7 +665,7 @@ export default function (event) {
         if (!handlerObject) {
             return
         }
-        let functionName = target[1];//处理函数名称 
+        let functionName = target[1];//处理函数名称
         let handlerFun = handlerObject[functionName];//处理函数
         if (!handlerFun || typeof handlerFun !== 'function') {
             return

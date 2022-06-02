@@ -33,6 +33,10 @@
         <MyTitleRichtext :component-data='mergeData' v-else-if='componentData.id=="title" || componentData.id=="richtext"' @custom-event='eventHandler'></MyTitleRichtext>
         <MyVideo :component-data='mergeData' v-else-if='componentData.id=="video"' @custom-event='eventHandler'></MyVideo>
         <NoticeModules :component-data='mergeData' v-else-if='componentData.id=="notice_modules"' @custom-event='eventHandler'></NoticeModules>
+        <!-- #ifdef MP-WEIXIN -->
+        <WxTransaction :component-data='mergeData' v-else-if='componentData.id=="wxTransaction"' @custom-event='eventHandler'></WxTransaction>
+        <!-- #endif -->
+
         <slot></slot>
     </div>
 </template>
@@ -64,6 +68,7 @@
     import TabbarTopmenu from './templates/Tabbar.Topmenu'
     import MyTitleRichtext from './templates/MyTitle.Richtext'
     import MyVideo from './templates/MyVideo'
+    import WxTransaction from './templates/WxTransaction'
     // #endif
 
     import {
@@ -104,6 +109,8 @@
             TabbarTopmenu,
             MyTitleRichtext,
             MyVideo,
+            WxTransaction
+
         },
         // #endif
         // #ifdef H5
@@ -131,6 +138,7 @@
             MyTitleRichtext:()=>import('./templates/MyTitle.Richtext.vue'),
             MyVideo:()=>import('./templates/MyVideo.vue'),
             NoticeModules:()=>import('../spin/Notice'),
+
         },
         // #endif
         data() {

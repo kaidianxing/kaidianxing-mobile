@@ -50,7 +50,7 @@ const router = new Router({
 })
 // #endif
 import $decorator from '@/common/decorator'
-import { isWx } from "../common/util";
+import { isWx ,is_weixin} from "../common/util";
 
 
 // localStorage.setItem('session-id', '5798f6a827fd3a989f5f049e804bcfd4')
@@ -70,6 +70,7 @@ router.beforeEach(async (to, from, next) => {
         if(isWhiteBlank) {
             return next()
         }
+
         //获取系统设置
         await beforeEacher.getSysSetting(to);
 
@@ -77,17 +78,30 @@ router.beforeEach(async (to, from, next) => {
         if(beforeEacher.isAdminClose(to,from,next,store)) {
             return
         };
+
         // 微信渠道获取渠道状态
         // #ifdef H5
         if(isWx) {
            await beforeEacher.getChannelStatus();
         }
         // #endif
+        // #ifdef H5
+        //获取系统消息通知模板ID--需要放在缓存渠道之后 不然缓存清除进入页面初始化is_weixin 为false
+        if(is_weixin()){
+            await store.dispatch('setting/getWxappIds') // 更新系统小程序订阅模板id
+        }
+
+        // #endif
+
+        // #ifdef MP-WEIXIN
+        await store.dispatch('setting/getWxappIds') // 更新系统小程序订阅模板id
+        // #endif
+
          //处理缺少session-id
         beforeEacher.haveSessionId();
         // 初始化装修状态
         $decorator.getPageType(to.path)!=-1&&$decorator.initStatus();//只会运行一次，第一个装修页面触发
-       
+
          /**
          * 先要判断是否能够跳转
          * 有些页面需要先登录后跳转，如：分销中心
@@ -146,7 +160,7 @@ router.afterEach((to, from) => {
     // #ifndef H5
     beforeEacher.getChannelStatus()
     // #endif
-  
+
     store.commit('setCurRoute', deepCopy(to))
 })
 export {

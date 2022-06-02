@@ -476,8 +476,9 @@ export const getSDKInstance = InGetSDKInstance = (() => {
                                     "scanQRCode",
                                     "openLocation",
                                     "getLocation",
+                                    "wx-open-subscribe"
                                 ],
-                                openTagList: ["wx-open-launch-weapp"],
+                                openTagList: ["wx-open-launch-weapp", "wx-open-subscribe","wx-open-subscribe-dialog"],
                             });
 
                             jweixin.ready(function () {
@@ -601,8 +602,8 @@ export function getShareInfo(shareInfo, has, callback) {
                     timestamp: res.config.timestamp, // 必填，生成签名的时间戳 由接口返回
                     nonceStr: res.config.nonceStr, // 必填，生成签名的随机串 由接口返回
                     signature: res.config.signature, // 必填，签名 由接口返回
-                    jsApiList: ['onMenuShareAppMessage', 'onMenuShareTimeline', 'invokeMiniProgramAPI', 'openAddress', "scanQRCode", "openLocation", "getLocation",], // 此处填你所用到的方法
-                    openTagList: ['wx-open-launch-weapp'] // 可选，需要使用的开放标签列表，例如['wx-open-launch-app']
+                    jsApiList: ['onMenuShareAppMessage', 'onMenuShareTimeline', 'invokeMiniProgramAPI', 'openAddress', "scanQRCode", "openLocation", "getLocation","wx-open-subscribe"], // 此处填你所用到的方法
+                    openTagList: ['wx-open-launch-weapp',"wx-open-subscribe", "wx-open-subscribe-dialog"] // 可选，需要使用的开放标签列表，例如['wx-open-launch-app']
                 });
 
                 jweixin.ready(function () {
@@ -1036,4 +1037,40 @@ export const richVideo = (content) => {
 /* 获取当前手机端链接 支付使用 */
 export const getPhoneUrl = () => {
     return `${settings.wap_url}`
+}
+
+/*
+* 小程序消息订阅
+* ids 订阅模板id
+* callback 订阅执行完成调用的方法
+* */
+export const sendWxappMsg = (type_code, callback) => {
+    // #ifdef MP-WEIXIN
+    let ids = [],
+            noticeIds = store.state.setting?.noticeTemId
+    console.log('-----------sendWxappMsg-------?????????>>>>>>>--------',noticeIds)
+    if(noticeIds && type_code.length) {
+        type_code.map((item)=> {
+            if(noticeIds[item]) {
+                ids.push(noticeIds[item])
+            }
+        })
+    }
+    console.log('-----------sendWxappMsg---ids----ids?????ids????>>>>>>>--------',ids)
+    wx.requestSubscribeMessage({
+        tmplIds: ids,
+        success(res) {
+            console.log(res,'success');
+        },
+        fail(rej) {
+            console.log(rej,'fail');
+        },
+        complete: (res) => {
+            console.log(res,'complete');
+            if(callback) {
+                callback()
+            }
+        }
+    })
+    // #endif
 }

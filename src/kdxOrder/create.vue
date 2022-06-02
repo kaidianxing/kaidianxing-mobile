@@ -33,9 +33,8 @@
             <!-- 支付 -->
             <order-pay ref="orderPay" :orderId="payOrderID" :create="true" :orderData="orderData" @handlePayStatus="payStatus"></order-pay>
         </view>
-        <!-- 底部结算 -->
-        <create-submit slot="foot" :orderData="orderData" :payPrice="payPrice" @pay="createConditions"></create-submit>
-
+        <!-- 底部结算  -->
+        <create-submit slot="foot" :orderData="orderData" :payPrice="payPrice" :noticePayIds="subTemplateId"  @pay="createConditions"></create-submit>
     </page-box>
 </template>
 
@@ -95,6 +94,8 @@
                 isVirtualEmail: false, //是否显示卡密商品接收邮箱地址输入框
                 isShowRefresh: false, // 在show请求数据后是否需要重新获取数据
                 pendingActiveName: '', // 进行中的活动
+                subTemplateId: [], // 立即支付订阅消息模板id-公众号
+                noticePay: [],//立即支付订阅场景值-小程序
             }
         },
         computed: {
@@ -162,6 +163,14 @@
             }
 
             this.getData();
+            // #ifdef MP-WEIXIN
+            this.getMsgIds()
+            // #endif
+            // #ifdef H5
+            if(this.$utils.is_weixin()) {
+                this.getMsgIds()
+            }
+            // #endif
         },
         methods: {
             getData() {
@@ -236,6 +245,14 @@
                     }
                 }).finally(() => {
                     this.isShowRefresh = false;
+                    // #ifdef MP-WEIXIN
+                    this.getMsgIds()
+                    // #endif
+                    // #ifdef H5
+                    if(this.$utils.is_weixin()) {
+                        this.getMsgIds()
+                    }
+                    // #endif
                 })
             },
             // 处理创建订单条件
@@ -250,7 +267,12 @@
                         return
                     }
                 }
+                // #ifdef MP-WEIXIN
+                    this.$utils.sendWxappMsg(this.noticePay,this.createOrder)
+                // #endif
+                // #ifndef MP-WEIXIN
                 this.createOrder()
+                // #endif
             },
             // 创建订单
             async createOrder() {
@@ -260,10 +282,6 @@
                     paramsForm.type = '1';
                 }
                 this.isCan = true;
-                // #ifdef MP-WEIXIN
-                let type_code = ['buyer_order_pay', 'buyer_order_send'];
-                await this.sendMsg(type_code);
-                // #endif
                 this.handlerCreateOrder(paramsForm)
             },
             async handlerCreateOrder(paramsForm) {
@@ -283,7 +301,7 @@
                             }));
                         if (formRes.error === 0) {
                             // 0元订单不用支付的订单直接跳转支付成功页面
-                            
+
                             if (orderRes.order.pay_price == 0) {
                                 this.toCreateResult();
                                 this.isCan = false;
@@ -360,7 +378,7 @@
             clearCache() {
                 let obj = {
                     changeAddress: false, // 是否切换地址
-                    dispatch_type: '10', // 快递类型  10:快递 
+                    dispatch_type: '10', // 快递类型  10:快递
                     address_id: 0, // 地址id  0默认
                     buyer_remark: '', // 留言
                     invoice_title: '', // 发票抬头
@@ -385,29 +403,24 @@
                     }
                 })
             },
-            // 小程序订阅消息
-            sendMsg(type_code) {
-                return new Promise(resolve => {
-                    this.$api.othersApi.getNoticeTemId({type_code}, { errorToast: false}).then(res => {
-                        if (res.error == 0) {
-                            wx.requestSubscribeMessage({
-                                tmplIds: res.data,
-                                success(res) {
-                                    console.log(res);
-                                },
-                                fail(rej) {
-                                    console.log(rej);
-                                },
-                                complete: (res) => {
-                                    resolve()
-                                }
-                            })
-                        } else {
-                        // 没有权限直接resolve()
-                            resolve()
-                        }
-                    });
-                })
+            getMsgIds() {
+                let type_code = ['buyer_order_pay', 'buyer_order_send'];
+                // #ifdef H5
+                if(this.$utils.is_weixin()) {
+                    let noticeIds = this.$store.state.setting?.noticeTemId;
+                    if(noticeIds && type_code.length) {
+                        type_code.map((item)=> {
+                            if(noticeIds[item]) {
+                                this.subTemplateId?.push(noticeIds[item])
+                            }
+                        })
+                    }
+                }
+                // #endif
+                // #ifdef MP-WEIXIN 
+                this.noticePre = ['buyer_order_pay', 'buyer_order_send'];
+                this.noticePay = type_code;
+                // #endif
             },
             payStatus(data) {
                 this.isCan = data

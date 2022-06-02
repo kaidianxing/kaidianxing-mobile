@@ -48,10 +48,11 @@
                         }}
                     </div>
 
-                    <div v-if="couponData.is_free === '1'" style="width:100%;margin-top:32rpx;">
-                        <btn type="do" size="middle" @btn-click="getCoupon">立即领取</btn>
+                    <div v-if="couponData.is_free === '1'" style="width:100%;margin-top:32rpx;position: relative">
+                        <btn type="do" size="middle" @btn-click="getCouponForMsg">立即领取</btn>
+                        <subscribe class="sub-coupon-wrap" v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId"  @success="success" @error="error"></subscribe>
                     </div>
-                    <div class="btn" v-else @click="buyCoupon">
+                    <div class="btn" style="position: relative" v-else @click="getCouponForMsg">
                         <span v-if="parseFloat(couponData.credit) !== 0"
                             >{{ parseFloat(couponData.credit)
                             }}{{ credit_text }}</span
@@ -66,6 +67,8 @@
                         <span v-if="parseFloat(couponData.balance) !== 0"
                             >{{ parseFloat(couponData.balance) }}元</span
                         >
+                        <subscribe class="sub-coupon-wrap" v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId"  @success="success" @error="error"></subscribe>
+
                     </div>
                     <ul class="dotList">
                         <li class="dot"></li>
@@ -268,10 +271,15 @@ import payPicker from '@/components/picker/payPicker'
 import { requestPayment, wapWechatPay, wapAliPay } from '@/common/payment'
 import PageMixin from '@/common/PageMixin.js'
 import { config } from '@/static/settings'
+import {is_weixin} from "@/common/util";
+
+import Subscribe from '@/components/wechat/Subscribe'
+
 export default {
     mixins: [PageMixin],
     components: {
         payPicker,
+        Subscribe
     },
     data() {
         return {
@@ -291,6 +299,8 @@ export default {
             orderId: '', // 订单号
             payParams: '', // 微信支付返回的参数
             linkReceive: '', // 链接领取 1：是
+            subTemplateId: [], //公众号订阅模板
+            showSubscribe: true, //公众号订阅按钮
         }
     },
     filters: {
@@ -300,6 +310,22 @@ export default {
             }
             return value
         },
+    },
+    created() {
+        // #ifdef H5
+        if (is_weixin()) {
+            let noticeIds = this.$store.state.setting?.noticeTemId;
+            let type_code = ['buyer_coupon_send','coupon_expire_notice'];
+            if (noticeIds && type_code.length) {
+                type_code.map((item) => {
+                    if (noticeIds[item]) {
+                        this.subTemplateId?.push(noticeIds[item])
+                    }
+                })
+            }
+        }
+        // #endif
+
     },
     computed: {
         is_weixin() {
@@ -378,10 +404,6 @@ export default {
                 // 未登录
                 return this.$store.commit('login/setModal', true)
             }
-			// 订阅消息
-            // #ifdef MP-WEIXIN
-            await this.sendMsg();
-            // #endif
 			let params = {
                     id: this.couponId,
                 };
@@ -407,11 +429,6 @@ export default {
                 // 未登录
                 return this.$store.commit('login/setModal', true)
             }
-            // 订阅消息
-            // #ifdef MP-WEIXIN
-            await this.sendMsg();
-            // #endif
-
             this.modalType = 'pay'
             this.modalTitle = '确定购买优惠券吗？'
             this.cancelText = '取消'
@@ -692,30 +709,60 @@ export default {
             return content
         },
         // 小程序订阅消息
-        sendMsg() {
-            let type_code = ['buyer_coupon_send'];
-            return new Promise(resolve => {
-                this.$api.othersApi.getNoticeTemId({type_code}, { errorToast: false}).then(res => {
-                    if (res.error == 0) {
-                        wx.requestSubscribeMessage({
-                            tmplIds: res.data,
-                            success(res) {
-                                console.log(res);
-                            },
-                            fail(rej) {
-                                console.log(rej);
-                            },
-                            complete: (res) => {
-                                resolve()
-                            }
-                        })
-                    } else {
-                        // 没有权限直接resolve()
-                        resolve()
+        //订阅
+        getCouponForMsg() {
+            // 订阅消息
+            //#ifdef H5
+            if(is_weixin()){
+                this.showSubscribe = true
+                if(this.subTemplateId.length == 0) {
+                    if(this.couponData.is_free == '1') {
+                        this.getCoupon()
+                    }else{
+                        this.buyCoupon()
                     }
-                });
+                }
+            }else{
+                if(this.couponData.is_free == '1') {
+                    this.getCoupon()
+                }else{
+                    this.buyCoupon()
+                }
+            }
+            //#endif
+            // #ifdef MP-WEIXIN
+            let type_code = ['buyer_coupon_send','coupon_expire_notice'];
+            this.$utils.sendWxappMsg(type_code,()=>{
+                if(this.couponData.is_free == '1') {
+                    this.getCoupon()
+                }else{
+                    this.buyCoupon()
+                }
             })
+            // #endif
         },
+        // 公众号订阅消息事件
+        success() {
+            this.showSubscribe = false;
+            if (this.couponData.is_free == '1') {
+                // 免费领取
+                this.getCoupon()
+            } else {
+                // 购买
+                this.buyCoupon()
+            }
+        },
+        error() {
+            this.showSubscribe = false;
+            if (this.couponData.is_free == '1') {
+                // 免费领取
+                this.getCoupon()
+            } else {
+                // 购买
+                this.buyCoupon()
+            }
+        },
+
     },
 }
 </script>
@@ -1049,5 +1096,11 @@ export default {
             }
         }
     }
+
+}
+.sub-coupon-wrap{
+    border: 1px solid red;
+    left: 0;
+    z-index: 10000;
 }
 </style>

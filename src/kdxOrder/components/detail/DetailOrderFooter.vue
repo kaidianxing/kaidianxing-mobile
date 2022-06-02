@@ -85,7 +85,8 @@ export default {
             return (
                 this.checkOrderSts(this.info) &&
                 this.isRefund === '0' &&
-                this.hasIntersect
+                this.hasIntersect && this.orderData.scene !='20' &&
+                !(this.orderData.status === '20' && this.orderData.dispatch_type === '30')
             )
         },
         // 订单完成时时检测维权时间是否在范围内

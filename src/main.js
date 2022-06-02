@@ -116,6 +116,11 @@ const app = new Vue({
 RouterMount(app,router, "#app");
 // #endif
 
+// 处理公众号订阅消息的开放标签
+// #ifdef H5
+Vue.config.ignoredElements = [...Vue.config.ignoredElements,"wx-open-subscribe"];
+// #endif
+
 // #ifndef H5
 app.$mount(); //为了兼容小程序及app端必须这样写才有效果
 // #endif

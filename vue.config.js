@@ -1,6 +1,6 @@
 //vue.config.js
 const path = require('path')
-const version = '1.0.3'
+const version = new Date().getTime()
 const outDir = 'static/dist/shop_wap/'
 let settings = require('./src/static/settings.js').config
 const TransformPages = require('uni-read-pages')

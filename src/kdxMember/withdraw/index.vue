@@ -1,13 +1,13 @@
 /**
- * 开店星新零售管理系统
- * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
- * @author 青岛开店星信息技术有限公司
- * @link https://www.kaidianxing.com
- * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
- * @copyright 版权归青岛开店星信息技术有限公司所有
- * @warning Unauthorized deletion of copyright information is prohibited.
- * @warning 未经许可禁止私自删除版权信息
- */
+* 开店星新零售管理系统
+* @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+* @author 青岛开店星信息技术有限公司
+* @link https://www.kaidianxing.com
+* @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+* @copyright 版权归青岛开店星信息技术有限公司所有
+* @warning Unauthorized deletion of copyright information is prohibited.
+* @warning 未经许可禁止私自删除版权信息
+*/
 <template>
     <page-box>
         <div class="recharge-index">
@@ -41,7 +41,7 @@
                                 'icon-m-zhifubao1': payType === 'alipay',
                             }"
                         ></div>
-                        <div class="text">{{payType|formatPayType}}</div>
+                        <div class="text">{{ payType|formatPayType }}</div>
                     </div>
                     <div class="icon icon-m-right iconfont-m-"></div>
                 </div>
@@ -50,6 +50,10 @@
             </div>
             <div class="btn-wrap">
                 <btn type="do" classNames="theme-primary-bgcolor" size="middle" @btn-click="sure">确认</btn>
+                <subscribe v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId"
+                           :subStyle="`top:16rpx;left:0;padding:0 24rpx;width:calc(100% - 48rpx);`" @success="success"
+                           @error="error"></subscribe>
+
             </div>
             <!-- 支付弹窗 -->
             <pay-picker
@@ -74,12 +78,16 @@ import InputList from '../components/InputList'
 import payPicker from '@/components/picker/payPicker'
 import NumberInput from '@/components/input/NumberInput'
 import PageMixin from '@/common/PageMixin.js'
+import Subscribe from '@/components/wechat/Subscribe'
+
 export default {
     mixins: [PageMixin],
     components: {
         InputList,
         payPicker,
         NumberInput,
+        Subscribe
+
     },
     data() {
         return {
@@ -97,6 +105,8 @@ export default {
             showModal: false,
             modalTips: '',
             submitFlag: false, // 控制提现按钮， 防止多点
+            subTemplateId: [], //公众号订阅模板
+            showSubscribe: true, //公众号订阅按钮
         }
     },
     filters: {
@@ -105,14 +115,29 @@ export default {
             return value === 'wechat'
                 ? '微信钱包'
                 : value === 'alipay'
-                ? '支付宝账户'
-                : ''
+                    ? '支付宝账户'
+                    : ''
         },
     },
     watch: {
         balance(value) {
             this.balance = value || '0.00'
         },
+    },
+    created() {
+        // #ifdef H5
+        if (this.$utils.is_weixin()) {
+            let noticeIds = this.$store.state.setting?.noticeTemId;
+            let type_code = ['buyer_pay_withdraw'];
+            if (noticeIds && type_code.length) {
+                type_code.map((item) => {
+                    if (noticeIds[item]) {
+                        this.subTemplateId?.push(noticeIds[item])
+                    }
+                })
+            }
+        }
+        // #endif
     },
     computed: {
         balance_text() {
@@ -121,7 +146,7 @@ export default {
             )
         },
         inputList() {
-            return this.payType === 'alipay'? [
+            return this.payType === 'alipay' ? [
                     {
                         label: '姓名',
                         content: this.realname || '',
@@ -177,7 +202,7 @@ export default {
                     })
                     this.list = ways.filter((item) => item.type);
                     // 只有一种提现方式默认选中  多种不默认选中
-                    this.payType = this.list?.length==1?this.list?.[0]?.type:'';
+                    this.payType = this.list?.length == 1 ? this.list?.[0]?.type : '';
                 } else {
                     this.$toast(res.message)
                 }
@@ -234,7 +259,7 @@ export default {
                     // 有提现免手续费区间
                     if (
                         parseFloat(this.money) >
-                            parseFloat(this.free_fee_end) ||
+                        parseFloat(this.free_fee_end) ||
                         parseFloat(this.money) < parseFloat(this.free_fee_start)
                     ) {
                         _showModal = true
@@ -275,9 +300,10 @@ export default {
             }
             this.submitFlag = true
             // #ifndef H5
-            this.sendMsg()
+            let type_code = ['buyer_pay_withdraw'];
+            this.$utils.sendWxappMsg(type_code, this.handleSubmit)
             // #endif
-            // #ifdef H5
+            // #ifdef H5 || APP-PLUS
             this.handleSubmit()
             // #endif
         },
@@ -334,7 +360,7 @@ export default {
         },
         sendMsg() {
             this.$api.othersApi
-                .getNoticeTemId({ type_code: ['buyer_pay_withdraw'] })
+                .getNoticeTemId({type_code: ['buyer_pay_withdraw']})
                 .then((res) => {
                     if (res.error == 0) {
                         wx.requestSubscribeMessage({
@@ -354,18 +380,30 @@ export default {
                     }
                 })
         },
+        // 公众号订阅消息事件
+        success() {
+            this.showSubscribe = false;
+            this.sure()
+        },
+        error() {
+            this.showSubscribe = false;
+            this.sure()
+        }
     },
 }
 </script>
 
 <style lang="scss" scoped>
-.btn-wrap{
-    margin-top:px2rpx(16);
-    padding:0 24rpx;
+.btn-wrap {
+    position: relative;
+    margin-top: px2rpx(16);
+    padding: 0 24rpx;
 }
+
 .recharge-index {
     width: 100%;
     height: 100%;
+
     .input {
         min-height: px2rpx(112);
         background: #fff;
@@ -374,18 +412,21 @@ export default {
         flex-direction: column;
         margin: px2rpx(8) px2rpx(12);
         padding: px2rpx(16) px2rpx(12) 0;
+
         .title {
             font-size: px2rpx(12);
             line-height: px2rpx(17);
             color: #969696;
             margin-bottom: px2rpx(12);
         }
+
         .money {
             width: 100%;
             height: px2rpx(50);
             display: flex;
             flex-wrap: nowrap;
             border-bottom: 1rpx solid #e6e7eb;
+
             .label {
                 width: px2rpx(36);
                 height: 100%;
@@ -396,9 +437,11 @@ export default {
                 color: #212121;
                 flex-shrink: 0;
             }
+
             .input-box {
                 width: 0;
                 flex: 1;
+
                 /deep/ input {
                     font-size: px2rpx(36);
                     line-height: px2rpx(36);
@@ -407,6 +450,7 @@ export default {
                 }
             }
         }
+
         .cash {
             width: 100%;
             font-size: px2rpx(12);
@@ -416,12 +460,14 @@ export default {
             display: flex;
             flex-wrap: nowrap;
             justify-content: space-between;
-         
+
         }
     }
+
     .radio-group {
         width: 100%;
         padding: 0 px2rpx(12);
+
         .type {
             border-radius: px2rpx(6);
             width: 100%;
@@ -431,29 +477,35 @@ export default {
             align-items: center;
             padding: px2rpx(8) px2rpx(12);
             background: #fff;
+
             .label {
                 font-size: px2rpx(14);
                 line-height: px2rpx(14);
                 color: #212121;
                 width: px2rpx(84);
             }
+
             .type-info {
                 flex: 1;
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
+
                 .icon {
                     line-height: 24rpx;
                     height: 24rpx;
                     margin-right: 12rpx;
                     padding-top: 4rpx;
+
                     &.icon-m-pay-wechatpay {
                         color: #00ac1c;
                     }
+
                     &.icon-m-zhifubao1 {
                         color: #00a0ee;
                     }
                 }
+
                 .text {
                     font-weight: 500;
                     font-size: 24rpx;
@@ -461,6 +513,7 @@ export default {
                     color: #212121;
                 }
             }
+
             .icon-m-right {
                 width: px2rpx(18);
                 height: px2rpx(18);
@@ -471,6 +524,7 @@ export default {
             }
         }
     }
+
     .submit {
         width: px2rpx(351);
         height: px2rpx(40);

@@ -56,7 +56,10 @@
             <view>我已阅读并了解了<text class="deal-text" @click="dealModel=true">《{{commissionSetting.agreement_title}}》</text></view>
         </view>
 
-        <btn styles="margin-top:52rpx;" classNames="theme-primary-bgcolor" size="middle" @btn-click="handleApply">申请成为{{commissionSetting.agent_name}}</btn>
+        <view style="position: relative">
+            <btn styles="margin-top:52rpx;" classNames="theme-primary-bgcolor" size="middle" @btn-click="handleApply">申请成为{{commissionSetting.agent_name}}</btn>
+            <subscribe v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId" :subStyle="`top:50rpx;left:0;width:100%;height:76rpx`" @success="success" @error="error"></subscribe>
+        </view>
         <!--<view class="tip uni-text-color-grey">提示：申请成功后，您店铺的商品将和总店保持同步，不能再自行发布商品，你已自行发布的商品将不再展示</view>-->
 
         <!-- 协议弹窗 -->
@@ -76,10 +79,13 @@
 <script>
     import {mapState, mapGetters} from "vuex";
     import richText from '@/components/decorate/templates-shim/RichText'
+    import Subscribe from '@/components/wechat/Subscribe'
+
     export default {
         name: "ApplyForm",
         components: {
             richText,
+            Subscribe
         },
         props: {
             applyData: {
@@ -94,7 +100,9 @@
                 formData: {
                     name: '',
                     mobile: ''
-                }
+                },
+                subTemplateId: [], //公众号订阅模板
+                showSubscribe: true, //公众号订阅按钮
             }
         },
         computed: {
@@ -104,6 +112,19 @@
             ...mapGetters('form', ['form'])
         },
         created() {
+            // #ifdef H5
+            if(this.$utils.is_weixin()) {
+                let noticeIds = this.$store.state.setting?.noticeTemId;
+                let type_code = ['commission_buyer_agent_become', 'commission_buyer_commission_upgrade', 'commission_buyer_agent_add_child', 'commission_buyer_agent_add_child_line'];
+                if(noticeIds && type_code.length) {
+                    type_code.map((item)=> {
+                        if(noticeIds[item]) {
+                            this.subTemplateId?.push(noticeIds[item])
+                        }
+                    })
+                }
+            }
+            // #endif
         },
         mounted() {
         },
@@ -154,7 +175,16 @@
             },
             changeFrom(data) {
                 this.$store.commit('form/setFormContent', data);
-            }
+            },
+            // 公众号订阅消息事件
+            success() {
+                this.showSubscribe = false;
+                this.handleApply()
+            },
+            error() {
+                this.showSubscribe = false;
+                this.handleApply()
+            },
         },
     }
 </script>

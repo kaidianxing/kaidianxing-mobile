@@ -23,5 +23,9 @@ export const othersApi = {
     getWxAppLink: {
         method: 'get',
         api: '/wxappSkip/index'
+    },
+    getWxappNoticeTemId: {
+        method: 'get',
+        api: '/index/get-notice-template'
     }
 }

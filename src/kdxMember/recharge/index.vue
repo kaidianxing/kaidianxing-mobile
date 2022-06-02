@@ -115,7 +115,10 @@
             </div>
         </div>
         <template v-slot:foot>
-            <btn styles="border-radius:0!important;" classNames="theme-primary-bgcolor" type="do" size="middle" @btn-click="recharge">充值</btn>
+            <div class="btn-size" >
+                <btn styles="border-radius:0!important;" classNames="theme-primary-bgcolor" type="do" size="middle" @btn-click="recharge">充值</btn>
+                <subscribe v-if="showSubscribe && subTemplateId.length>0" :templates="subTemplateId" :subStyle="`top:10rpx;left:0;padding:0 24rpx;width:calc(100% - 48rpx);`" @success="success" @error="error"></subscribe>
+            </div>
         </template>
     </page-box>
 </template>
@@ -126,11 +129,14 @@ import NumberInput from "@/components/input/NumberInput";
 import { requestPayment, wapWechatPay, wapAliPay } from "@/common/payment";
 import PageMixin from '@/common/PageMixin.js'
 import { config } from '@/static/settings'
+import Subscribe from '@/components/wechat/Subscribe'
+
 export default {
     mixins: [PageMixin],
     components: {
         MyRadioGroup,
         NumberInput,
+        Subscribe
     },
     data() {
         let balance_text =
@@ -176,6 +182,8 @@ export default {
             award: [],
             timer: null,
             isShowActivity: false, //是否有充值奖励活动
+            subTemplateId: [], //公众号订阅模板
+            showSubscribe: true, //公众号订阅按钮
         };
     },
     computed: {
@@ -207,6 +215,21 @@ export default {
             this.recharge_money_low = value || "0.1";
         },
     },
+    created() {
+        // #ifdef H5
+        if(this.is_weixin) {
+            let noticeIds = this.$store.state.setting?.noticeTemId;
+            let type_code = ['buyer_pay_recharge'];
+            if(noticeIds && type_code.length) {
+                type_code.map((item)=> {
+                    if(noticeIds[item]) {
+                        this.subTemplateId?.push(noticeIds[item])
+                    }
+                })
+            }
+        }
+        // #endif
+    },
     mounted() {
         uni.setNavigationBarTitle({
             title: this.balance_text + "充值",
@@ -215,6 +238,15 @@ export default {
         this.getRechargeRewardActivity();
     },
     methods: {
+        // 公众号订阅消息事件
+        success() {
+            this.showSubscribe = false;
+            this.recharge()
+        },
+        error() {
+            this.showSubscribe = false;
+            this.recharge()
+        },
         // 获取充值奖励活动
         getRechargeRewardActivity() {
             this.$api.memberApi
@@ -279,9 +311,10 @@ export default {
         recharge() {
             if (+this.balance >= +this.recharge_money_low) {
                 // #ifdef MP-WEIXIN
-                this.sendMsg();
+                let type_code = ['buyer_pay_recharge'];
+                this.$utils.sendWxappMsg(type_code, this.handlerRecharge)
                 // #endif
-                // #ifdef H5 || MP-TOUTIAO
+                // #ifdef H5 || MP-TOUTIAO || APP-PLUS
                 this.handlerRecharge();
                 // #endif
             } else {
@@ -344,30 +377,6 @@ export default {
                         }
                     } else {
                         this.$toast("支付失败");
-                    }
-                });
-        },
-        sendMsg() {
-            this.$api.othersApi
-                .getNoticeTemId({
-                    type_code: ["buyer_pay_recharge"],
-                })
-                .then((res) => {
-                    if (res.error == 0) {
-                        wx.requestSubscribeMessage({
-                            tmplIds: res.data,
-                            success(res) {
-                                console.log(res);
-                            },
-                            fail(rej) {
-                                console.log(rej);
-                            },
-                            complete: (res) => {
-                                this.handlerRecharge();
-                            },
-                        });
-                    } else {
-                        this.$toast(res.message);
                     }
                 });
         },
@@ -569,5 +578,10 @@ export default {
         }
     }
 }
-
+.btn-size {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid #E6E7EB;
+    padding: 10rpx 24rpx;
+}
 </style>

@@ -117,7 +117,7 @@
             }
 
             // 视频号进入的
-            if (new Set([1175, 1177, 1191]).has(opt?.scene)) {
+            if (new Set([1036, 1208, 1216, 1175, 1177, 1191, 1176, 1195, 1197, 1198]).has(opt?.scene)) {
                 this.sessionStorage.setItem('wx-video', opt?.scene);
             } else {
                 this.sessionStorage.setItem('wx-video', '')
@@ -132,9 +132,9 @@
             ...mapMutations('login', ['setBind', 'setUserInfo','setModal']),
             init(){
                 /* 持久缓存导致需要手动设置一下 */
-                if(this.$store.state.login.isLogin){  
+                if(this.$store.state.login.isLogin){
                     this.setModal(false)
-                }  
+                }
             },
             initVConsole(){
                 if(process.env.NODE_ENV=='development'){

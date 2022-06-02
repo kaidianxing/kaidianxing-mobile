@@ -17,16 +17,23 @@
                 <text class="theme-primary-price" :class="creditText?'fz-16': 'fz-12'">￥</text>
                 <span class="price-text theme-primary-price">{{pay_price}}</span>
             </view>
-            <btn :disabled="disabled" classNames="theme-primary-bgcolor"  styles="margin-left: 24rpx;padding: 0 44rpx;width:auto" type="do" size="middle" @btn-click="pay">立即支付</btn>
+            <view  style="position: relative">
+                <btn :disabled="disabled" classNames="theme-primary-bgcolor"  styles="margin-left: 24rpx;padding: 0 44rpx;width:auto" type="do" size="middle" @btn-click="pay">立即支付</btn>
+                <subscribe v-if="showSubscribe && noticePayIds.length>0 && $utils.is_weixin()" :templates="noticePayIds" :subStyle='sub_style' @success="success" @error="error"></subscribe>
+            </view>
+
         </view>
     </view>
 </template>
 
 <script>
     import {mapState} from "vuex";
+    import Subscribe from '@/components/wechat/Subscribe'
+    import {px2rpx} from "@/assets/jsTools/environment";
+
     export default {
         name: "CreateSubmit",
-        components: {},
+        components: {Subscribe},
         props: {
             payPrice: {
                 type: [String, Number],
@@ -36,11 +43,21 @@
                 type: Object,
                 default: () => {}
             },
+            // 公众号信息
+            noticePayIds: {
+                type: Array,
+                default: () => []
+            },
         },
         data() {
-            return {}
+            return {
+                showSubscribe: true, //公众号订阅按钮
+            }
         },
         computed: {
+            sub_style() {
+                return `top:0;right:0;width:${px2rpx(190)};height:${px2rpx(76)};`
+            },
             ...mapState('setting', {
                 credit_text: state => state.systemSetting.credit_text,
             }),
@@ -71,6 +88,15 @@
         methods: {
             pay() {
                 this.$emit('pay')
+            },
+            // 公众号订阅消息事件
+            success() {
+                this.showSubscribe = false;
+                this.$emit('pay')
+            },
+            error() {
+                this.showSubscribe = false;
+                this.$emit('pay')
             }
         },
     }
@@ -84,7 +110,7 @@
         background-color: #fff;
 
         .price-text {
-            font-size: 32rpx; 
+            font-size: 32rpx;
             font-weight: bold;
         }
         .flex {

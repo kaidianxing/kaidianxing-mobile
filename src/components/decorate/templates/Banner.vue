@@ -16,10 +16,14 @@
             height:imgHeight,
             borderRadius: getBorderRadius
         }">
-            <MySwiper :key="componentData.style.marginleft" :startLoadImg='startLoadImg' :borderRadius="getBorderRadius" ref="swiper" :height='imgHeight' :list='getImgs' :imgStyle='imgStyle' @change='change' @click='click' :setting='setting'></MySwiper>
+            <MySwiper :key="componentData.style.marginleft" :startLoadImg='startLoadImg' :borderRadius="getBorderRadius"
+                      ref="swiper" :height='imgHeight' :list='getImgs' :imgStyle='imgStyle' @change='change'
+                      @click='click' :setting='setting'></MySwiper>
             <div v-if="getList.length>1">
-                    <ul class='dots' :class='[componentData.style.dotstyle]' :style='{justifyContent:getAlign}' v-if='componentData.style&&componentData.style.dotstyle!="number"'>
-                        <li class="dot" :style='{background:activeIndex==index?componentData.style.background:"#fff"}' :class='{active:activeIndex==index}' v-for='(item,index) in getList' :key='index'></li>
+                <ul class='dots' :class='[componentData.style.dotstyle]' :style='{justifyContent:getAlign}'
+                    v-if='componentData.style&&componentData.style.dotstyle!="number"'>
+                    <li class="dot" :style='{background:activeIndex==index?componentData.style.background:"#fff"}'
+                        :class='{active:activeIndex==index}' v-for='(item,index) in getList' :key='index'></li>
                     </ul>
                     <p class='number' :class='[getAlign]' v-else>
                         {{`${activeIndex+1}/${getList.length}`}}
@@ -138,6 +142,10 @@
                         index,
                         linkurl: this.componentData.data[index]?.linkurl,
                         wxappid: this.componentData.data[index]?.wxappid,
+                        videoParams: this.componentData.data[index]?.videoParams,
+                        linkurl_name: this.componentData.data[index]?.linkurl_name,
+                        keyLink: this.componentData.data[index]?.keyLink,
+                        video_id: this.componentData.data[index]?.video_id
                     }
                 })
             }

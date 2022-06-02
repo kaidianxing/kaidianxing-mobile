@@ -306,4 +306,12 @@ export default class Calculater {
     credit(data) {
         return 494
     }
+    wxTransaction(data) {
+        // #ifdef MP-WEIXIN
+        return 68
+        // #endif
+        // #ifndef MP-WEIXIN
+        return 0
+        // #endif
+    }
 }
