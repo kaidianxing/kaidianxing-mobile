@@ -182,5 +182,25 @@ export const orderApi = {
     checkScene: {
         method: 'post',
         api: '/wxTransactionComponent/index/check-scene'
-    }
+    },
+    // 获取同城配送区域
+    getDispatchArea:{
+        method: 'get',
+        api: '/dispatch/intracity/get-dispatch-area'
+    },
+    // 获取第三方订单详情(同城配送 三方配送 订单跟踪)
+    queryOrderStatus:{
+        method: 'post',
+        api: '/dispatch/intracity/query-order-status'
+    },
+    // 获取日期带分页
+    getDate: {
+        method: 'get',
+        api: '/order/index/get-date'
+    },
+    // 同城配送时间段
+    getDeliveryTime: {
+        method: 'get',
+        api: '/order/index/get-intracity-delivery-time'
+    },
 };

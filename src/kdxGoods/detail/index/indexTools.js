@@ -169,19 +169,20 @@ function isDisabled(value) {
     return typeof value === 'undefined' || value == '0' || value == ''
 }
 export async function createOrder({
-    goods_id,
-    option_id,
-    total,
-    liverId,
-    goodDetail,
-    detailInfo,
-    canBuy,
-    buy_num,
-    activityInfo,
-    is_origin,
-    ...restOpt
-}) {
-  
+                                      goods_id,
+                                      option_id,
+                                      total,
+                                      liverId,
+                                      goodDetail,
+                                      detailInfo,
+                                      canBuy,
+                                      buy_num,
+                                      activityInfo,
+                                      is_origin,
+                                      free_goods_code,
+                                      ...restOpt
+                                  }) {
+
     try{
         total = await handleLimit.call(this, {
             goodDetail,
@@ -211,18 +212,26 @@ export async function createOrder({
     }
 
     return new Promise( async(resolve, reject) => {
-        // 存储商品、店铺 普通快递
+        // 存储商品、店铺 普通快递/同城配送状态/自提
         let {
+            dispatch_intracity,
             dispatch_express,
+            dispatch_verify,
             type,
             form_data
         } = detailInfo.data.goods;
         let {
             express_enable,
+            intracity_enable,
+            verify_enable
         } = detailInfo.intracity;
         let dispatchStatus = {
+            dispatch_intracity,
             dispatch_express,
+            dispatch_verify,
             express_enable,
+            intracity_enable,
+            verify_enable
         };
         store.commit('orderCreate/setDispatchStatus', dispatchStatus);
         store.commit('orderCreate/setGoodsInfo', [{
@@ -252,12 +261,43 @@ export async function createOrder({
         if (liverId) {
             query.room_id = liverId
         }
-        
-        resolve()
-        this.$Router.auto({
-            path: '/kdxOrder/create',
-            query
-        })
+        // 商品存在表单时，存取商品表单信息
+        if(form_data) {
+            let resultParams =  await store.dispatch('quickPurchase/validForm')
+            resultParams.goods_id = goods_id;
+            resultParams.option_id = option_id || 0;
+            if(this.$utils.is_merchant) {
+                resultParams.sub_shop_id = detailInfo?.data?.sub_shop_info?.id
+            }
+            if(resultParams.form_id) {
+                store.dispatch('quickPurchase/sendFormData', resultParams).then((res)=> {
+                    if(res.error == 0) {
+                        resolve()
+                        // 跳转订单页面清空表单信息
+                        store.commit('form/resetForm')
+                        this.$Router.auto({
+                            path: '/kdxOrder/create',
+                            query
+                        })
+                    }
+                });
+            }else {
+                resolve()
+                // 跳转订单页面清空表单信息
+                store.commit('form/resetForm')
+                this.$Router.auto({
+                    path: '/kdxOrder/create',
+                    query
+                })
+            }
+        } else {
+            resolve()
+            store.commit('form/resetForm')
+            this.$Router.auto({
+                path: '/kdxOrder/create',
+                query
+            })
+        }
     })
 }
 // 活动公共单规格限购

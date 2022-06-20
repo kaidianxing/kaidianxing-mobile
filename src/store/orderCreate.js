@@ -14,7 +14,7 @@ export default {
     namespaced: true,
     state: {
         changeAddress: false, // 是否切换地址
-        dispatch_type: '10', // 快递类型  10:快递  
+        dispatch_type: '10', // 快递类型  10:快递 30:同城配送
         address_id: 0, // 地址id  0默认
         goods_info: [
             {
@@ -30,18 +30,22 @@ export default {
         invoice_is_company: '', // 是否是个人发票 1是个人 2是企业
         invoice_number: '', // 纳税人识别号
         invoice_address: '', // 邮寄地址/电子邮箱
-
-
-        merchant_select_coupon_id: {}, // 多商户店铺优惠券
-        merchant_buyer_remark: {}, // 多商户备注
         select_coupon_id: '', // 优惠券
         deduct_balance: 1, // 是否开启余额抵扣
         deduct_credit: 1, // 是否开启积分抵扣
         dispatch_status: {
             dispatch_express: "0", // 商品是否开启普通快递
             express_enable: 0, // 商城是否开启普通快递
+            dispatch_intracity: "0", // 商品是否开启同城配送
+            intracity_enable: 0, // 商城是否开启同城配送
+
         },
         cacheAddressId: {},
+
+        deliveryTime:'',//配送、自提时间
+        span_detail: [], // 自提、送达可选时间段
+        span_detail_now: [], // 自提、送达当天可选时间段
+
         // ext_field: {}, // 扩展字段
         // pay_type: 'online',//付款方式 online: 在现在支付 delivery: 货到付款
     },
@@ -56,6 +60,7 @@ export default {
             });
         },
         setDispatchStatus(state, status) {
+            console.log('设置了快递',status)
             state.dispatch_status = {
                 ...state.dispatch_status,
                 ...status,
@@ -65,6 +70,11 @@ export default {
                     dispatch_type: '10',
                     type: 'dispatch_express',
                     enable: 'express_enable'
+                },
+                30: {
+                    dispatch_type: '30',
+                    type: 'dispatch_intracity',
+                    enable: 'intracity_enable'
                 },
             };
             // 兼容数据配送方式顺序为空的时候
@@ -87,12 +97,27 @@ export default {
                 }
             }
         },
+        // 设置送达时间
+        setOrderDeliverTime(state, res) {
+            state.deliveryTime = res || '';
+        },
         clearInvoiceInfo(state) {
             state.invoice_title ='';
             state.invoice_is_electronic ='';
             state.invoice_is_company ='';
             state.invoice_number ='';
             state.invoice_address ='';
+        },
+        setDropInfo(state, res) {
+            state.drop_ship_info = {
+                ...res
+            }
+        },
+        setChangeDrop(state, res) {
+            state.changeDropInfo = res
+        },
+        setFreeGoodsCode(state, res) {
+            state.free_goods_code = res
         }
     },
 };

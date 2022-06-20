@@ -17,11 +17,13 @@
                 <delivery-type v-if="hasDeliveryHead" v-model="dispatch_type" :goodsType="goodsType" ></delivery-type>
                 <!-- 选择地址 (虚拟商品不显示地址) -->
                 <create-address :addressData="orderData" v-if="goodsType && goodsType === '0'"></create-address>
+                <!-- 不在配送范围提示 -->
+                <delivery-area :orderData="orderData" v-if="dispatch_type === '30' && (orderData.dispatch_intracity_error && (orderData.dispatch_intracity_error.code === 230132 || orderData.dispatch_intracity_error.code === 230135 || orderData.address_province==='国外'))" />
                 <!-- 商品优惠信息 -->
                 <create-info :orderData="orderData" :invoiceData="invoiceData" @getData="getData" :dispatch_type="dispatch_type"></create-info>
                 <!-- 卡密商品 -接收邮箱地址 -->
                 <create-email v-if="isVirtualEmail"></create-email>
-                <!--系统表单-->
+             <!--系统表单-->
                 <div class="order-create-form" v-if="form.content ">
                     <SystemformItems class="order-create-form-items" :items="form.content" @on-change="changeForm"></SystemformItems>
                 </div>
@@ -47,6 +49,9 @@
     import createPrice from './components/create/CreatePrice'
     import createSubmit from './components/create/CreateSubmit'
     import orderPay from "./components/OrderPay";
+    import DeliveryArea from './components/create/DeliveryArea'
+
+
     import SystemformItems from "@/components/decorate/templates-shim/SystemformItems";
 
     import {mapActions, mapState, mapGetters} from 'vuex'
@@ -69,6 +74,7 @@
             orderPay,
             SystemformItems,
             CreateEmail,
+            DeliveryArea
 
         },
         props: {},
@@ -101,6 +107,12 @@
         computed: {
             ...mapState('orderCreate', {
                 params: state => state,
+            }),
+            ...mapState('setting', {
+                verifySetting:  state => state.verifySetting,
+                remind: state => state?.systemSetting?.appointment_setting?.remind || 2,
+                dropSettings: state => state.dropSettings,
+                wareSetting: state => state.wareSetting
             }),
             ...mapGetters('form', ['form']),
             hasDeliveryHead(){ // 是否有配送标题
@@ -174,6 +186,11 @@
         },
         methods: {
             getData() {
+                // 清除配送、自提时间
+                this.isShowRefresh && (this.$store.commit('orderCreate/setOrderCreateInfo',{
+                    deliveryTime: '',
+                    merchant_delivery_time: {}
+                }))
                 // 读取缓存
                 let {address_id, cacheAddressId, ...params} = this.params
                 let cacheId = cacheAddressId[this.dispatch_type]
@@ -209,6 +226,8 @@
                 delete obj.dispatch_status;
                 delete obj.dispatch_express;
                 delete obj.express_enable;
+                delete obj.intracity_enable;
+                delete obj.deliveryTime;
                 delete obj.virtual_email;
                 this.$api.orderApi.confirmOrder(obj).then(res => {
                     this.requestedFlag = true;
@@ -226,6 +245,18 @@
                             };
                         this.payPrice = res.order.pay_price;
                         this.orderData = res.order;
+                        // 同城可选时间段
+                        if(res.order.dispatch_type == 30) {
+                            this.$api.orderApi.getDeliveryTime().then((res) => {
+                                console.log(res,'getDeliveryTime')
+                                if(res.error === 0) {
+                                    this.$store.commit('orderCreate/setOrderCreateInfo',{
+                                        span_detail: res.data?.span_detail || [],
+                                        span_detail_now: res.data?.span_detail_now || []
+                                    })
+                                }
+                            })
+                        }
                         this.$decorator.getModule('diymenu').getCartNum();
                         this.$store.commit('orderCreate/setOrderCreateInfo', {changeAddress: false,address_id: res.order.address_id||0});
                         // 进行表单的判断，如果是不是新进入的页面就不刷新
@@ -265,6 +296,28 @@
                     if (!this.orderData.address_id) {
                         this.$toast('请添加地址');
                         return
+                    }
+
+                    let somecityname = this.$store.state.setting?.systemSetting?.dispatch_name['30'] ? this.$store.state.setting?.systemSetting?.dispatch_name['30'] : '同城配送'
+                    if (this.dispatch_type === '30' && (this.orderData.dispatch_intracity_error?.code === 230132 || this.orderData.dispatch_intracity_error?.code === 230135 || this.orderData.address_province == '国外')) {
+                        // 同城配送不在范围内
+                        if (this.orderData.over_scope === 0) {
+                            // 不使用快递
+                            this.$toast(`超出${somecityname}范围`)
+                        } else {
+                            // 使用快递
+                            this.$toast(`超出${somecityname}范围，请选择快递`)
+                        }
+                        return
+                    }
+                }
+                if (this.dispatch_type == 30) {
+                    if (this.goodsType!=5) {
+                        // 同城配送时校验配送时间
+                        if (1 === +this.orderData.delivery_time && !this.params.deliveryTime) {
+                            this.$toast('请选择配送时间');
+                            return;
+                        }
                     }
                 }
                 // #ifdef MP-WEIXIN
@@ -371,6 +424,8 @@
                 delete paramsOrder.dispatch_express;
                 delete paramsOrder.express_enable;
                 delete paramsOrder.merchant_buyer_remark;
+                delete paramsOrder.intracity_enable;
+                delete paramsOrder.deliveryTime;
                 console.log('params-order', paramsOrder)
                 return paramsOrder
             },
@@ -417,7 +472,7 @@
                     }
                 }
                 // #endif
-                // #ifdef MP-WEIXIN 
+                // #ifdef MP-WEIXIN
                 this.noticePre = ['buyer_order_pay', 'buyer_order_send'];
                 this.noticePay = type_code;
                 // #endif

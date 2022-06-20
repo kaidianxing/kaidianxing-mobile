@@ -202,7 +202,29 @@ const order = [
         beforeEnter: (to, from, next) => {
             next();
         }
-    }
-    
+    },
+    {
+        path: '/kdxOrder/deliveryArea',
+        name: 'delivery_area',
+        meta: {
+            title: '同城配送范围',
+            needLogin: false
+        },
+        beforeEnter: (to, from, next) => {
+            next();
+        }
+    },
+    {
+        path: '/kdxOrder/deliveryInfo',
+        name: 'delivery_info',
+        meta: {
+            title: '配送信息',
+            needLogin: true
+        },
+        beforeEnter: (to, from, next) => {
+            next();
+        }
+    },
+
 ]
 export default order

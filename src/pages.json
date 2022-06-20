@@ -130,6 +130,20 @@
 					}
 				},
 				{
+					"path": "deliveryArea",
+					"style": {
+						"navigationBarTitleText": "同城配送范围",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "deliveryInfo",
+					"style": {
+						"navigationBarTitleText": "配送信息",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
 					"path": "comment/list",
 					"style": {
 						"navigationBarTitleText": "待评价商品"
@@ -184,6 +198,12 @@
 					"path": "refund/expressInfo",
 					"style": {
 						"navigationBarTitleText": "查看物流"
+					}
+				},
+				{
+					"path": "deliveryInfo",
+					"style": {
+						"navigationBarTitleText": "配送信息"
 					}
 				}
 			]

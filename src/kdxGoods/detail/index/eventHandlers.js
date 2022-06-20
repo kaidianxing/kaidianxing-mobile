@@ -9,14 +9,15 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 import store from '@/store'
-import { getActivityName } from '@/common/helper/goods'
-import { SINGLE_BUY_ACTIVE } from '@/common/variable/activity'
+import {getActivityName} from '@/common/helper/goods'
+import {SINGLE_BUY_ACTIVE} from '@/common/variable/activity'
 import {
     tipBeforeOper,
     addCart,
     createOrder,
 } from './indexTools'
-import { hasBindBySence } from '@/common/helper/user';
+import {hasBindBySence} from '@/common/helper/user';
+
 async function detailNavBarHandler(data, {
     goodsData,
     goods_id,
@@ -37,14 +38,14 @@ async function detailNavBarHandler(data, {
                     goods_id: goods_id,
                     is_add: detail_navbar.params.favor ? 0 : 1
                 })
-                if (res.error == 0) { 
-                    if(!detail_navbar.params.favor){ 
-                        uni.showToast({ title:'收藏成功',icon:"none"});
+                if (res.error == 0) {
+                    if (!detail_navbar.params.favor) {
+                        uni.showToast({title: '收藏成功', icon: "none"});
                     }
                     detail_navbar.params.favor = !detail_navbar.params.favor;
                     this.$decorator.getPage(this.$Route).setPageInfo({
                         detail_navbar
-                    },'detailNavBarHandler/eventHandler.js')
+                    }, 'detailNavBarHandler/eventHandler.js')
                 }
                 break;
             case 'add': //添加购物车
@@ -58,7 +59,7 @@ async function detailNavBarHandler(data, {
                 }
                 // 往goodsPicker里存值
                 this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
-                this.$store.commit('quickPurchase/setOptionsInfo', store.state ?.decorate ?.goodDetailPage ?.optionsInfo)
+                this.$store.commit('quickPurchase/setOptionsInfo', store.state?.decorate?.goodDetailPage?.optionsInfo)
                 await tipBeforeOper({
                     goodsData,
                     goods_id,
@@ -77,7 +78,7 @@ async function detailNavBarHandler(data, {
                     buy_num,
                     is_origin,
                 });
-                this.goodsData.has_option == 1 && this.$refs ?.goodsPicker.toggle();
+                this.goodsData.has_option == 1 && this.$refs?.goodsPicker.toggle();
                 this.$decorator.getModule('diymenu').getCartNum()
                 break;
             case 'tocart': //去购物车
@@ -97,14 +98,14 @@ async function detailNavBarHandler(data, {
                 // 往goodsPicker里存值
                 // 判断是不是秒杀
                 let hasActive = SINGLE_BUY_ACTIVE.includes(params.activeName);
-                let optionsInfo = hasActive? store.state?.decorate?.goodDetailPage?.activeOptInfo: store.state?.decorate?.goodDetailPage?.optionsInfo;
+                let optionsInfo = hasActive ? store.state?.decorate?.goodDetailPage?.activeOptInfo : store.state?.decorate?.goodDetailPage?.optionsInfo;
                 this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
                 delete optionsInfo.is_join
-                this.$store.commit('quickPurchase/setOptionsInfo',optionsInfo)
-                
+                this.$store.commit('quickPurchase/setOptionsInfo', optionsInfo)
+
                 // 判断是否是原价购买
                 let singleActiveName = getActivityName(this.activityInfo)
-                let is_origin= SINGLE_BUY_ACTIVE.includes(singleActiveName) &&!hasActive;
+                let is_origin = SINGLE_BUY_ACTIVE.includes(singleActiveName) && !hasActive;
                 await tipBeforeOper({
                     goodsData,
                     goods_id,
@@ -119,7 +120,7 @@ async function detailNavBarHandler(data, {
 
                 // console.log('to buy!!', this.goodsData.has_option == 1)
                 console.log(this.goodsData)
-                this.goodsData.has_option == 1  && this.$refs ?.goodsPicker.toggle();
+                this.goodsData.has_option == 1 && this.$refs?.goodsPicker.toggle();
 
                 let orderParams = {
                     goodDetail,
@@ -133,7 +134,7 @@ async function detailNavBarHandler(data, {
                     activityInfo,
                     is_origin,
                 }
-                
+
                 createOrder.call(this, {...orderParams})
                 break;
             case 'custom':
@@ -169,13 +170,13 @@ async function detailNavBarHandler(data, {
         }
 
     } catch (e) {
-        console.log(e,'eeeeeeeeeee')
+        console.log(e, 'eeeeeeeeeee')
         /*
         * 商品详情中购买弹窗判断
         * */
-        if (e ?.errorId == 'openPicker') {
+        if (e?.errorId == 'openPicker') {
             this.$refs.goodsPicker.toggle(null, e.type);
-        } else if (e ?.errorInfo) {
+        } else if (e?.errorInfo) {
             uni.showToast({
                 title: e.errorInfo,
                 icon: 'none'
@@ -187,8 +188,8 @@ async function detailNavBarHandler(data, {
 
 /**
  * 装修组件事件处理
- * @param {自定义的事件对象} data 
- * @param {入参} param1 
+ * @param {自定义的事件对象} data
+ * @param {入参} param1
  */
 export async function eventHandler(data, {
     goodsData,
@@ -213,7 +214,7 @@ export async function eventHandler(data, {
                                 is_buy_disable: true,
                             },
                         },
-                    },'goodDetail/eventHandler.js/eventHandler');
+                    }, 'goodDetail/eventHandler.js/eventHandler');
                 } else {
                     this.pullDownRefresh();
                 }
@@ -223,7 +224,7 @@ export async function eventHandler(data, {
                 // 判断登录
                 await this.$store.dispatch('quickPurchase/checkLoginStatus')
                 // 获取商品详情
-                this.cartAdder.getGoodDetail(data ?.data ?.value ?.gid,'godddDEtail/goods/clickBuyBtn').then((res) => {
+                this.cartAdder.getGoodDetail(data?.data?.value?.gid, 'godddDEtail/goods/clickBuyBtn').then((res) => {
                     if (res.error === 0) {
                         // 打开goodsPicker
                         this.cartAdder.callback({
@@ -241,32 +242,32 @@ export async function eventHandler(data, {
                     return store.commit('login/setModal', true)
                 }
                 // 需要绑定手机号
-                console.log(hasBindBySence('buy'),'hasBindBySence("buy")')
-                if (hasBindBySence('cart')||hasBindBySence('buy')) {
+                console.log(hasBindBySence('buy'), 'hasBindBySence("buy")')
+                if (hasBindBySence('cart') || hasBindBySence('buy')) {
                     return store.commit('login/setModal', true)
                 }
                 // 往goodsPicker里存值
                 this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
 
                 // 活动使用活动规格
-                let hasSingle =  SINGLE_BUY_ACTIVE.includes(data.data.params.activeName) 
-                let optionsInfo =hasSingle? store.state?.decorate?.goodDetailPage?.activeOptInfo : store.state?.decorate?.goodDetailPage?.optionsInfo;
+                let hasSingle = SINGLE_BUY_ACTIVE.includes(data.data.params.activeName)
+                let optionsInfo = hasSingle ? store.state?.decorate?.goodDetailPage?.activeOptInfo : store.state?.decorate?.goodDetailPage?.optionsInfo;
                 this.$store.commit('quickPurchase/setOptionsInfo', optionsInfo)
                 // 打开goodsPicker
-                if(hasSingle){
+                if (hasSingle) {
                     // 打开活动弹窗
                     this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
-                    await tipBeforeOper.call(this, {goodsData, goods_id, option_id, total,type:'buy', activityInfo });
+                    await tipBeforeOper.call(this, {goodsData, goods_id, option_id, total, type: 'buy', activityInfo});
                     this.goodsData.has_option == 1 && this.$refs?.goodsPicker.toggle();
-                    createOrder.call(this, { goods_id, option_id, total, goodDetail,detailInfo, is_origin })
-                }else{
-                    this.goodsData.has_option == 1 && this.$refs ?.goodsPicker.toggle(null, 'spec', 'cacheNum');
+                    createOrder.call(this, {goods_id, option_id, total, goodDetail, detailInfo, is_origin})
+                } else {
+                    this.goodsData.has_option == 1 && this.$refs?.goodsPicker.toggle(null, 'spec', 'cacheNum');
                 }
                 break;
             case 'detail_navbar/clickItem': //点击商品底部菜单事件
                 detailNavBarHandler.call(this, data, {
                     goodsData,
-                    goodDetail:this.goodDetail,
+                    goodDetail: this.goodDetail,
                     goods_id,
                     option_id,
                     total,
@@ -302,7 +303,7 @@ export async function eventHandler(data, {
             case 'detail_info/clickShare':
                 if (!(await store.dispatch('login/checkLogin'))) {
                     return store.commit('login/setModal', true)
-                } else if(hasBindBySence('share')){
+                } else if (hasBindBySence('share')) {
                     return store.commit('login/setModal', true)
                 } else {
                     this.showShare = true
@@ -313,10 +314,14 @@ export async function eventHandler(data, {
                 break;
             case 'detail_sale/clickItem':
                 this.type = data.data.type;
-                
-                let info = this.pageInfo.detail_sale ?.data;
+
+                let info = this.pageInfo.detail_sale?.data;
                 if (info && this.type) {
                     this.info = info.filter(item => item.type == this.type)[0];
+                }
+                if (this.type == 'samecity') {
+                    this.$Router.auto('/kdxOrder/deliveryArea');
+                    return;
                 }
                 // 需要绑定登录
                 if (data.data.type == 'coupon' && !(await store.dispatch('login/checkLogin'))) {
@@ -325,7 +330,7 @@ export async function eventHandler(data, {
                 this.show = true
                 break;
             case 'detail_swipe/clickImg':
-                if (store.state.setting ?.systemSetting ?.basic ?.photo_preview == '1') {
+                if (store.state.setting?.systemSetting?.basic?.photo_preview == '1') {
                     uni.previewImage({
                         urls: data.data.items,
                         current: data.data.index,
@@ -334,7 +339,7 @@ export async function eventHandler(data, {
                 }
                 break;
             case 'detail_pullup/clickDetail':
-                if (store.state.setting ?.systemSetting ?.basic ?.photo_preview == '1') {
+                if (store.state.setting?.systemSetting?.basic?.photo_preview == '1') {
                     // #ifdef H5
                     // var previewUrls = []
                     // data.data.content.replace(
@@ -363,9 +368,9 @@ export async function eventHandler(data, {
                 break;
         }
     } catch (e) {
-        if (e ?.errorId == 'openPicker') {
+        if (e?.errorId == 'openPicker') {
             this.$refs.goodsPicker.toggle(null, e.type, 'cacheNum');
-        } else if (e ?.errorInfo) {
+        } else if (e?.errorInfo) {
             uni.showToast({
                 title: e.errorInfo,
                 icon: 'none'

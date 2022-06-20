@@ -60,12 +60,16 @@ export default {
         getIcon() {
             let opt = {
                 'express': 'order/delivery_map.png',
+                'intracity': 'order/delivery_samecity.png'
+
             }
             return opt[this.type] || ''
         },
         getTitle() {
             let opt = {
                 'express': this.dispatchName['10'] ? this.dispatchName['10'] : '快递配送',
+                'intracity': this.dispatchName['30'] ? this.dispatchName['30'] : '同城配送',
+
             }
             return opt[this.type] || ''
         }
@@ -80,8 +84,8 @@ export default {
                 }
                 goods_id.push(current.goods_id)
                 return {goods_id,actives}
-            }, preState) 
-            
+            }, preState)
+
               // 存在多个活动类型商品时，不能同时下单
             if(actives.length>1){
                 return this.$toast('不同的活动类型 暂不支持同时下单')

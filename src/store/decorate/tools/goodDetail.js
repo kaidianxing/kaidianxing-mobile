@@ -20,7 +20,7 @@ import $decorator from '@/common/decorator'
 export function detail_spec(goods, activity, res) {
     let name = getActivityName(activity)
     let hasSingle = SINGLE_BUY_ACTIVE.includes(name)
-    let title = ''; 
+    let title = '';
     title = '请选择商品规格'
     let price_actives = ['seckill','preheat_activity'];
     return {
@@ -142,14 +142,6 @@ export function detail_sale(goods, {
                 // }),
                 items: goods.label.filter(v => v.name)
             }
-
-
-            // { label: '二次购买', name: "二次购买", type: "erci", content: { discount: 10 }, url: 'erci' },
-            // { label: '会员价', name: "会员价", type: "huiyuan", content: { discount: 10 } },
-            // { label: '优惠', name: "优惠", type: "youhui", content: { discount: 10 }, url: 'youhui' },
-            // { label: '积分', name: "积分", type: "jifen", content: { discount: 10 }, url: 'jifen' },
-            // { label: '赠品', name: "赠品", type: "zengpin", content: { discount: 10 }, url: 'zengpin' },
-            // { label: '全返', name: "全返", type: "fullback", content: { discount: 10 }, url: 'fullback' },
         ],
         params: {
             activityName,
@@ -158,29 +150,90 @@ export function detail_sale(goods, {
         }
 
     };
+    // 运费
+    let expressFee;
+    let freightText = goods?.trade?.freight_type == 0 ? '包邮': goods?.trade?.freight_content || ""
+    //虚拟商品
+    if (goods.type != 0) {
+        expressFee = '0'
+    } else if (goods.dispatch_intracity === '1' && intracity.intracity_enable == 1) {
+        // 同城配送开启 并且商品支持同城配送
+        expressFee = (parseFloat(intracity?.dispatch_price) > 0 ? `运费${parseFloat(intracity?.dispatch_price)}元` : freightText);
+    } else if (goods.dispatch_express === '1' && intracity.express_enable === 1) {
+        // 快递开启 并且商品支持快递
+        // 包邮
+
+        if (goods.dispatch_type == '0') {
+            expressFee = freightText
+        }
+        // 运费模板
+        if (goods.dispatch_type == '1') {
+
+            expressFee = (dispatch?.dispatch_price > 0 ? `运费${parseFloat(dispatch?.dispatch_price)}元` : freightText);
+        }
+
+        // 统一运费
+        if (goods.dispatch_type == '2') {
+
+            expressFee = (goods?.dispatch_price > 0 ? `运费${parseFloat(goods?.dispatch_price)}元` : freightText)
+        }
+    } else {
+
+        expressFee = '0'
+    }
     // 判断不配送区域
     let not_dispatch = data.dispatch_template?.not_dispatch
-
     // data.goods.type == 0 改为配送区域只在实体商品中显示
-    if (typeof not_dispatch == 'string' && not_dispatch.trim() != '' && data.goods.type == 0) {
-
+    if ((typeof not_dispatch == 'string' && not_dispatch.trim() != '' && data.goods.type == 0) || (expressFee != 0)) {
         // 添加商城配送or不配送判断
         let dispatchLabel = data.dispatch_template?.delivery_type == '0' ? '不配送' : '只配送'
+        // if(data.dispatch_template?.delivery_type != '0' ){
+        //
+        // }
         info.data.push({
-            label: dispatchLabel,
-            name: "不配送区域",
+            label: "发货",
+            name: "发货",
             type: "bupeisong",
+            showIcon: (typeof not_dispatch == 'string' && not_dispatch.trim() != '' && data.goods.type == 0),
             content: {
-                value: data.dispatch_template?.not_dispatch
+                value: expressFee,
+                dispatchLabel,
+                dispatch: data.dispatch_template?.not_dispatch
             }
         })
     }
+    // 判断商品支持同城配送
+    if (data.goods.dispatch_intracity === '1' && intracity.intracity_enable == 1) {
+        let closeStatus = intracity.dispatch_area?.delivery_area == '2'
+        let someCity = store.state.setting?.systemSetting?.dispatch_name['30']? store.state.setting?.systemSetting?.dispatch_name['30'] : '同城配送';
+        let address = `${intracity?.shop_address?.address?.province || ""}${intracity?.shop_address?.address?.city || ""}${intracity?.shop_address?.address?.area || ""}${intracity?.shop_address?.address?.detail || ""}`
+        if(intracity?.sub_shop_address?.address) {
+            address = `${intracity?.sub_shop_address?.address?.province || ""}${intracity?.sub_shop_address?.address?.city || ""}${intracity?.sub_shop_address?.address?.area || ""}${intracity?.sub_shop_address?.address?.detail || ""}`
+        }
+        info.data.push({
+            label: `${someCity}`,
+            name: '查看商家位置',
+            content: {
+                value: closeStatus ? '' : address
+            },
+            showIcon: !closeStatus,
+            type: 'samecity',
+            url: 'samecity'
+        })
 
+    }
     // 判断活动显示内容
     let activityObj = {
         seckill: ['biaoqian', 'bupeisong', 'samecity'],
     };
-
+    // 拼团不开启使用优惠券关闭
+    if(activity.groups?.rules?.use_coupon=='0') {
+        info.data = info.data.filter(item=> item.type!='coupon')
+    }
+    // 拼团返利不开启使用优惠券关闭
+    if(activity.groupsRebate?.rules?.use_coupon=='0') {
+        info.data = info.data.filter(item=> item.type!='coupon')
+    }
     let activeKey;
     // 获取当前正在进行的活动
     Object.keys(activityObj).forEach(key => {

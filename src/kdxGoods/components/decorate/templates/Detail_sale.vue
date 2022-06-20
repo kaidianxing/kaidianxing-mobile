@@ -60,6 +60,14 @@
                             </p>
                         </li>
                     </ul>
+                    <!-- 发货 -->
+                    <div class="common" v-else-if="item.type =='bupeisong'" >
+                        <p class="words" :style="{ color: componentData.style.textcolor }">{{componentData.params.hidedispatch != 0 ? item.content.value : "待下单时查看"}}</p>
+                        <p v-if="item.showIcon" style="color: #969696; font-size: 24rpx;" @click="clickItem('bupeisong')">查看发货区域</p>
+                    </div>
+                    <view class="samecity" v-else-if="item.type == 'samecity' " @click="clickItem('samecity')">
+                        <view class="words line-hide" :style="{ color: componentData.style.textcolor }">{{item.content.value}}</view>
+                    </view>
                     <!-- 活动 -->
                     <ul
                         v-else-if="item.type=='active'"
@@ -201,6 +209,8 @@
                     zengpin: false, //
                     fullback: false, //
                     active: true,
+                    samecity: true,
+                    verify: true,
                 }
                 if (this.componentData ?.data) {
                     return this.componentData.data.filter(item => {
@@ -458,8 +468,25 @@
                         white-space: nowrap;
                         text-overflow: ellipsis;
                     }
-                }
 
+                }
+                .words {
+                    flex: 1;
+                    margin: auto 0;
+                    font-weight: normal;
+                    font-size: px2rpx(12);
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+                .samecity {
+                    color:#212121;
+                    align-items: center;
+                    font-size: px2rpx(12);
+                    height: px2rpx(44);
+                    line-height: px2rpx(44);
+                    padding-left: px2rpx(10);
+                }
 
                 .icon-word {
                     font-size: px2rpx(10);
