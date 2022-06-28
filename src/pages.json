@@ -199,12 +199,6 @@
 					"style": {
 						"navigationBarTitleText": "查看物流"
 					}
-				},
-				{
-					"path": "deliveryInfo",
-					"style": {
-						"navigationBarTitleText": "配送信息"
-					}
 				}
 			]
 		},

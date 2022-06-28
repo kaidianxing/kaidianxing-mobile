@@ -67,7 +67,7 @@ export const goodApi = {
     },
     getActivity: { // 获取商城活动状态
         method: 'get',
-        api: '//product/list/get-activity'
+        api: '/product/list/get-activity'
     },
     removeLose: { // 移除购物车失效商品
         method: 'post',
@@ -75,8 +75,12 @@ export const goodApi = {
     },
     getActivityGoods: { // 获取活动商品
         method: 'get',
-        api: '//product/list/get-activity-goods'
+        api: '/product/list/get-activity-goods'
     },
+    getShortLink: {
+        method: "post",
+        api: '/product/detail/get-short-link'
+    }
 
 
 }

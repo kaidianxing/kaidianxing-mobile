@@ -32,18 +32,22 @@
                     <!--#endif-->
                     <!--#ifdef MP-WEIXIN-->
                     <button class="channel-list" v-if="isWeixin" open-type="share" hover-class="none">
-                        <view class="iconfont-m- icon-m-qudao-weixin channel-icon" />
+                        <img class='img' :src="$utils.staticMediaUrl('share/weixin.png')" alt="">
                         <view class="channel-text">微信</view>
                     </button>
                     <!--#endif-->
+                    <view v-if="showMaterial" class="channel-list" @click="materialHandler">
+                        <img class='img' :src="$utils.staticMediaUrl('share/material.png')" alt="">
+                        <view class="channel-text">一键发圈</view>
+                    </view>
                     <!--#ifndef MP-TOUTIAO-->
                     <view class="channel-list" @click="shareHandler">
-                        <view class="iconfont-m- icon-m-shengchenghaibao channel-icon" />
+                        <img class='img' :src="$utils.staticMediaUrl('share/poster.png')" alt="">
                         <view class="channel-text">生成海报</view>
                     </view>
                     <!--#endif-->
                     <view class="channel-list" @click="copyLink" v-if="isShowLink">
-                        <view class="iconfont-m- icon-m-fuzhilianjie channel-icon" />
+                        <img class='img' :src="$utils.staticMediaUrl('share/copy.png')" alt="">
                         <view class="channel-text">复制链接</view>
                     </view>
                 </view>
@@ -67,6 +71,10 @@ export default {
         type: {
             type: String,
             default: ''
+        },
+        goods: {
+            type: Object,
+            default: ()=> {}
         }
     },
     components: {
@@ -111,6 +119,9 @@ export default {
         isWeixin() {
             return this.$utils.is_weixin()
         },
+        showMaterial() {
+            return this.goods?.data?.goods?.material && this.goods?.data?.goods?.material?.length !== 0
+        }
     },
     watch: {
         value(newValue) {
@@ -129,6 +140,9 @@ export default {
         },
         shareHandler(type) {
             this.$emit('share', type)
+        },
+        materialHandler() {
+            this.$emit('material', 'share')
         },
         copyLink() {
             let copy_url = this.posterUrl;
@@ -234,14 +248,20 @@ export default {
     .channel {
         padding-bottom: 24rpx;
         &-list {
-            width: 140rpx;
+            width: px2rpx(60);
             height: 188rpx;
-            margin-right: 28rpx;
+            margin-right: px2rpx(12);
             background-color: transparent;
             line-height: 1;
-
+            .img {
+                width: px2rpx(60);
+                height: px2rpx(60);
+            }
             &::after {
                 border: none;
+            }
+            &:last-child {
+                margin-right: 0;
             }
         }
 
@@ -269,10 +289,10 @@ export default {
 
         &-text {
             margin-bottom: 17rpx;
-            font-size: 28rpx;
+            font-size: px2rpx(12);
             text-align: center;
             line-height: 40rpx;
-            color: #969696;
+            color: #212121;
         }
     }
 

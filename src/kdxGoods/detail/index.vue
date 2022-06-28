@@ -54,9 +54,17 @@
         <!-- 商品详情分享 -->
         <share-modal
             v-model="showShare"
+            :goods="detailInfo"
             @share="shareHandler"
+            @material="materialHandler"
             v-if='showShare'
         ></share-modal>
+        <material-modal
+            v-model="showMaterial"
+            :type="materialType"
+            :goods="detailInfo"
+            @complete="handleComplete"
+        ></material-modal>
         <poster-modal
             v-if="showPoster"
             @mounted='posterShow'
@@ -84,6 +92,7 @@
     import PageDecorater from "../components/decorate/PageBox";
     import GoodsModal from '../components/detail/modal/GoodsModal'
     import ShareModal from "../components/detail/ShareModal";
+    import MaterialModal from "../components/detail/MaterialModal";
     import PosterModal from "@/components/poster/PosterModal";
     import Skeleten from './index/Skeleten.vue'
     import RewardModal from "../components/detail/RewardModal";
@@ -134,6 +143,8 @@
             ShareModal,
             Skeleten,
             RewardModal,
+            MaterialModal,
+
         },
         computed: {
             loadTip() {
@@ -173,6 +184,9 @@
             },
             beforeLoaded(){
                 return this.showSkeleten||!this.lazyLoadList?.length
+            },
+            showMaterialModal() {
+                return this.goodsData?.material && this.goodsData?.material?.length !== 0
             },
         },
         watch: {
@@ -237,6 +251,9 @@
                 goods_id: "",
                 liverId: '',
                 showShare: false,
+                showMaterial: false,
+                shareInfo: null,//-----------
+                materialType: "share",
                 buy_num: 0, // 已经购买个数
                 type: "",//商品营销活动类型
                 show: false,
@@ -251,6 +268,7 @@
                 },
                 activityInfo: null, // 商品活动信息
                 isFullRefresh: false,
+
             };
         },
         onShow() {
@@ -348,6 +366,14 @@
                         this.pullDownRefresh();
                     }
                 }
+                if(e.target === 'detail_info/clickShare' && e.data?.from === 'suspension' && this.showMaterialModal) {
+                    this.materialHandler("share");
+                    return
+                }
+                if(e.target === "showCommissionMaterial") {
+                    this.materialHandler("commission");
+                    return
+                }
                 if(isRequestingDetail){//如果正在登录后的刷新过程中就等候，
                     if (e.target !== 'loginModal/closeModal') {//除了登录弹窗关闭事件
                         uni.showToast({
@@ -435,6 +461,20 @@
             shareHandler() {
                 this.showShare = false;
                 this.posterShow();
+            },
+            materialHandler(type) {
+                console.log('进来了')
+                this.materialType = type
+                this.showShare = false;
+                this.showMaterial = true;
+                console.log('进来了')
+                console.log('this.materialType：',this.materialType)
+                console.log('this.showShare：',this.showShare)
+                console.log('this.showMaterial：',this.showMaterial)
+
+            },
+            handleComplete() {
+                this.showMaterial = false;
             },
             posterShow() {
                 if(!this.showPoster){
