@@ -172,7 +172,7 @@
             })
             // #endif
         },
-        methods: { 
+        methods: {
             getList() {
                 this.loading = true;
                 this.$api.orderApi[this.apiObj[this.status]]({page: this.page})
@@ -218,7 +218,7 @@
                     })
             },
             btnClick(data) {
-                
+
                 let cache = {}
                 switch (data.name) {
                     // 取消订单
@@ -235,7 +235,7 @@
                         break
                     // 查看物流
                     case 'express':
-                        this.orderData = data.item; 
+                        this.orderData = data.item;
                         data.item.orderGoods.forEach(item=>{cache[item.package_id]=item.package_id})
                         let package_ids=Object.keys(cache);
                         if(package_ids.length==1){
@@ -243,7 +243,7 @@
                         }else{
                             this.express()
                         }
-                        
+
                         break
                     // 确认收货
                     case 'sendOrder':
@@ -266,6 +266,10 @@
                             this.comment()
                         }
                         break
+                    case 'toGroups':
+                        this.orderData = data.item
+                        this.toGroups()
+                        break;
                 }
             },
             cancelOrder() {
@@ -407,6 +411,16 @@
                             title: res.message,
                             icon: 'none'
                         })
+                    }
+                })
+            },
+            toGroups(){
+                // 小程序分享有影响,只能在入口处清除
+                this.$store.commit('groups/setGroupsTeamId', null)
+                this.$Router.auto({
+                    path: '/kdxGoods/groups/detail',
+                    query: {
+                        team_id: this.orderData.groups_team_info?.id
                     }
                 })
             },

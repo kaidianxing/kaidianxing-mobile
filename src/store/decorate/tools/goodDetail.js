@@ -23,9 +23,11 @@ export function detail_spec(goods, activity, res) {
     let title = '';
     title = '请选择商品规格'
     let price_actives = ['seckill','preheat_activity'];
+    let isBargain = activity && price_actives.some(key=> activity[key]);
     return {
         //商品规格选择框
         show: goods?.has_option == 1,
+        isBargain,
         params: {
             specs: title,
             activeName: hasSingle ? name : '',
@@ -41,7 +43,9 @@ export function detail_sale(goods, {
     intracity
 } = res) {
     let activityName = getActivityName(activity)
-    let price_actives = ['seckill','preheat_activity'];
+    let price_actives = ['seckill','preheat_activity','groups'];
+    let isBargain = activity && price_actives.some(key=> activity[key]);
+
     let info = {
         data: [
             {
@@ -145,6 +149,7 @@ export function detail_sale(goods, {
         ],
         params: {
             activityName,
+            isBargain,//是否是活动商品
             activityData: activity[activityName],
             goods,
         }
@@ -241,7 +246,10 @@ export function detail_sale(goods, {
             activeKey = key
         }
     })
-
+    // 拼团不开启使用优惠券关闭
+    if(activity.groups?.rules?.use_coupon=='0') {
+        info.data = info.data.filter(item=> item.type!='coupon')
+    }
     info.data = info.data.filter(item => {
         if (activeKey) {
             if (activityObj[activeKey].includes(item.type)) {
@@ -285,6 +293,9 @@ export function detail_info(data, activity, dispatch, intracity) {
     //虚拟商品
     if (data.type != 0) {
         expressFee = '0.00'
+    } else if (data.dispatch_intracity === '1' && intracity.intracity_enable == 1) {
+        // 同城配送开启 并且商品支持同城配送
+        expressFee = (parseFloat(intracity?.dispatch_price) > 0 ? "¥" + parseFloat(intracity?.dispatch_price) : freightText);
     } else if (data.dispatch_express === '1' && intracity.express_enable === 1) {
         // 快递开启 并且商品支持快递
         // 包邮
@@ -309,15 +320,17 @@ export function detail_info(data, activity, dispatch, intracity) {
     if (has_option) {
         // 多规格 会员价
         price = activity.member_price ?
-            `${activity.member_price.min_price}-${activity.member_price.max_price}` :
-            `${data.min_price}-${data.max_price}`
+                `${activity.member_price.min_price}-${activity.member_price.max_price}` :
+                `${data.min_price}-${data.max_price}`
         price = utils.formartPrice(price)
 
     } else {
         // 单规格 会员价
         price = activity.member_price ? activity.member_price.min_price : data.price
     }
-
+    if(activity?.member_card_free_goods?.free_goods_code) {
+        price = activity?.member_card_free_goods?.price
+    }
     let memberInfo = $decorator.getPage(12).pageInfo;
     return {
         params: {
@@ -371,9 +384,12 @@ export function detail_navbar(res) {
     if (res?.activity?.seckill) {
         params.seckill = res?.activity?.seckill
     }
-
+    if (res?.activity?.groups) {
+        params.groups = res?.activity?.groups
+    }
     let canService = false;
-    let price_actives = ['seckill','preheat_activity'];
+    let price_actives = ['seckill','preheat_activity','groups'];
+    let isBargain = res?.activity && price_actives.some(key=> res?.activity[key]);
     // #ifdef MP-WEIXIN
     canService = true
     // #endif
@@ -388,6 +404,7 @@ export function detail_navbar(res) {
             canbuy: res.data?.goods?.stock > 0,
             goods: res.data.goods,
             ...params,
+            isBargain,
             activityName: getActivityName(res?.activity)
         },
     }
@@ -436,6 +453,7 @@ export function clearAllData() {
                     activity_type: ''  //清除预热信息
                 },
                 seckill: null,
+                groups: null,
                 activityName: '',
 
             }
@@ -451,3 +469,4 @@ export function clearAllData() {
  * 接口请求失败时的默认数据
  */
 export const defaultPageInfo = {}
+

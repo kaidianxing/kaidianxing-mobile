@@ -43,6 +43,7 @@
         <!-- #ifdef MP-WEIXIN -->
         <WxTransaction :component-data='mergeData' v-else-if='componentData.id=="wxTransaction"' @custom-event='eventHandler'></WxTransaction>
         <!-- #endif -->
+        <Groups :component-data='mergeData' @custom-event='eventHandler'></Groups>
         <slot></slot>
     </div>
 </template>
@@ -83,6 +84,8 @@
     import MyTitleRichtext from '@/components/decorate/templates/MyTitle.Richtext'
     import MyVideo from '@/components/decorate/templates/MyVideo'
     import WxTransaction from '@/components/decorate/templates/WxTransaction'
+    import Groups from '@/components/decorate/templates/Groups'
+
     // #endif
 
     import {
@@ -130,7 +133,8 @@
             TabbarTopmenu,
             MyTitleRichtext,
             MyVideo,
-            WxTransaction
+            WxTransaction,
+            Groups
         },
         // #endif
         // #ifdef H5
@@ -165,6 +169,8 @@
             MyTitleRichtext:()=>import('@/components/decorate/templates/MyTitle.Richtext.vue'),
             MyVideo:()=>import('@/components/decorate/templates/MyVideo.vue'),
             NoticeModules:()=>import('@/components/spin/Notice'),
+            Groups: () => import('@/components/decorate/templates/Groups.vue'),
+
         },
         // #endif
         data() {

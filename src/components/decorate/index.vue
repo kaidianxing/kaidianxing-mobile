@@ -36,7 +36,7 @@
         <!-- #ifdef MP-WEIXIN -->
         <WxTransaction :component-data='mergeData' v-else-if='componentData.id=="wxTransaction"' @custom-event='eventHandler'></WxTransaction>
         <!-- #endif -->
-
+        <Groups :component-data='mergeData' v-else-if='componentData.id=="groups"&&mergeData.data.length' @custom-event='eventHandler'></Groups>
         <slot></slot>
     </div>
 </template>
@@ -69,6 +69,7 @@
     import MyTitleRichtext from './templates/MyTitle.Richtext'
     import MyVideo from './templates/MyVideo'
     import WxTransaction from './templates/WxTransaction'
+    import Groups from './templates/Groups'
     // #endif
 
     import {
@@ -109,7 +110,8 @@
             TabbarTopmenu,
             MyTitleRichtext,
             MyVideo,
-            WxTransaction
+            WxTransaction,
+            Groups
 
         },
         // #endif
@@ -138,6 +140,7 @@
             MyTitleRichtext:()=>import('./templates/MyTitle.Richtext.vue'),
             MyVideo:()=>import('./templates/MyVideo.vue'),
             NoticeModules:()=>import('../spin/Notice'),
+            Groups:()=>import('./templates/Groups.vue'),
 
         },
         // #endif

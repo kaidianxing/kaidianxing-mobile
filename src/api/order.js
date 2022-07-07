@@ -183,6 +183,16 @@ export const orderApi = {
         method: 'post',
         api: '/wxTransactionComponent/index/check-scene'
     },
+    // 获取日期带分页
+    getDate: {
+        method: 'get',
+        api: '/order/index/get-date'
+    },
+    // 同城配送时间段
+    getDeliveryTime: {
+        method: 'get',
+        api: '/order/index/get-intracity-delivery-time'
+    },
     // 获取同城配送区域
     getDispatchArea:{
         method: 'get',
@@ -193,14 +203,20 @@ export const orderApi = {
         method: 'post',
         api: '/dispatch/intracity/query-order-status'
     },
-    // 获取日期带分页
-    getDate: {
+    // 拼团订单
+    groupsOrder: {
         method: 'get',
-        api: '/order/index/get-date'
+        api: '/groups/invite',
+        needLogin: true
     },
-    // 同城配送时间段
-    getDeliveryTime: {
+    // 获取小程序拼团码
+    getWxGroupsQrcode: {
         method: 'get',
-        api: '/order/index/get-intracity-delivery-time'
+        api: '/groups/invite/get-wxapp-qrcode'
+    },
+    // 获取小程序拼团码
+    getWxGroupsRebateQrcode: {
+        method: 'get',
+        api: '/groupsRebate/invite/get-wxapp-qrcode'
     },
 };

@@ -41,11 +41,10 @@ export default {
 
         },
         cacheAddressId: {},
-
         deliveryTime:'',//配送、自提时间
         span_detail: [], // 自提、送达可选时间段
         span_detail_now: [], // 自提、送达当天可选时间段
-
+        extend_params: null, // 拼团信息
         // ext_field: {}, // 扩展字段
         // pay_type: 'online',//付款方式 online: 在现在支付 delivery: 货到付款
     },
@@ -60,7 +59,6 @@ export default {
             });
         },
         setDispatchStatus(state, status) {
-            console.log('设置了快递',status)
             state.dispatch_status = {
                 ...state.dispatch_status,
                 ...status,
@@ -118,6 +116,9 @@ export default {
         },
         setFreeGoodsCode(state, res) {
             state.free_goods_code = res
-        }
+        },
+        setGroupsInfo(state, params){
+            state.extend_params = params;
+        },
     },
 };

@@ -12,9 +12,19 @@
     <div
         class="detail_sale"
         :style="{padding:`${px2rpx(componentData.style.margintop)} ${px2rpx(componentData.style.marginleft)} ${px2rpx(componentData.style.marginbottom)}`}"
-        v-if='componentData&&componentData.id=="detail_sale"&&(getList.length)'
+        v-if='isShowSale'
     >
         <div style="overflow: hidden" :style="{'border-radius':`${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.bottomradius)} ${px2rpx(componentData.style.bottomradius)}`}">
+       <div>
+           <!--多人拼团-->
+           <detail-sale-group
+               v-if="componentData.params.activityName =='groups' && getGroupsTeam.length"
+               :info="componentData.params.activityData"
+               :team="getGroupsTeam"
+               @click-all="clickGroups"
+               @click-detail="clickGroupsItem"
+               @special-click="clickBuyItem"></detail-sale-group>
+       </div>
         <ul
             class="container"
             :style="{'border-radius':`${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.bottomradius)} ${px2rpx(componentData.style.bottomradius)}`,background:componentData.style.background,color:componentData.style.textcolor}"
@@ -176,9 +186,14 @@
 
 <script>
     import mixin from './mixin.js'
+    import DetailSaleGroup from './Detail_sale__group'
+
     export default {
         mixins: [mixin],
         name: 'detail_sale',
+        components:{
+            DetailSaleGroup
+        },
         data() {
             return {
                 balance_text: '余额',
@@ -188,6 +203,13 @@
             }
         },
         computed: {
+            isShowSale() {
+                return this.componentData && this.componentData.id=="detail_sale"
+                    && ( this.getList.length ||
+                        ((this.componentData.params.activityName =="groups" )&& this.getGroupsTeam.length))
+                    && (this.componentData.params.isBargain || !this. componentData.params.buy_button_status)
+                    && this.componentData.params.goods.type != 6
+            },
             getLabelStyle() {
                 if (this.componentData.params.label_style == '0') {
                     return ''
@@ -195,6 +217,13 @@
                     return 'icon-m-dian iconfont-m-'
                 }
                 return 'icon-m-yes1 iconfont-m-'
+            },
+            // 获取可参团列表
+            getGroupsTeam(){
+                if(this.$isPC){
+                    return []
+                }
+                return this.componentData?.params?.activityData?.team || []
             },
             getList() {
                 let row = {
@@ -253,6 +282,25 @@
                 this.$emit('custom-event', {
                     target: 'detail_navbar/clickItem',
                     data: data
+                })
+            },
+            // 点击拼团订单列表
+            clickGroupsItem(item){
+                this.$emit('custom-event', {
+                    target: 'detail_sale/clickGroupsItem',
+                    data: {
+                        data: this.componentData,
+                        item
+                    }
+                })
+            },
+            // 查看拼团列表
+            clickGroups() {
+                this.$emit('custom-event', {
+                    target: 'detail_sale/clickGroups',
+                    data: {
+                        info: this.componentData.params.activityData
+                    }
                 })
             },
             // 显示活动中第一条类型的数据

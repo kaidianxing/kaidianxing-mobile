@@ -1,0 +1,471 @@
+<template>
+    <view class="community-poster-modal" v-if='show' :class="{'loading':loading}">
+        <!--#ifdef H5-->
+        <view class="modal" :class="{'create-poster':!url}"></view>
+        <!--#endif-->
+        <!--#ifndef H5-->
+        <view class="modal"></view>
+        <!--#endif-->
+        <view class='poster-container'>
+            <!--#ifdef H5-->
+            <view class='close' style='background:rgba(0,0,0,0)' :class="{'create-poster':!url}" @click='toggle'><i class="iconfont-m- icon-m-close"></i></view>
+            <div :class="{'create-poster':!url}">
+                <create-poster ref='posterCreate' :painting='painterData' :img-src='url'></create-poster>
+            </div>
+            <canvas class="none" canvas-id="qrcode" :style="{width: getSize+ 'px', height: getSize+ 'px'}" />
+            <!--#endif-->
+            <!--#ifndef H5-->
+            <view class='poster-top' style='padding-bottom:329rpx;'>
+                 <view v-if="imagePath" class="content-img" @touchmove>
+                    <image :src="imagePath" class="img-preview" mode="scaleToFill"></image>
+                </view>
+                <view v-if="!imagePath" class="canvas-box">
+                    <painter :palette="painterData" :widthPixels="1000" @imgErr="imgErr" @imgOK="onImgOK" />
+                </view >
+            </view>
+            <!--#endif-->
+            <!-- 链接 -->
+            <!--#ifndef H5-->
+            <view class="link-content-wxapp flex" style="position:absolute;bottom:0;left:0;right:0;">
+                <div class='share-btns' style="background:rgba(255,255,255,0.96)">
+                    <button class="btn" open-type="share" hover-class="none">
+                        <img class='img' :src="$utils.staticMediaUrl('share/weixin.png')" alt="">
+                        <view>微信</view>
+                    </button>
+                    <view class="btn" @click="copyLink">
+                        <img class='img' :src="$utils.staticMediaUrl('share/copy.png')" alt="">
+                        <view>复制链接</view>
+                    </view>
+                    <view class="btn" @click="download">
+                        <img class='img' :src="$utils.staticMediaUrl('share/download.png')" alt="">
+                        <view>保存图片</view>
+                    </view>
+                </div>
+                <view class='close' @click='toggle'>取消</view>
+            </view>
+            <!--#endif-->
+            <!--#ifdef H5-->
+            <view class="link-content-h5 flex">
+                <view :class="{'create-poster':!url}">
+                    <view>长按保存图片</view>
+                </view>
+            </view>
+            <!--#endif-->
+        </view>
+    </view>
+</template>
+
+<script>
+    // #ifdef H5
+    import createPoster from './CreatePoster'
+    // #endif
+    import {
+        mapState
+    } from "vuex";
+    // #ifdef H5
+    import uQRCode from "./uqrcode";
+    // #endif
+    import {
+        getCommissionPoster, //分销海报生成
+        getGoodsPosters, //商品海报生成
+        getGroupPoster, // 拼团海报
+    } from './getUrl.js'
+    // #ifdef H5
+    import {
+        getFollowPosters, //公众号关注海报生成
+    } from './getUrl.js'
+    // #endif
+    import { config } from '@/static/settings'
+    export default {
+        // #ifdef H5
+        components: {
+            createPoster
+        },
+        // #endif
+        props: {
+            posterType: {
+                type: String,
+                default: ''
+            }
+        },
+        data() {
+            return {
+                loading: true,
+                show: false,
+                callback: null,
+                info: null,
+                url: '',
+                copyLinkUrl: '',
+                qrcodeSrc: '',
+                painterData: {},
+                imagePath: '',
+                showPoster:''
+            }
+        },
+        mounted() {
+            this.$emit('mounted')
+        },
+        computed: {
+            ...mapState('setting', {
+                name: state => state.systemSetting ?.basic ?.name
+            }),
+            ...mapState('decorate/goodDetailPage', {
+                goods: state => state.detailInfo ?.data ?.goods ?? {},
+                posterUrl: state => state.detailInfo ?.poster_url,
+                pageList: state => state.pageList
+            }),
+            ...mapState('groups', ['groupPosterData']),
+            ...mapState('groupsRebate', {
+                groupsRebatePosterData: state=> state.groupPosterData
+            }),
+            ...mapState('groupsFission', {
+                groupsFissionPosterData: state=> state.groupPosterData
+            }),
+            ...mapState('posterData', ['posterData']),
+            ...mapState('creditShop', ['creditPosterData']),
+            getSize() {
+                return uni.upx2px(120) * 4
+            }
+        },
+        methods: {
+            clear(){
+                this.url = '';
+                return this;
+            },
+            toggle(callback) {
+                this.show = !this.show;
+                if (this.show) {
+                    this.loading = true;
+                    uni.showLoading({
+                        title: "海报生成中...",
+                        mask: true,
+                    });
+
+                    // #ifdef H5
+                    this.$nextTick(()=>{
+                        this.$refs.posterCreate && this.$refs.posterCreate.create(url=>{
+                            this.url=url;
+                        });
+                    })
+                    // #endif
+                    this.getUrl()
+                }
+                if(this.imagePath){
+                    uni.hideLoading()
+                }
+                if (typeof callback == 'function') {
+                    this.callback = callback;
+                }
+                if (this.callback) { //两种回调监听方式
+                    this.callback(this.show);
+                }
+                this.$emit('toggle', this.show); //两种回调监听方式
+            },
+            getUrl() {
+                let that = this;
+                if (this.posterType == 'commission') {
+                    this.$api.commissionApi.getQrcode({}).then(res => {
+                        if (res.error == 0) {
+                            this.copyLinkUrl = res.url;
+                            this.$store.commit('setting/setAvatar',res.avatar)
+                            getCommissionPoster(res, that.getSize).then(poster => {
+                                this.setNumberToString(poster)
+                                that.loading = false;
+                                that.painterData = poster;
+                            }).catch((e) => {
+                                that.$toast('生成海报失败');
+                            })
+                        } else {
+                            uni.hideLoading();
+                            that.$toast('生成海报失败');
+                        }
+                    })
+                } else if (this.posterType == 'goods') {
+                    getGoodsPosters(this.goods.id, that.getSize).then(poster => {
+                        this.setNumberToString(poster)
+                        that.loading = false;
+                        that.painterData = poster;
+                    }).catch((e) => {
+                        that.$toast('生成海报失败');
+                    })
+                } else if (this.posterType == 'follow') {
+                    // #ifdef H5
+                    getFollowPosters(that.getSize).then(poster => {
+                        this.setNumberToString(poster)
+                        that.loading = false;
+                        that.painterData = poster;
+                    }).catch((e) => {
+                        that.$toast('生成海报失败');
+                    })
+                    // #endif
+                } else if (this.posterType === 'group') {
+                    // 拼团海报
+                    getGroupPoster(this.groupPosterData.team_id).then(poster => {
+                        this.setNumberToString(poster)
+                        that.loading = false;
+                        that.painterData = poster;
+                    }).catch((e) => {
+                        that.$toast('生成海报失败');
+                    })
+                }else if (this.posterType == 'creditGoods') {
+                    getCreditGoodsPosters(this.creditPosterData.id, that.getSize).then(poster => {
+                        this.setNumberToString(poster)
+                        that.loading = false;
+                        that.painterData = poster;
+                    }).catch((e) => {
+                        that.$toast('生成海报失败');
+                    })
+                }
+            },
+            copyLink() {
+                if (this.posterType == 'goods') {
+                    this.copyLinkUrl = this.posterUrl
+                } else if (this.posterType === 'join') {
+                    // 推广管理 海报复制链接
+                    this.copyLinkUrl = `${config.wap_url}/pagesMerchant/join/index/index?invite_code=${this.$store.state.login.userInfo.id}`
+                } else if (this.posterType === 'group') {
+                    // 拼团海报
+                    this.copyLinkUrl = this?.groupPosterData?.invite_url
+                }
+                uni.setClipboardData({
+                    data: this.copyLinkUrl,
+                    success: () => {
+                        this.show = false;
+                        this.$toast('复制成功');
+                    }
+                })
+            },
+            download() {
+                this.saveImage();
+            },
+            onImgOK(e) {
+                this.imagePath = e.detail.path;
+                this.loading = false;
+                uni.hideLoading();
+            },
+            imgErr(e) {
+                uni.hideLoading();
+                uni.showModal({
+                    title: '提示',
+                    content: "生成海报失败",
+                    showCancel: false,
+                });
+            },
+            saveImage() { //长按保存
+                let _this = this;
+                uni.authorize({
+                    scope: "scope.writePhotosAlbum",
+                    success() {
+                        uni.saveImageToPhotosAlbum({
+                            filePath: _this.imagePath,
+                            success() {
+                                uni.showModal({
+                                    title: "保存成功",
+                                    content: "图片已成功保存到相册，快去分享到您的圈子吧",
+                                    showCancel: false
+                                })
+                            }
+                        });
+                    },
+                    fail(){
+                        uni.showToast({
+                            title: "无相册读写权限",
+                            icon:'none'
+                        })
+                    }
+                })
+            },
+            /**
+             * 海报image类型css样式中不能带有number类型 需要转为string
+             * 由于引用关系直接修改 不需要return
+             * @param poster
+             */
+            setNumberToString(poster){
+                poster.views.forEach(item=>{
+                    if(item.type == 'image'){
+                        for(let key in item.css){
+                            if(typeof item.css[key] === 'number'){
+                                item.css[key] += ''
+                            }
+                        }
+                    }
+                })
+
+            },
+        }
+    }
+</script>
+
+<style lang="scss" scoped>
+    .community-poster-modal {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 10000000;
+        .modal {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .create-poster {
+             opacity: 0;
+        }
+        &.loading {
+            visibility: hidden;
+        }
+        .none {
+            position: fixed;
+            top: -99999rpx;
+            left: -99999rpx;
+            z-index: -99999;
+        }
+        .poster-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            //#ifdef H5
+            height:996rpx;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); //#endif
+            // #ifndef H5
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column; // #endif
+            //#ifdef H5
+            .close {
+                position: absolute;
+                left: 50%;
+                top: -80rpx; // #ifdef MP-WEIXIN
+                top: -30rpx; // #endif
+                width: 48rpx;
+                height: 48rpx;
+                line-height: 40rpx;
+                border: 1px solid #fff;
+                text-align: center;
+                border-radius: 50%;
+                transform: translateX(-50%);
+                box-sizing: border-box;
+                background: #ffffff;
+                i {
+                    color: #fff;
+                    font-size: 20rpx;
+                }
+            } //#endif
+            //#ifndef H5
+            .close {
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                height: 68rpx;
+                line-height: 68rpx;
+                border-top: 1rpx solid #ccc;
+                text-align: center;
+                color: #333;
+            }
+            .poster-top {
+                height: 0;
+                flex: 1;
+                overflow: auto;
+                .content-img{
+                    // #ifdef H5
+                    width: 702rpx;
+                    // #endif
+                    // #ifndef H5
+                    width: 606rpx;
+                    // #endif
+                    margin: 24rpx auto;
+                    overflow: hidden;
+                    border-radius: 18rpx;
+                    height: px2rpx(539);
+                    image{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+                .canvas-box {
+                    width: 702rpx;
+                    // margin: 100vh auto;
+                    transform:scale(0.25);
+                    overflow: hidden;
+                    border-radius: 18rpx;
+                }
+            } //#endif
+            .link-content-h5 {
+                justify-content: space-around;
+                color: #fff;
+                font-size: 20rpx;
+                text-align: center;
+                height: 30%;
+                flex-shrink: 0;
+                padding: 40rpx 40rpx 0;
+            }
+            .link-content-wxapp {
+                color: #333;
+                font-size: 20rpx;
+                text-align: center;
+                height: 329rpx;
+                flex-shrink: 0;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                .close{
+                    border-top: 1rpx solid #e6e7eb;
+                    height: 100rpx;
+                    font-size: 28rpx;
+                    text-align: center;
+                    line-height: 100rpx;
+                    color: #969696;
+                    width: 100%;
+                    padding: 0 24rpx;
+                    background:#fff;
+                }
+                .share-btns{
+                    display:flex;
+                    padding: 0 px2rpx(12);
+                    .btn{
+                        width: px2rpx(60);
+                        height: 229rpx;
+                        display: flex;
+                        justify-content:center;
+                        flex-direction: column;
+                        font-style: normal;
+                        margin-right: px2rpx(12);
+                        .img{
+                            width: px2rpx(60);
+                            height: px2rpx(60);
+                        }
+                        view{
+                            font-size: px2rpx(12);
+                            margin:0 auto;
+                            text-align: center;
+                            color:#212121;
+                        }
+                    }
+                }
+                image {
+                    width: 120rpx;
+                    height: 120rpx;
+                }
+                button {
+                    background-color: transparent;
+                    line-height: 1.25;
+                    color: #333;
+                    border-radius: 0;
+                }
+                button::after {
+                    border: none;
+                }
+            }
+        }
+    }
+</style>

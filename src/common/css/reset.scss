@@ -47,7 +47,7 @@ div {
 
 /* --------uni.scss移入---------- */
 
-.van-hairline, 
+.van-hairline,
 .van-hairline--bottom,
 .van-hairline--left,
 .van-hairline--right,
@@ -696,7 +696,7 @@ button:after {
                     }
                 }
 
-                .seckill-tag {
+                .seckill-tag,.groups-tag, .groups-fission-tag{
                     position: absolute;
                     left: 0;
                     top: 0;
@@ -706,13 +706,13 @@ button:after {
                     border-radius: px2rpx(2);
                     padding: px2rpx(1) px2rpx(2);
                     min-width: px2rpx(36);
-                    
-        
+
+
                     .badge-icon {
                         font-size: px2rpx(8);
                         color:  #fff;
                     }
-        
+
                     .badge-text {
                         flex: 1;
                         text-align: center;
@@ -724,6 +724,9 @@ button:after {
                 }
                 .seckill-tag {
                     background: #ff3c29;
+                }
+                .groups-tag {
+                    background: linear-gradient(114.57deg, #FF8A00 19.05%, #FF4C14 87.67%);
                 }
             }
         }

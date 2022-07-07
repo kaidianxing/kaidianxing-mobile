@@ -180,5 +180,9 @@ export const memberApi = {
         method: 'post',
         api: '/member/red-package/get',
     },
-
+    // 支付成功后 邀请好友
+    getGroupsSuccess: {
+        method: 'get',
+        api: '/order/index/get-groups-success'
+    },
 }

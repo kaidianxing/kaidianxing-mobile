@@ -25,7 +25,12 @@
                                     <span class="badge-text">限时秒杀</span>
                                 </view>
                             </block>
-
+                            <block v-else-if="getActName(item)=='groups'">
+                                <view class="groups-tag" :style="{color: '#fff'}">
+                                    <i class="iconfont-m- icon-m-pintuan2-1 badge-icon"></i>
+                                    <span class="badge-text">多人拼团</span>
+                                </view>
+                            </block>
                             <block v-else>
                                 <!-- 推荐 -->
                                 <view class="recommend" v-if="item.is_recommand == 1">
@@ -64,7 +69,7 @@
                                         <view class="price is_seckill theme-primary-price" v-if="getActPrice(item)">
                                             <span class="primary-price theme-primary-price">{{getActPrice(item) |formatMoney}}</span>
                                         </view>
-                                        
+
                                         <view class="price theme-primary-price" v-else-if="item.activities && item.activities.member_price!=null">￥
                                             <text class="primary-price theme-primary-price">{{item.activities.member_price}}</text>
                                         </view>
@@ -209,7 +214,7 @@
 
         },
         filters: {
-          
+
             formatMoney(money) {
                 if (typeof money === 'number' || (typeof money === 'string' && money.trim() !== '')) {
                     if (money >= 10000) {

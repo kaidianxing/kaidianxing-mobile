@@ -9,15 +9,15 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 import store from '@/store'
-import {getActivityName} from '@/common/helper/goods'
-import {SINGLE_BUY_ACTIVE} from '@/common/variable/activity'
+import { getActivityName } from '@/common/helper/goods'
+import { SINGLE_BUY_ACTIVE } from '@/common/variable/activity'
 import {
     tipBeforeOper,
     addCart,
     createOrder,
+    handleGroupParams
 } from './indexTools'
-import {hasBindBySence} from '@/common/helper/user';
-
+import { hasBindBySence } from '@/common/helper/user';
 async function detailNavBarHandler(data, {
     goodsData,
     goods_id,
@@ -39,13 +39,13 @@ async function detailNavBarHandler(data, {
                     is_add: detail_navbar.params.favor ? 0 : 1
                 })
                 if (res.error == 0) {
-                    if (!detail_navbar.params.favor) {
-                        uni.showToast({title: '收藏成功', icon: "none"});
+                    if(!detail_navbar.params.favor){
+                        uni.showToast({ title:'收藏成功',icon:"none"});
                     }
                     detail_navbar.params.favor = !detail_navbar.params.favor;
                     this.$decorator.getPage(this.$Route).setPageInfo({
                         detail_navbar
-                    }, 'detailNavBarHandler/eventHandler.js')
+                    },'detailNavBarHandler/eventHandler.js')
                 }
                 break;
             case 'add': //添加购物车
@@ -98,14 +98,29 @@ async function detailNavBarHandler(data, {
                 // 往goodsPicker里存值
                 // 判断是不是秒杀
                 let hasActive = SINGLE_BUY_ACTIVE.includes(params.activeName);
-                let optionsInfo = hasActive ? store.state?.decorate?.goodDetailPage?.activeOptInfo : store.state?.decorate?.goodDetailPage?.optionsInfo;
+                let optionsInfo = hasActive? store.state?.decorate?.goodDetailPage?.activeOptInfo: store.state?.decorate?.goodDetailPage?.optionsInfo;
                 this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
-                delete optionsInfo.is_join
-                this.$store.commit('quickPurchase/setOptionsInfo', optionsInfo)
+                // 拼团参团
+                if(hasActive && params.is_join =='1') {
+                    optionsInfo.is_join='1'
+                    optionsInfo.team_id = params.team_id
+                    // 拼团活动失效且团订单处在有效期
+                    if(params.activity_id) {
+                        optionsInfo.activity_id = params.activity_id
+                    }
+                    if(params.ladder){
+                        optionsInfo.ladder =params.ladder
+                    }
+
+
+                } else {
+                    delete optionsInfo.is_join
+                }
+                this.$store.commit('quickPurchase/setOptionsInfo',optionsInfo)
 
                 // 判断是否是原价购买
                 let singleActiveName = getActivityName(this.activityInfo)
-                let is_origin = SINGLE_BUY_ACTIVE.includes(singleActiveName) && !hasActive;
+                let is_origin= SINGLE_BUY_ACTIVE.includes(singleActiveName) &&!hasActive;
                 await tipBeforeOper({
                     goodsData,
                     goods_id,
@@ -133,6 +148,11 @@ async function detailNavBarHandler(data, {
                     buy_num,
                     activityInfo,
                     is_origin,
+                }
+
+                // 单规格普通拼 增加拼团参数
+                if(singleActiveName=='groups' && !is_origin){
+                    orderParams.extend_params = handleGroupParams(optionsInfo)
                 }
 
                 createOrder.call(this, {...orderParams})
@@ -214,7 +234,7 @@ export async function eventHandler(data, {
                                 is_buy_disable: true,
                             },
                         },
-                    }, 'goodDetail/eventHandler.js/eventHandler');
+                    },'goodDetail/eventHandler.js/eventHandler');
                 } else {
                     this.pullDownRefresh();
                 }
@@ -242,8 +262,8 @@ export async function eventHandler(data, {
                     return store.commit('login/setModal', true)
                 }
                 // 需要绑定手机号
-                console.log(hasBindBySence('buy'), 'hasBindBySence("buy")')
-                if (hasBindBySence('cart') || hasBindBySence('buy')) {
+                console.log(hasBindBySence('buy'),'hasBindBySence("buy")')
+                if (hasBindBySence('cart')||hasBindBySence('buy')) {
                     return store.commit('login/setModal', true)
                 }
                 // 往goodsPicker里存值
@@ -254,7 +274,7 @@ export async function eventHandler(data, {
                 let optionsInfo = hasSingle ? store.state?.decorate?.goodDetailPage?.activeOptInfo : store.state?.decorate?.goodDetailPage?.optionsInfo;
                 this.$store.commit('quickPurchase/setOptionsInfo', optionsInfo)
                 // 打开goodsPicker
-                if (hasSingle) {
+                if(hasSingle){
                     // 打开活动弹窗
                     this.$store.commit('quickPurchase/setGoodDetail', detailInfo)
                     await tipBeforeOper.call(this, {goodsData, goods_id, option_id, total, type: 'buy', activityInfo});
@@ -264,10 +284,20 @@ export async function eventHandler(data, {
                     this.goodsData.has_option == 1 && this.$refs?.goodsPicker.toggle(null, 'spec', 'cacheNum');
                 }
                 break;
+            case 'detail_sale/clickGroupsItem':
+                // 小程序分享有影响,只能在入口处清除
+                this.$store.commit('groups/setGroupsTeamId', null)
+
+                this.$Router.auto({
+                    path: '/kdxGoods/groups/detail',
+                    query: {team_id: data.data.item.id}
+                })
+
+                break;
             case 'detail_navbar/clickItem': //点击商品底部菜单事件
                 detailNavBarHandler.call(this, data, {
                     goodsData,
-                    goodDetail: this.goodDetail,
+                    goodDetail:this.goodDetail,
                     goods_id,
                     option_id,
                     total,
@@ -303,7 +333,7 @@ export async function eventHandler(data, {
             case 'detail_info/clickShare':
                 if (!(await store.dispatch('login/checkLogin'))) {
                     return store.commit('login/setModal', true)
-                } else if (hasBindBySence('share')) {
+                } else if(hasBindBySence('share')){
                     return store.commit('login/setModal', true)
                 } else {
                     this.showShare = true
@@ -328,6 +358,10 @@ export async function eventHandler(data, {
                     return store.commit('login/setModal', true)
                 }
                 this.show = true
+                break;
+            case 'detail_sale/clickGroups':
+                this.groupsInfo = data.data.info || {}
+                this.groupShow = true
                 break;
             case 'detail_swipe/clickImg':
                 if (store.state.setting?.systemSetting?.basic?.photo_preview == '1') {
@@ -368,9 +402,9 @@ export async function eventHandler(data, {
                 break;
         }
     } catch (e) {
-        if (e?.errorId == 'openPicker') {
+        if (e ?.errorId == 'openPicker') {
             this.$refs.goodsPicker.toggle(null, e.type, 'cacheNum');
-        } else if (e?.errorInfo) {
+        } else if (e ?.errorInfo) {
             uni.showToast({
                 title: e.errorInfo,
                 icon: 'none'

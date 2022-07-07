@@ -19,7 +19,7 @@
             <view class="subtitle" v-if="isComment">谢谢您的用心评价，期待您的下次惠顾</view>
             <view class="flex">
                 <block v-if="!isComment">
-                    <view  class="btn" @click="toOrderDetail">订单详情</view>
+                    <view  class="btn" @click="toOrderDetail">{{ groupsInfo.success == false ?`邀请好友`:`订单详情` }}</view>
                 </block>
                 <view class="btn" @click="toIndex">返回首页</view>
             </view>
@@ -99,13 +99,16 @@
                 showShoppingRewardFlag: false,
                 showShoppingActivityData: {}, //购物奖励红包弹窗
                 showShoppingVisible: false, //购物奖励红包弹窗
+                groupsInfo: {}, //拼团活动订单信息 按钮显示
+
             }
         },
         computed: {
             ...mapState('orderCreate', ['dispatch_type']),
         },
-        mounted() {
-            this.init();
+        async mounted() {
+            await this.init();
+            this.getPlugin()
         },
         methods: {
             init() {
@@ -122,18 +125,41 @@
                 this.getActivityData();
                 this.sendShoppingReward();
             },
+            getPlugin() {
+                this.$api.memberApi.getGroupsSuccess({order_id: this.order_id},{ errorToast: false }).then(res => {
+                    if(res.error == 0) {
+                        this.groupsInfo = res?.data;
+                    }
+                })
+
+            },
             toOrderDetail() {
                 let order_id = this.order_id
-                // 处理多商户传的id是个数组
                 if(Array.isArray(order_id)){
                    order_id = order_id[0]
                 }
-                this.$Router.replace({
-                    path: '/kdxOrder/detail',
-                    query: {
-                        order_id
+                let {success, plugin, team_id} = this.groupsInfo
+                if(!success) {
+                    switch(plugin) {
+                        case "groups":
+                            this.$Router.replace({
+                                path: '/kdxGoods/groups/detail',
+                                query: {
+                                    team_id: team_id
+                                }
+                            })
+                            break;
+                        default:
+                            break;
                     }
-                })
+                }else {
+                    this.$Router.replace({
+                        path: '/kdxOrder/detail',
+                        query: {
+                            order_id
+                        }
+                    })
+                }
             },
             toIndex() {
                 this.$Router.replaceAll({

@@ -82,5 +82,4 @@ export const goodApi = {
         api: '/product/detail/get-short-link'
     }
 
-
 }

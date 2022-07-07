@@ -17,7 +17,7 @@
                     <template slot="btn">
                         <view class="refund-btn" :class="{'mBottom': showRefund(item) || showDetail(item)}">
                             <block v-if="orderGoods[0].type != '2'">
-                                <view v-if="showRefund(item)" @click.stop="canRefund(item.id)">申请售后</view>
+                                <view v-if="showRefund(item) && !(isGroupOrder&& !isSucGroups) " @click.stop="canRefund(item.id)">申请售后</view>
                                 <view v-if="showDetail(item)" @click.stop="goRefundDetail(item.id)">售后详情</view>
                             </block>
                         </view>
@@ -81,6 +81,14 @@
             },
             backgroundImage() {
                 return `background-image:url(${this.$utils.staticMediaUrl('decorate/logo_default.png')})`
+            },
+            // 是否是拼团订单
+            isGroupOrder(){
+                return this.orderData.activity_type=='3' ||  this.orderData.activity_type=='4' ||  this.orderData.activity_type=='6'
+            },
+            // 拼团成功
+            isSucGroups(){
+                return this.orderData.groups_data?.success =='1' || this.orderData.groups_rebate_data?.success =='1' || this.orderData.groups_fission_data?.success =='1'
             },
         },
         watch: {
@@ -188,7 +196,7 @@
     margin: 16rpx 0;
     overflow: hidden;
 
- 
+
 
     .goods-item {
         background-color: #fff;

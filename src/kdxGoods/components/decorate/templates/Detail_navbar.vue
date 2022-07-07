@@ -68,8 +68,12 @@
              </button>-->
 
            <li class='btns-box'>
+               <!-- 多人拼团 -->
+               <div class="btn-groups" v-if="componentData.params.activityName=='groups'">
+                   <detail-navbar-group @normal-click="clickItem" :activity-data="componentData" @special-click="clickItem"></detail-navbar-group>
+               </div>
                 <!-- 普通商品非议价商品 -->
-               <div class="btns-gorup" v-if="componentData.params.goods">
+               <div class="btns-gorup" v-else-if="componentData.params.goods">
                     <div class='btns' v-if="componentData.params.canbuy == false">
                         <p class="btn no-num">已售罄</p>
                     </div>
@@ -95,11 +99,13 @@
 <script>
     import mixin from './mixin.js'
     import DetailNavbarSeckill from './Detail_navbar__seckill.vue'
+    import DetailNavbarGroup from './Detail_navbar__group.vue'
     export default {
         mixins: [mixin],
         name: 'detail_navbar',
         components: {
             DetailNavbarSeckill,
+            DetailNavbarGroup
         },
         computed: {
             styles(){
@@ -309,6 +315,7 @@
         },
         methods: {
             clickItem(data) {
+
                 if (data.btn=='buy' && this.componentData.params?.is_buy_disable) {
                     return
                 }
@@ -319,6 +326,7 @@
                     return
 
                 }
+
                 this.$emit('custom-event', {
                     target: 'detail_navbar/clickItem',
                     data: data

@@ -11,14 +11,34 @@
 export default {
   namespaced: true,
   state: {
+    usePersionId: '',
     refund_checkEx: {},
+    groupsUser: [],
+    groupLeader: null,
+    payInfo: {
+      payType:'',
+      order_id:''
+    }
   },
   mutations: {
+    setUsePersionId(state,id) {
+      state.usePersionId = id
+    },
+    setPayInfo(state,data) {
+      state.payInfo = data
+    },
     setRefundCheckEx(state, checkEx) {
       state.refund_checkEx = checkEx
     },
+    // 设置拼团团队信息
+    setGroupsUser(state, info){
+      state.groupLeader = info.id
+      state.groupsUser = info.list
+    }
   },
   getters:{
-    refund_checkEx: state=> state.refund_checkEx
+    refund_checkEx: state=> state.refund_checkEx,
+    payInfo: state=> state.payInfo
+
   }
 }

@@ -250,6 +250,8 @@
                 id: "",
                 goods_id: "",
                 liverId: '',
+                groupShow: false,
+                groupsInfo: {},
                 showShare: false,
                 showMaterial: false,
                 shareInfo: null,//-----------
@@ -301,6 +303,14 @@
             this.getDetail();
         },
         methods: {
+            clickGroupsItem(item) {
+                this.eventHandler({
+                    target: 'detail_sale/clickGroupsItem',
+                    data: {
+                        item
+                    }
+                })
+            },
             loadList(list) {
                 if (list.length>this.lazyLoadList.length) {
                     setTimeout(() => {
@@ -352,6 +362,7 @@
                 },1000)
             },
             eventHandler(e) {
+
                 if (e.target == "detail_info/refresh") {
                     if (e.data == "frontStop") {
                         // 刷新底部导航
@@ -383,6 +394,7 @@
                     }
                     return
                 }
+
                 eventHandler.call(this, e, {
                     goodsData:this.goodsData,
                     goods_id: this.goods_id,

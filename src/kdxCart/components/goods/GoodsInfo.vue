@@ -25,6 +25,12 @@
                                     <span class="badge-text">限时秒杀</span>
                                 </view>
                         </block>
+                        <block v-else-if="getActName=='groups'">
+                            <view class="groups-tag" :style="{color: '#fff'}">
+                                <i class="iconfont-m- icon-m-pintuan2-1 badge-icon"></i>
+                                <span class="badge-text">多人拼团</span>
+                            </view>
+                        </block>
                         <block v-else>
                             <!-- 推荐 -->
                             <view class="recommend" v-if="goodsData.is_recommand == 1">
@@ -100,7 +106,7 @@
         mapState
     } from "vuex";
     export default {
-        name: 'GoodsInfo', 
+        name: 'GoodsInfo',
         props: {
             goodsData: {
                 type: Object,

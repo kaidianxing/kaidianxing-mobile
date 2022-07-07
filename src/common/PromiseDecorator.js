@@ -57,7 +57,6 @@ class PromiseDecorator {
       // 拉取缓存并且返回
       try {
         this.callBack(JSON.parse(uni.getStorageSync(`${this.setting.api}`)));
-        // console.log(333444);
       } catch (e) {}
     }
   }

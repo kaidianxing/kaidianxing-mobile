@@ -19,9 +19,12 @@
                     <btn v-if="status == 0" :classNames="['ptd28 theme-primary-bgcolor']" @btn-click="btnClick('payOrder')" type="do">立即付款</btn>
                     <!-- 实体商品显示查看物流 -->
                     <btn v-if="orderData.dispatch_type == '10' && ((orderData.status == 11 || orderData.status == 30)|| (status == 20 && orderData.orderGoods[0].type === '0'))" :classNames="['ptd28']" @btn-click="btnClick('express')" type="text" :ghost="true">查看物流</btn>
-                    <btn v-if="canShowAll" :classNames="['ptd28']" @btn-click="btnClick('refund')" type="text" :ghost="true">申请售后</btn>
+                    <btn v-if="canShowAll && !(isGroupOrder&& !isSucGroups)" :classNames="['ptd28']" @btn-click="btnClick('refund')" type="text" :ghost="true">申请售后</btn>
                     <view v-if="refund_type === '1'" @click="btnClick('refundDetail')">售后详情</view>
                     <btn v-if="status == 30 || status == -1" :classNames="['ptd28']" @btn-click="btnClick('deleteOrder')" type="text" :ghost="true">删除订单</btn>
+                    <!-- 拼团操作 -->
+                    <view v-if="status ==10 && isGroupOrder" class="primary theme-primary-bgcolor" @click="btnClick('groupsDetail')">查看团详情</view>
+
                     <btn v-if="status == 20" :classNames="['ptd28','theme-primary-bgcolor']" @btn-click="btnClick('sendOrder')" type="do">确认收货</btn>
                     <btn v-if="status == 30 && is_comment == 1 && orderData.comment_status == 0&& orderData.activity_type !== '5'" :classNames="['ptd28','theme-primary-bgcolor']" @btn-click="btnClick('comment')" type="do">立即评价</btn>
                 </view>
@@ -93,6 +96,14 @@ export default {
         allowFinish() {
             return this.info.refund_setting?.refund_time_status === 1
         },
+        // 是否是拼团订单
+        isGroupOrder(){
+            return this.orderData.activity_type=='3'
+        },
+        // 拼团成功
+        isSucGroups(){
+            return this.orderData.groups_data?.success =='1'
+        },
     },
     watch: {
         orderData: {
@@ -131,6 +142,8 @@ export default {
             let fns = {
                 refund: this.canRefund,
                 refundDetail: this.goRefundDetail,
+                groupsDetail: this.goGroupsDetail,
+
             };
             let fn = fns[type]
             if(fn){
@@ -156,6 +169,15 @@ export default {
 
             this.$Router.auto({
                 path: '/kdxOrder/refund/detail',
+                query
+            })
+        },
+        goGroupsDetail(){
+            // 小程序分享有影响,只能在入口处清除
+            this.$store.commit('groups/setGroupsTeamId', null)
+            let query = { team_id: this.orderData.groups_data.id}
+            this.$Router.auto({
+                path: '/kdxGoods/groups/detail',
                 query
             })
         },

@@ -23,7 +23,8 @@
                     <view v-else>
                         <view v-if="item.status == 0" class="status uni-color-primary">待付款</view>
                         <view v-if="item.status == 10" class="status">
-                            <span class="orange">待发货</span>
+                            <span class="primary" v-if="isLoadGroups(item)">待成团</span>
+                            <span class="orange" v-else>待发货</span>
                         </view>
                         <view v-if="item.status == 11" class="status orange">部分发货</view>
                         <view v-if="item.status == 20" class="status blue">待收货</view>
@@ -72,6 +73,9 @@
                     <view v-if="item.status == 20"
                             class="border-primary theme-primary-color theme-primary-border"
                             @click.stop="btnClick('sendOrder', item)">确认收货</view>
+                    <block v-if="item.activity_type ==3 && item.status ==10">
+                        <view class="border-primary theme-primary-color theme-primary-border" @click.stop="btnClick('toGroups', item)">查看团详情</view>
+                    </block>
                     <view v-if="item.status == 30 || item.status == -1"
                           @click.stop="btnClick('deleteOrder', item)">删除订单</view>
                     <!-- 订单状态为已完成并且后台开启订单评价显示 -->
@@ -150,6 +154,9 @@
                     return
                 }
                 this.$emit('btnClick', {name, item})
+            },
+            isLoadGroups(item){
+                return (item.activity_type=='3'&& item.groups_team_info?.success=='0') || (item.activity_type=='4'&& item.groups_rebate_team_info?.success=='0') || (item.activity_type=='6'&& item.groups_fission_team_info?.success=='0')
             },
             toDetail(id) {
                 this.$Router.auto({

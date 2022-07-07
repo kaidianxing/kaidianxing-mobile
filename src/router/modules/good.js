@@ -65,11 +65,39 @@ const good = [
         }
     },
     {
+        path: '/kdxGoods/activity/groupsList',
+        name: 'groupsList',
+        meta: {
+            title: '拼团'
+        }
+    },
+    {
         path: '/kdxGoods/invalid/index',
         name: 'invalidGoods',
         meta: {
             title:'商品详情'
         }
-    }
+    },
+    {
+        path: '/kdxGoods/groups/detail',
+        name: 'groups_detail',
+        meta: {
+            title: '拼团详情'
+        },
+        beforeEnter: (to, from, next) => {
+            next();
+        }
+    },
+    {
+        path: '/kdxGoods/groups/user',
+        name: 'groups_user',
+        meta: {
+            title: '团员列表',
+            needLogin: true
+        },
+        beforeEnter: (to, from, next) => {
+            next();
+        }
+    },
 ]
 export default good

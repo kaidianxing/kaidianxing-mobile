@@ -9,8 +9,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 // 商品详情活动独立装修
-export const ACTIVE_DECORATE_NAME = ['seckill']
+export const ACTIVE_DECORATE_NAME = ['seckill','groups']
 // 商城活动类型
-export const GOODS_ACTIVIYIES = ['seckill']
+export const GOODS_ACTIVIYIES = ['seckill','groups']
 // 商城原价购买
-export const SINGLE_BUY_ACTIVE = ['seckill']
+export const SINGLE_BUY_ACTIVE = ['seckill','groups']

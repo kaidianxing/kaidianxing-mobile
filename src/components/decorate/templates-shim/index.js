@@ -280,7 +280,6 @@ handler.menu = {
 
 handler.menu2 = {
     clickItem(data) {
-        console.log(data,'data---111')
         if (data.item.linkurl) {
             this.$Router.auto(data.item.linkurl, {wxappid: data.item.wxappid})
         }
@@ -526,6 +525,27 @@ handler.credit = {
             path: '/kdxMember/memberInfo/index'
         })
     },
+}
+handler.groups = {
+    clickGood(data) {
+        if (data.value.gid) {
+            this.$Router.auto({
+                path: '/kdxGoods/detail/index',
+                query: {
+                    goods_id: data.value.gid
+                }
+            })
+        }
+
+    },
+    clickMore(data){
+        if(data.type){
+            this.$Router.auto({
+                path: '/kdxGoods/activity/groupsList',
+                query: data
+            })
+        }
+    }
 }
 /**
  * 视频号交易组件点击事件 - 视频号直播

@@ -25,7 +25,7 @@
                 </div>
                 <div class="picker-wrap">
                     <scroll-view scroll-y class="date-list picker-list" @scrolltolower="scrolltolower">
-                        <view :class="['date-item', date.timestemp === item.timestemp ? 'selected' : '']" v-for="(item, index) in dateList" :key="index" @click="selectDate(item)">
+                        <view :class="['date-item', date.timestemp === item.timestemp ? 'selected' : '']" v-for="item, index in dateList" :key="index" @click="selectDate(item)">
                             {{ `${item.date}(${item.text})` }}
                         </view>
                     </scroll-view>
@@ -127,8 +127,8 @@ export default {
             this.dateTime = `${this.date.timestemp} ${this.time}`
         },
         scrolltolower() {
-            this.page.page += 1;
-            this.getDate()
+           this.page.page += 1;
+           this.getDate()
         },
         getDate() {
             return new Promise((resolve) => {

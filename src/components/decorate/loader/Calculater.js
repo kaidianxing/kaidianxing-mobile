@@ -314,4 +314,25 @@ export default class Calculater {
         return 0
         // #endif
     }
+    groups(data) {
+        let height = 0
+        if (data) {
+            let pageInfo = this.pageInfo[data._comIndex_] || {};
+            let list = pageInfo ?.data || data.data
+            console.log(list)
+            if (list.length == 0) {
+                return 0
+            } else {
+                if (data.params.listtype == 'scroll') {
+                    height = 0 + data.style.margintop + data.style.marginbottom
+                } else if (data.params.listtype == 'list') {
+                    height = 0 + list.length * 252 + data.style.margintop + data.style.marginbottom
+                } else {
+                    height = 0 + Math.ceil(list.length / 2) * 596 + data.style.margintop + data.style.marginbottom
+                }
+            }
+        }
+        console.log(height,'height')
+        return height
+    }
 }

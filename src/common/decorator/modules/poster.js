@@ -13,6 +13,8 @@ import store from '@/store'
 import * as utils from '@/common/util.js'
 import $decorator from '@/common/decorator'
 import {ModuleMixin} from '../Mixin'
+import {groupsPoster} from '@/components/poster/posterData/groups.js'
+
 const getShopInfo = shopInfo => ({
     poster_shoplogo: item => {
         item.params.imgurl = utils.mediaUrl(shopInfo.logo)
@@ -28,8 +30,6 @@ const getGoodInfo = detailInfo => {
     let detail = detailInfo.data ?.goods || {}
     return {
         poster_goodimg: item => {
-
-            console.log(detail.thumb,'detail.thumb>>>>');
 
             item.params.imgurl = utils.mediaUrl(detail.thumb)
             return item
@@ -61,7 +61,7 @@ const getGoodInfo = detailInfo => {
                 }
             }
             item.params.content = price;
-            let price_actives = ['seckill','preheat_activity'];
+            let price_actives = ['seckill','preheat_activity','groups'];
             let is_active = activity && price_actives.some(key=> activity[key]);
             return item
         },
@@ -88,7 +88,7 @@ const getGoodInfo = detailInfo => {
                 price =  activity.member_price ? activity.member_price.min_price : goods.price
               }
             }
-            let price_actives = ['seckill','preheat_activity'];
+            let price_actives = ['seckill','preheat_activity','groups'];
             let is_active = activity && price_actives.some(key=> activity[key]);
             item.params.content = price
             return item
@@ -116,6 +116,39 @@ const getUserInfo = userInfo => ({
     },
 })
 
+const getGroupInfo = detailInfo => {
+    return {
+        poster_bgimg: item => {
+            item.params.imgurl = utils.staticMediaUrl('activity/group/poster_bg.png');
+            return item
+        },
+        poster_goodimg: item => {
+            item.params.imgurl = utils.mediaUrl(detailInfo.thumb);
+            return item
+        },
+        poster_img: item => {
+            item.params.imgurl = utils.staticMediaUrl('activity/group/groups_label.png');
+            return item
+        },
+        poster_goodname: item => {
+            // 空格请勿去除，占位符
+            item.params.content = '         '+detailInfo.title;
+            return item
+        },
+        poster_price: item => {
+            item.params.content = detailInfo.groups_price;
+            return item
+        },
+        poster_delprice: item => {
+            item.params.content = detailInfo.original_price;
+            return item
+        },
+        poster_qrcode: item => {
+            item.params.imgurl = detailInfo.invite_url;
+            return item
+        },
+    }
+};
 class Poster extends ModuleMixin {
     constructor() {
         super()
@@ -124,7 +157,7 @@ class Poster extends ModuleMixin {
         goodsPoster: null,
         commissionPoster: null,
         followPoster: null,
-        joinPoster:null,
+        groupsPoster: null, //拼团海报
     };
     userInfo = null; //用户信息缓存
     getUserInfo() { //请求用户信息
@@ -254,6 +287,17 @@ class Poster extends ModuleMixin {
             }
         })
     }
+    getGroupsPoster() {
+        let that = this;
+        return new Promise((resolve, reject) => {
+            if (that.poster.groupsPoster) {
+                resolve(that.poster.groupsPoster)
+            } else {
+                that.poster.groupsPoster = groupsPoster;
+                resolve(that.poster.groupsPoster)
+            }
+        })
+    }
     /**
      * //获取商品详情
      * @param {*} data
@@ -306,7 +350,32 @@ class Poster extends ModuleMixin {
             })
         })
     }
-
+    /**
+     * //获取商品拼团
+     * @param {*}
+     */
+    getGroupsPosterDetail() {
+        let that = this;
+        return new Promise((resolve, reject) => {
+            Promise.all([that.getUserInfo(), that.getGroupsPoster()]).then(async res => {
+                let detail = store.state.groups.groupPosterData;
+                let groupInfo = {};
+                if (detail) {
+                    groupInfo = getGroupInfo(detail)
+                }
+                let info = {};
+                if (that.userInfo) {
+                    info = {
+                        ...getUserInfo(that.userInfo),
+                    }
+                }
+                resolve({
+                    ...info,
+                    ...groupInfo
+                })
+            })
+        })
+    }
     /**
      * 海报模板的实际数据处理方法集合
      * @param {*} data
@@ -345,6 +414,10 @@ class Poster extends ModuleMixin {
                 case 'follow':
                     requester = await that.getFollowPosterDetail()
                     list = that.poster.followPoster.content
+                    break;
+                case 'group': // 拼团
+                    requester = await that.getGroupsPosterDetail();
+                    list = that.poster.groupsPoster;
                     break;
 
             }

@@ -20,8 +20,8 @@ export * from './price'
 export * from './helper/user'
 let settings = require('@/static/settings.js').config
 // #ifdef MP-WEIXIN
-let playerPlugin = null;
-// let playerPlugin = requirePlugin('live-player-plugin');
+// let playerPlugin = null;
+let playerPlugin = requirePlugin('live-player-plugin');
 // #endif
 
 let sysType = -1;
@@ -1074,3 +1074,6 @@ export const sendWxappMsg = (type_code, callback) => {
     })
     // #endif
 }
+
+export const isArray = (arr) =>  Object.prototype.toString.call(arr) == "[object Array]"
+

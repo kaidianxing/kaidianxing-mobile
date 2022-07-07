@@ -28,14 +28,15 @@ import $decorator from '@/common/decorator'
 function getGoodActivity(activity){
     //判断商品活动类型
     let name = ACTIVE_DECORATE_NAME.filter(key => {return activity?.[key]})
+    // console.log(name[0])
     if(name){
         return name[0]
-    } 
+    }
     return 11
 }
- 
+
 const hasMenuRoute = ['/kdxGoods/categoryList/index','/kdxCart/index']; // 非装修页具有底部菜单
- 
+
 //普通页面（非装修）
 function getUnDecoratePageList() {
     $decorator.getPage(-1).setPageList(createPageList({}, -1))

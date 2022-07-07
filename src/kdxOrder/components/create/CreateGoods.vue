@@ -1,13 +1,13 @@
 /**
-* 开店星新零售管理系统
-* @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
-* @author 青岛开店星信息技术有限公司
-* @link https://www.kaidianxing.com
-* @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
-* @copyright 版权归青岛开店星信息技术有限公司所有
-* @warning Unauthorized deletion of copyright information is prohibited.
-* @warning 未经许可禁止私自删除版权信息
-*/
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
 <template>
     <view class="create-goods">
         <!-- 配送、自提时间 -->
@@ -43,120 +43,120 @@
 </template>
 
 <script>
-import goodsBlock from "../goods/GoodsBlock";
-import DateTime from '../datetime/index.vue'
-import DateTimePicker from '../DateTimePicker'
+    import goodsBlock from "../goods/GoodsBlock";
+    import DateTime from '../datetime/index.vue'
+    import DateTimePicker from '../DateTimePicker'
 
-import {mapState} from 'vuex'
+    import {mapState} from 'vuex'
 
-export default {
-    name: "CreateGoods",
-    components: {
-        goodsBlock,
-        DateTime,
-        DateTimePicker
+    export default {
+        name: "CreateGoods",
+        components: {
+            goodsBlock,
+            DateTime,
+            DateTimePicker
 
-    },
-    props: {
-        goodsData: {
-            type: Array,
-            default: () => []
         },
-        activityType: {
-            type: [String,Number],
-            default: ''
+        props: {
+            goodsData: {
+                type: Array,
+                default: () => []
+            },
+            activityType: {
+                type: [String,Number],
+                default: ''
+            },
+            orderData: {
+                type: Object,
+                default: ()=> {}
+            },
+            dispatch_type: { // 当前选择配送方式
+                type: String,
+                default: ''
+            }
         },
-        orderData: {
-            type: Object,
-            default: ()=> {}
+        data() {
+            return {
+                addGrayColor: false,
+                reduceGrayColor: true,
+                currentDate: '', // 当前时间
+                date:'',
+            }
         },
-        dispatch_type: { // 当前选择配送方式
-            type: String,
-            default: ''
-        }
-    },
-    data() {
-        return {
-            addGrayColor: false,
-            reduceGrayColor: true,
-            currentDate: '', // 当前时间
-            date:'',
-        }
-    },
-    watch:{
-        'delivery_time':{
-            handler(val){
-                console.log(val,'vall')
-                if(val){
-                    this.date =val
+        watch:{
+            'delivery_time':{
+                handler(val){
+                    console.log(val,'vall')
+                    if(val){
+                        this.date =val
+                    }
+                },
+                deep:true
+            }
+        },
+        computed: {
+            ...mapState('orderCreate', {
+                delivery_time: state => state.deliveryTime,
+                merchant_delivery_time: state => state.merchant_delivery_time,
+                span_detail: state => state.span_detail,
+                span_detail_now: state => state.span_detail_now,
+            }),
+            backgroundImage() {
+                return `background-image:url(${this.$utils.staticMediaUrl('decorate/logo_default.png')})`
+            },
+            getMaxNum() {
+                /*
+                * 2秒杀活动
+                * 5. 积分余额商品
+                * default 普通商品
+                * */
+                switch (this.activityType) {
+                    case 2:
+                        return this.getSeckillMax
                 }
             },
-            deep:true
-        }
-    },
-    computed: {
-        ...mapState('orderCreate', {
-            delivery_time: state => state.deliveryTime,
-            merchant_delivery_time: state => state.merchant_delivery_time,
-            span_detail: state => state.span_detail,
-            span_detail_now: state => state.span_detail_now,
-        }),
-        backgroundImage() {
-            return `background-image:url(${this.$utils.staticMediaUrl('decorate/logo_default.png')})`
-        },
-        getMaxNum() {
-            /*
-            * 2秒杀活动
-            * 5. 积分余额商品
-            * default 普通商品
-            * */
-            switch (this.activityType) {
-                case 2:
-                    return this.getSeckillMax
-            }
-        },
-        getSeckillMax(){
-            if(this.activityType==2) {
-                let activityData = this.orderData?.extra_discount_rules_package?.[0]?.seckill || {}
-                let {buy_count,rules: {limit_num,limit_type}} = activityData
-                return limit_type != 0? Number(limit_num - buy_count) : ''
-            }
-
-        },
-        // 获取配送、自提时间开启状态
-        getDeliveryTimeStatus() {
-            // 到店自提
-            if (20 === +this.orderData.dispatch_type) {
-                return 1 === +this.orderData.dispatch_verify_delivery_time && 0 === this.goodsType;
-            } else if (30 === +this.orderData.dispatch_type) {
-                return 1 === +this.orderData.delivery_time;
-            }
-            return false;
-        },
-        // 配送、核销字段名称
-        getDeliveryName() {
-            let option = {
-                20: '自提时间',
-                30: '配送时间'
-            }
-            return option[this.orderData.dispatch_type];
-        }
-    },
-    created() {
-    },
-    mounted() {
-        this.currentDate = this.$utils.formatDateTime(new Date(), 'yyyy-MM-dd hh:mm');
-    },
-    methods: {
-        detail(id) {
-            this.$Router.auto({
-                path: '/kdxGoods/detail/index',
-                query: {
-                    goods_id: id
+            getSeckillMax(){
+                if(this.activityType==2) {
+                    let activityData = this.orderData?.extra_discount_rules_package?.[0]?.seckill || {}
+                    let {buy_count,rules: {limit_num,limit_type}} = activityData
+                    return limit_type != 0? Number(limit_num - buy_count) : ''
                 }
-            })
+
+            },
+            // 获取配送、自提时间开启状态
+            getDeliveryTimeStatus() {
+                // 到店自提
+                if (20 === +this.orderData.dispatch_type) {
+                    return 1 === +this.orderData.dispatch_verify_delivery_time && 0 === this.goodsType;
+                } else if (30 === +this.orderData.dispatch_type) {
+                    return 1 === +this.orderData.delivery_time;
+                }
+                return false;
+            },
+            // 配送、核销字段名称
+            getDeliveryName() {
+                let option = {
+                    20: '自提时间',
+                    30: '配送时间'
+                }
+                return option[this.orderData.dispatch_type];
+            }
         },
-        clickAdd(data, index, e) {
+        created() {
+        },
+        mounted() {
+            this.currentDate = this.$utils.formatDateTime(new Date(), 'yyyy-MM-dd hh:mm');
+        },
+        methods: {
+            detail(id) {
+                this.$Router.auto({
+                    path: '/kdxGoods/detail/index',
+                    query: {
+                        goods_id: id
+                    }
+                })
+            },
+            clickAdd(data, index, e) {
 
             // 秒杀处理限购
             if(this.activityType == 2){

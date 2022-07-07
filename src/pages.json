@@ -46,6 +46,26 @@
 					}
 				},
 				{
+					"path": "activity/groupsList",
+					"style": {
+						"navigationBarTitleText": "拼团",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "groups/detail",
+					"style": {
+						"navigationBarTitleText": "拼团详情",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "groups/user",
+					"style": {
+						"navigationBarTitleText": "团员列表"
+					}
+				},
+				{
 					"path": "activity/expire",
 					"style": {
 						"navigationBarTitleText": "活动已结束"

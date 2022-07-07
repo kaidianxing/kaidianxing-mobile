@@ -7,7 +7,7 @@
  * @copyright 版权归青岛开店星信息技术有限公司所有
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息.
- */ 
+ */
 <template>
     <div>
         <!-- #ifdef MP-WEIXIN -->
@@ -91,16 +91,13 @@ export default {
         }
     },
     computed: {
-        ...mapState('setting', {
-            pluginsPerms: state => state.pluginsPerms,
-        }),
         getContentBackground() {
             let bgStyle = this.componentData.params.bgstyle;
             if (bgStyle === 'color') {
                 return this.componentData.style.bgcolor
             }
             if (bgStyle === 'img' && this.componentData.params.bgimg) {
-                return `url(${this.$utils.media(this.componentData.params.bgimg)})`
+                return `url(${this.$utils.mediaUrl(this.componentData.params.bgimg)})`
             } else {
                 return ''
             }

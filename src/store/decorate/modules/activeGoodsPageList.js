@@ -269,9 +269,9 @@ const detail_navbar = {
         "likeiconclass": "iconfont-m- icon-m-fenxiaoshangdengji",
         "likelink": "/pages/member/index/index",
         "customerlink": "wx_service",
-        "customerWeixinLink": "",  
-        "customerWeixinName": "",  
-        "customerChannel": "0",    
+        "customerWeixinLink": "",
+        "customerWeixinName": "",
+        "customerChannel": "0",
         "lilelink_name": "",
         "shoplink": "",
         "shoplink_name": "",
@@ -304,10 +304,20 @@ const seckill = ()=> {
     return content
 }
 
+const groups = () => {
+    let newNavbar = deepCopy(detail_navbar)
+    newNavbar.params.hidecart='4'
+    let content = [detail_swipe, detail_info, detail_sale,detail_spec,detail_comment,detail_pullup,blank,newNavbar]
+    return content
+}
 
 const activityOpt = {
     seckill,
+    groups,
+
 }
+
+
 
 const getActiveContent = (activeType) => {
     let content = activityOpt[activeType]()

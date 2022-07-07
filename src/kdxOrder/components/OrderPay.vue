@@ -122,7 +122,6 @@ export default {
             }
         },
         getPayList() {
-            console.log(123);
             let params = {
                 order_id: this.orderId
             };
@@ -260,7 +259,7 @@ export default {
             console.log(this.return_url,'this.return_url------')
             // #endif
             this.$api.orderApi.pay({
-                    order_id: this.$utils.is_merchant&&!Array.isArray(this.orderId)?[this.orderId]:this.orderId,
+                    order_id: !Array.isArray(this.orderId)?[this.orderId]:this.orderId,
                     pay_type: this.payType,
                     ...params,
                 },
@@ -310,7 +309,7 @@ export default {
                             let orderInfo = await this.$api.orderApi.checkScene({
                                 scene: wxVideo,
                                 pay_info: res.data,
-                                order_id: this.$utils.is_merchant&&!Array.isArray(this.orderId)?[this.orderId]:this.orderId,
+                                order_id: !Array.isArray(this.orderId)?[this.orderId]:this.orderId,
                             });
                             if (orderInfo.error === 0) {
                                 let params = {

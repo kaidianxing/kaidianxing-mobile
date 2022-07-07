@@ -1,13 +1,13 @@
 /**
-* 开店星新零售管理系统
-* @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
-* @author 青岛开店星信息技术有限公司
-* @link https://www.kaidianxing.com
-* @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
-* @copyright 版权归青岛开店星信息技术有限公司所有
-* @warning Unauthorized deletion of copyright information is prohibited.
-* @warning 未经许可禁止私自删除版权信息
-*/
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
 <template>
     <view class="detail-order-info">
         <!-- 订单编号 -->
@@ -123,163 +123,163 @@ import detailOrderModal from './DetailOrderModal'
 import { mapState } from 'vuex'
 
 
-export default {
-    name: "DetailOrderInfo",
-    components: {
-        detailOrderPrice, detailOrderModal
-    },
-    props: {
-        orderData: {
-            type: Object,
-            default: () => {}
+    export default {
+        name: "DetailOrderInfo",
+        components: {
+            detailOrderPrice, detailOrderModal
         },
-    },
-    data() {
-        return {
-            // orderData: {},
-            remarkModal: false,
-            invoiceModal: false,
-            invoice: {
-                title: "",
-                is_electronic: '',
-                is_company: '',
-                number: "",
-                address: ""
-            }
-        }
-    },
-    watch: {
-        orderData(newValue) {
-            if (newValue?.invoice_info?.is_company) {
-                this.invoice = newValue.invoice_info
-            }
-        }
-    },
-    computed: {
-        ...mapState('setting'),
-        // 配送、字段名称
-        getDeliveryName() {
-            let option = {
-                20: '自提时间',
-                30: '配送时间'
-            }
-            return option[this.orderData.dispatch_type];
+        props: {
+            orderData: {
+                type: Object,
+                default: () => {}
+            },
         },
-        // 获取配送、时间字段
-        getDeliveryTime() {
-            return this.orderData?.extra_package?.delivery_time && this.orderData?.extra_package?.delivery_time !== '0000-00-00 00:00:00'
-                ? this.orderData?.extra_package?.delivery_time : '';
-        }
-    },
-    created() {
-    },
-    mounted() {},
-    methods: {
-        handleCopy() {
-            uni.setClipboardData({
-                data: this.orderData.order_no,
-                success: () => {
-                    uni.showToast({
-                        title: '复制成功',
-                    })
+        data() {
+            return {
+                // orderData: {},
+                remarkModal: false,
+                invoiceModal: false,
+                invoice: {
+                    title: "",
+                    is_electronic: '',
+                    is_company: '',
+                    number: "",
+                    address: ""
                 }
-            })
+            }
         },
-        showRemark() {
-            this.remarkModal = true
+        watch: {
+            orderData(newValue) {
+                if (newValue?.invoice_info?.is_company) {
+                    this.invoice = newValue.invoice_info
+                }
+            }
         },
-        showInvoice() {
-            this.invoiceModal = true
+        computed: {
+              ...mapState('setting'),
+            // 配送、字段名称
+            getDeliveryName() {
+                let option = {
+                    20: '自提时间',
+                    30: '配送时间'
+                }
+                return option[this.orderData.dispatch_type];
+            },
+            // 获取配送、时间字段
+            getDeliveryTime() {
+                return this.orderData?.extra_package?.delivery_time && this.orderData?.extra_package?.delivery_time !== '0000-00-00 00:00:00'
+                    ? this.orderData?.extra_package?.delivery_time : '';
+            }
         },
-        invoiceCancel() {
-            this.invoiceModal = false
+        created() {
         },
-        remarkCancel() {
-            this.remarkModal = false
-        }
-    },
-}
+        mounted() {},
+        methods: {
+            handleCopy() {
+                uni.setClipboardData({
+                    data: this.orderData.order_no,
+                    success: () => {
+                        uni.showToast({
+                            title: '复制成功',
+                        })
+                    }
+                })
+            },
+            showRemark() {
+                this.remarkModal = true
+            },
+            showInvoice() {
+                this.invoiceModal = true
+            },
+            invoiceCancel() {
+                this.invoiceModal = false
+            },
+            remarkCancel() {
+                this.remarkModal = false
+            }
+        },
+    }
 </script>
 
 <style lang="scss">
-.detail-order-info {
-    background-color: #fff;
-    border-radius: 12rpx;
-    overflow: hidden;
-    .rr-cell {
-        .label {
-            color: #565656;
-            font-size: px2rpx(12);
-        }
-        span {
-            font-size: px2rpx(12);
-        }
-        .flex .flex1 text {
-            color: $uni-text-color;
-            font-size: px2rpx(12);
-        }
-    }
-    .detail-order-no {
-        position: relative;
-        padding: 32rpx 0;
-        &::after {
-            content: '';
-            position: absolute;
-            left: 24rpx;
-            bottom: 0;
-            width: 97%;
-            height: 1rpx;
-            background-color: $uni-border-color;
-        }
+    .detail-order-info {
+        background-color: #fff;
+        border-radius: 12rpx;
+        overflow: hidden;
         .rr-cell {
-            margin-bottom: 32rpx;
-            height: 34rpx;
-            line-height: 34rpx;
-            &:last-child {
-                margin-bottom: 0;
+            .label {
+                color: #565656;
+                font-size: px2rpx(12);
+            }
+            span {
+                font-size: px2rpx(12);
+            }
+            .flex .flex1 text {
+                color: $uni-text-color;
+                font-size: px2rpx(12);
             }
         }
-    }
-    .detail-order-message {
-        .rr-cell {
-            height: 96rpx;
-            line-height: 96rpx;
-            .flex {
-                border-top: 1rpx solid $uni-border-color;
+        .detail-order-no {
+            position: relative;
+            padding: 32rpx 0;
+            &::after {
+                content: '';
+                position: absolute;
+                left: 24rpx;
+                bottom: 0;
+                width: 97%;
+                height: 1rpx;
+                background-color: $uni-border-color;
             }
-            &:last-child > .flex {
-                border-bottom: 1rpx solid $uni-border-color;
-            }
-            &:first-child > .flex {
-                border-top: 0;
+            .rr-cell {
+                margin-bottom: 32rpx;
+                height: 34rpx;
+                line-height: 34rpx;
+                &:last-child {
+                    margin-bottom: 0;
+                }
             }
         }
-    }
-    .right {
-        padding-right: 24rpx;
-    }
-    .invoice-content {
-        text-align: left;
-        > view {
-            margin-bottom: 32rpx;
+        .detail-order-message {
+            .rr-cell {
+                height: 96rpx;
+                line-height: 96rpx;
+                .flex {
+                    border-top: 1rpx solid $uni-border-color;
+                }
+                &:last-child > .flex {
+                    border-bottom: 1rpx solid $uni-border-color;
+                }
+                &:first-child > .flex {
+                    border-top: 0;
+                }
+            }
         }
-        text {
-            font-size: 24rpx;
-            line-height: 34rpx;
+        .right {
+            padding-right: 24rpx;
+        }
+        .invoice-content {
+            text-align: left;
+            > view {
+                margin-bottom: 32rpx;
+            }
+            text {
+                font-size: 24rpx;
+                line-height: 34rpx;
+                color: $uni-text-color;
+            }
+            .label {
+                display: inline-block;
+                margin-right: 24rpx;
+                width: 148rpx;
+                color: $uni-text-color-grey;
+                text-align: right;
+            }
+        }
+        .remark-content {
+            padding: 0 48rpx 32rpx;
             color: $uni-text-color;
-        }
-        .label {
-            display: inline-block;
-            margin-right: 24rpx;
-            width: 148rpx;
-            color: $uni-text-color-grey;
-            text-align: right;
+            word-break: break-word;
         }
     }
-    .remark-content {
-        padding: 0 48rpx 32rpx;
-        color: $uni-text-color;
-        word-break: break-word;
-    }
-}
 </style>

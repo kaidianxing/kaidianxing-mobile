@@ -15,12 +15,13 @@
         <div  :style="{background:componentData.style.background,'border-radius':`${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.bottomradius)} ${px2rpx(componentData.style.bottomradius)}`}">
         <!-- 活动-商品信息 -->
         <detail-info-seckill v-if="hasSeckill" :activity-data="componentData" @refresh="refresh"></detail-info-seckill>
-      <div class="container" >
+        <detail-info-group v-if="hasGroups" :activity-data="componentData" @refresh="refresh"></detail-info-group>
+            <div class="container" >
             <div>
                 <div class="price-floor floor" :class="{
-                    'seckill-price-floor': activityName=='seckill' }">
-                    <div v-if="activityName!=='seckill'">
-                        <div  class="price-level">
+                    'seckill-price-floor': activityName=='seckill' || activityName=='groups' }">
+                    <div v-if="activityName!=='seckill'&& activityName!='groups'">
+                        <div  class="price-level" v-if="!componentData.params.buy_button_status || is_preheatActivies">
                             <p class="price" :style="{color:componentData.style.pricecolor}">
                                 <span class="price-unit">￥</span>
                                 <i class="num" :class="{
@@ -38,7 +39,7 @@
                              :class="{
                             'no-level': !componentData.params.level_name
                         }"
-                             v-if="componentData.params.delPrice>0"
+                             v-if="componentData.params.delPrice>0 && (!componentData.params.buy_button_status || is_preheatActivies)"
                              :style="{ color:componentData.style.linepriceColor }"
                         >
                             <span  class="origin-price-line">￥{{componentData.params.delPrice}}</span>
@@ -49,10 +50,10 @@
                             <!-- #endif -->
                         </div>
                     </div>
-                    <div v-else class="title-floor floor">
-                        <p class="title" :style="{color:componentData.style.titlecolor}">{{componentData.params.title}}</p>
+                    <div v-else class="title-floor floor" >
+                        <p class="title"  v-if="is_preheatActivies" :style="{color:componentData.style.titlecolor}">{{componentData.params.title}}</p>
                     </div>
-                    <div class="share-commission">
+                    <div class="share-commission" v-if="!componentData.params.buy_button_status && !is_preheatActivies">
                         <div class="commission"
                              v-if="componentData.params.hidecomsission == 1 && componentData.params.commisionMax>0"
                              :style="{background: componentData.style.commissionBackground, color: componentData.style.commissionColor}">
@@ -64,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="title-floor floor" v-if="activityName!=='seckill'">
+                <div class="title-floor floor" v-if="activityName!=='seckill' && activityName!='groups' ">
                     <p class="title" :style="{color:componentData.style.titlecolor}">{{componentData.params.title}}</p>
                 </div>
             </div>
@@ -82,7 +83,7 @@
                         <p class="count-down">1天1小时44分33秒</p>
             </div>-->
             <!-- 运费、销量、库存在非面议情况显示 -->
-            <div class="express-floor floor" :style="{color:componentData.style.textcolor}">
+            <div class="express-floor floor" :style="{color:componentData.style.textcolor}"  v-if="!componentData.params.buy_button_status || is_preheatActivies">
                 <p class="express" :style="{ color: componentData.style.expresscolor }" v-if="componentData.params.type == 0  || componentData.params.expressFee == '包邮' ">
                     <i class="icon-m-shangpinxiangqing-kuaidi iconfont-m-"></i>
                     <span class="floor-text">运费：{{componentData.params.expressFee}}</span>
@@ -122,12 +123,15 @@
 <script>
     import mixin from './mixin.js'
     import detailInfoSeckill from './Detail_info__seckill'
+    import detailInfoGroup from './Detail_info__group'
+
     import {mapState} from "vuex";
     export default {
         mixins: [mixin],
         name: 'detail_info',
         components: {
             detailInfoSeckill,
+            detailInfoGroup
         },
         computed: {
             ...mapState("decorate/goodDetailPage", {
@@ -173,6 +177,13 @@
             },
             hasSeckill(){
                 return this.activityName==='seckill' || this.preheatType === 'seckill'
+            },
+            hasGroups(){
+                return this.activityName==='groups' || this.preheatType === 'groups'
+            },
+            is_preheatActivies() {
+                let actives = ['seckill','groups']
+                return this.componentData.params.activity && actives.some(key=> this.componentData.params.activity[key])
             },
         },
         methods: {
