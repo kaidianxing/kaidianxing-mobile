@@ -30,6 +30,7 @@ class Groups extends ModuleMixin {
                     get_activity: 1,
                     activity_type: 'groups'
                 };
+                this.getGroupsActivity(item,$Route)
                 if (!params) {
                     reject()
                     return

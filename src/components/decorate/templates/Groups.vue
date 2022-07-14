@@ -421,8 +421,8 @@
                 this.startCount(time, item)
             },
             isPreheat(activeInfo) {
-                let {is_preheat,start_time} = activeInfo || {}
-                return is_preheat =='1' && this.getFormatDate(start_time) > this.timestamp
+                let {start_time} = activeInfo || {}
+                return  this.getFormatDate(start_time) > this.timestamp
             },
             isStart(activeInfo){
                 let {start_time} = activeInfo || {}
