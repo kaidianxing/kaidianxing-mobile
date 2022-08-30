@@ -155,6 +155,76 @@ class GoodsUpdater extends Updater {
     }
 }
 
+class CreditGoodsUpdater extends Updater {
+    adapterData(item) { // 转换数据
+        let { id, sale, credit_shop_stock,goods_id } = item
+        let result = {
+            id: id,
+            gid: id,
+            sales: +sale,
+            stock: credit_shop_stock,
+            credit_shop_credit: item.min_price_credit,
+            credit_shop_price: item.min_price,
+            credit: 0,
+            ctype: 0,
+            goods_id,
+            act_type: '0',
+            credit_good: true
+        }
+        // 积分商品
+        if (item.type == '1') {
+            let { coupon_name: title, content: sub_title, coupon_sale_type, balance:shop_coupon_balance, credit:shop_coupon_credit } = item.shop_coupon || {}
+            result = {
+                ...result,
+                title,
+                sub_title,
+                coupon_sale_type,
+                shop_coupon_balance,
+                shop_coupon_credit,
+                act_type: '1',
+            }
+
+        } else {
+            let { thumb, title, sub_title, has_option, price, goods_type: type } = item.shop_goods ||{}
+            result = {
+                ...result,
+                title,
+                sub_title,
+                has_option,
+                type,
+                thumb,
+                productprice: price,
+            }
+        }
+        return result
+    }
+
+    getGoodsList = (item) => {
+        return new Promise((resolve) => {
+            let params = {
+                status: "1",
+            }
+
+            if (item.params.creditgoodsdata == '0') {
+                params.id = item.data.map(v => v.id).join(',')
+            }
+            api.creditShopApi
+                .getCreditShopList(params, {
+                    errorToast: false
+                })
+                .then((res) => {
+                    if (res.error === 0) {
+                        let list = res.list.map(item => this.adapterData(item))
+                        resolve(list)
+                    } else if (res.error === CREDIT_STATUS_CODE) {
+                        resolve([])
+                    }
+                })
+                .catch();
+        })
+    }
+}
+
 
 
 class Goods extends ModuleMixin {
@@ -169,6 +239,8 @@ class Goods extends ModuleMixin {
         let updater;
         if (item.params.goodstype == '0') {
             updater = new GoodsUpdater()
+        } else if (item.params.goodstype == '1') {
+            updater = new CreditGoodsUpdater()
         }
 
 

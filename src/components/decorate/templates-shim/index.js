@@ -378,8 +378,15 @@ handler.topmenu = {
 
 handler.goods = {
     clickGood(data) {
-        let {gid} = data.value;
-        if (gid) {
+        let {credit_good,gid,id} = data.value
+        if(credit_good){
+            this.$Router.auto({
+                path: '/kdxCreditShop/detail',
+                query: {
+                    id
+                }
+            })
+        } else if (gid) {
             this.$Router.auto({
                 path: '/kdxGoods/detail/index',
                 query: {
@@ -517,6 +524,10 @@ handler.credit = {
                 query: {
                     type: '2'
                 }
+            })
+        } else {
+            this.$Router.auto({
+                path: '/kdxCreditShop/list'
             })
         }
     },

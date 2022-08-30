@@ -88,7 +88,17 @@ export default {
         goodsData: {
             immediate: true,
             handler(val) {
-                val.thumb = `${this.$utils.mediaUrl(val.thumb)}`
+                if (val&&val.ext_field&&val.ext_field.is_credit_shop_coupon) {
+                    val.option_title = val?.ext_field?.content || ''
+                    if(val?.ext_field?.coupon_sale_type == 1) {
+                        val.thumb = `${this.$utils.staticMediaUrl('creditShop/full.png')}`
+                    }
+                    if(val?.ext_field?.coupon_sale_type == 2) {
+                        val.thumb =  `${this.$utils.staticMediaUrl('creditShop/discount.png')}`
+                    }
+                } else if (val&&val.thumb) {
+                    val.thumb = `${this.$utils.mediaUrl(val.thumb)}`
+                }
                 this.goodsData = val
             }
         }
@@ -117,12 +127,23 @@ export default {
             this.$emit('detail', {id, goodsData})
         },
         handleThumb() {
-            if (this.goodsData&&this.goodsData.thumb) {
+            if (this.goodsData&&this.goodsData.ext_field&&this.goodsData.ext_field.is_credit_shop_coupon) {
+                if(this.goodsData?.ext_field?.coupon_sale_type == 1) {
+                    return `${this.$utils.staticMediaUrl('creditShop/full.png')}`
+                }
+                if(this.goodsData?.ext_field?.coupon_sale_type == 2) {
+                    return `${this.$utils.staticMediaUrl('creditShop/discount.png')}`
+                }
+            } else if (this.goodsData&&this.goodsData.thumb) {
                 return `${this.$utils.mediaUrl(this.goodsData.thumb)}`
             }
         },
         handleOptionTitle() {
-            return this.goodsData?.option_title || ''
+            if (this.goodsData&&this.goodsData.ext_field&&this.goodsData.ext_field.is_credit_shop_coupon) {
+                return this.goodsData?.ext_field?.content || ''
+            } else {
+                return this.goodsData?.option_title || ''
+            }
         }
     }
 }

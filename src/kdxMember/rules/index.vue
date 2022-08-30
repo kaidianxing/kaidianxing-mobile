@@ -82,6 +82,7 @@ export default {
     mounted() {
         this.getType();
         this.getCreditSet();
+        this.getShopExplain();
     },
     methods: {
         getType() {
@@ -91,6 +92,13 @@ export default {
             this.$api.memberApi.getCreditSet().then(res => {
                 if (res.error !== 0) return;
                 this.credit = res.data;
+                this.setNavigationBarTitle();
+            })
+        },
+        getShopExplain() {
+            this.$api.creditShopApi.shopStatus({},  {errorToast: false}).then(res => {
+                if (res.error !== 0) return;
+                this.explain = res.data;
                 this.setNavigationBarTitle();
             })
         },

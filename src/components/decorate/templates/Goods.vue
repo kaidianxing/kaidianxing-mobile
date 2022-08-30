@@ -277,8 +277,9 @@ export default {
             let {
                 goodsdata,
                 goodstype,
+                creditgoodsdata
             } = this.insideParams
-            return (goodstype == '0' && goodsdata != 0) || (goodstype == 1)
+            return (goodstype == '0' && goodsdata != 0) || (goodstype == 1 && creditgoodsdata != 0)
         },
         limitNumData() {
             if (this.getGoodsList?.length > 0) {
@@ -437,6 +438,17 @@ export default {
         },
         clickBuyBtn(item, index) {
             if (!this.$isPC) {
+                if (item.credit_good) {
+                    /* 积分商品 点击加购按钮直接跳转商品详情 */
+                    this.$emit('custom-event', {
+                        target: 'goods/clickGood',
+                        data: {
+                            value: item,
+                            key: index
+                        }
+                    });
+                    return
+                }
                 if ((item.goodstype == '2' || item.type == '2') && !item?.plugin_account?.virtualAccount) {
                     //卡密权限适配
                     this.$toast('商品暂时无法购买')
@@ -460,21 +472,56 @@ export default {
                     parseFloat(item.commission) > 0 && this.insideParams.commisionstyle != '-1')
         },
         getThumb(row) {
+            if (row.act_type == '1') {
+                let suffix = ''
+                if (this.insideStyle?.liststyle.indexOf('one') > -1) {
+                    suffix = '_block'
+                }
+                let path = row.coupon_sale_type == '2' ? `creditShop/discount${suffix}.png` :
+                        `creditShop/full${suffix}.png`
+                return this.$utils.staticMediaUrl(path)
+            }
             return this.$utils.mediaUrl(row.thumb)
         },
         getDelPrice(row) {
+            if (row.act_type == '1') {
+                let str1, str2;
+                if (row.shop_coupon_credit) {
+                    str1 = `${row.shop_coupon_credit}${this.credit_text}`
+                }
+
+                if (row.shop_coupon_credit) {
+                    str2 = `￥${this.formatMoney(row.shop_coupon_balance)}`
+                }
+
+                if (str1 && str2) {
+                    return str1 + str2
+                }
+                return ''
+
+            }
             return this.formatMoney(row.productprice)
         },
         hasProductPrice(row) {
+            if (row.act_type == '1') {
+                if (row.shop_coupon_credit > 0 && row.shop_coupon_credit > 0) {
+                    return true
+                }
+                return false
+
+            }
             return row.productprice >= 0
         },
         getPrice(item) {
             if (typeof item.act_type === 'undefined') {
                 return this.formatMoney(item.price)
             }
-            return ''
+            return `${this.formatMoney(item.credit_shop_price)}`
         },
         getCredit(item) {
+            if (item.act_type && item?.credit_shop_credit) {
+                return `${item?.credit_shop_credit}${this.credit_text}`
+            }
             return ''
         },
         formatMoney(money) {

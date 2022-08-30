@@ -116,10 +116,15 @@ export default {
             })
         },
 
-        goGoodsDetail(e) {
+        goGoodsDetail(e, params) {
             let path, query = ''
-            path = '/kdxGoods/detail/index'
-            query = {goods_id: e.id}
+            if (params.activity_type === '5'){
+                path = '/kdxCreditShop/detail',
+                query = {id: e.id}
+            } else {
+                path = '/kdxGoods/detail/index'
+                query = {goods_id: e.id}
+            }
             this.$Router.auto({
                 path,
                 query

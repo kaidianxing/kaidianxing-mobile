@@ -173,7 +173,7 @@
                             this.getList()
                             this.cutdownTime(this.activeInfo, this)
                         } else {
-                            this.$Router.replace('/pagesGoods/activity/expire')
+                            this.$Router.replace('/kdxGoods/activity/expire')
                         }
                     }
                 }).catch(err => {
@@ -228,7 +228,7 @@
             },
             clickGoods(item) {
                 this.$Router.auto({
-                    path: '/pagesGoods/detail/index',
+                    path: '/kdxGoods/detail/index',
                     query: {
                         goods_id: item.id,
                     },

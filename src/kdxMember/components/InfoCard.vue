@@ -20,6 +20,10 @@
             <view class="iconfont-m- icon-m-wenhao"></view>
             <view class="tip"> {{ credit_text }}规则</view>
         </view>
+        <!-- 按钮：去使用 -->
+        <view class="card-use color" v-if="status === '1'" @click="skipToHome">
+            去使用 <span class="iconfont-m- icon-m-right"></span>
+        </view>
     </view>
 </template>
 
@@ -29,11 +33,13 @@ import { mapState } from 'vuex'
 export default {
     data() {
         return {
+            status: '0',
             credit: ''
         }
     },
     created() {
-        this.getMemberInfo()
+        this.getMemberInfo();
+        this.getStatus();
     },
     computed: {
         ...mapState('setting', {
@@ -53,6 +59,11 @@ export default {
                 }
             });
         },
+        skipToHome() {
+            this.$Router.push({
+                path: '/kdxCreditShop/index'
+            })
+        },
         getMemberInfo() {
             this.$decorator.getPage('vipCenter').getUserInfo().then(res => {
                 //获取会员详情
@@ -61,6 +72,14 @@ export default {
                 }
             })
         },
+        // 获取积分商城开关状态
+        getStatus() {
+            this.$api.creditShopApi.shopStatus({}, {errorToast: false}).then(res => {
+                if(res.error === 0) {
+                    this.status = res.data.status
+                }
+            })
+        }
     }
 }
 </script>

@@ -74,8 +74,13 @@ export default {
                 id = params.goods_id
             }
             let path, query = ''
-            path = '/kdxGoods/detail/index'
-            query = { goods_id :id }
+            if (goodsData?.plugin_identification?.is_credit_shop) {
+                path = '/kdxCreditShop/detail',
+                query = { id }
+            } else {
+                path = '/kdxGoods/detail/index'
+                query = { goods_id :id }
+            }
             this.$Router.auto({
                 path,
                 query

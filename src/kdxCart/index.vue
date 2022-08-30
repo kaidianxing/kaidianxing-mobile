@@ -150,8 +150,13 @@ export default {
                 if(path !== '/pagesCart/index') {
                     this.$store.commit('quickPurchase/setCartChooseInfo',null)
                 }
-            },
-        }
+            }
+        },
+        // #endif
+        // #ifndef H5
+        onUnload() {
+             this.$store.commit('quickPurchase/setCartChooseInfo',null)
+        },
         // #endif
     },
     // #ifndef H5

@@ -522,7 +522,33 @@
 					}
 				}
 			]
-		}
+		},
+        {   /* 积分商城 */
+            "root": "kdxCreditShop",
+            "pages": [
+                {
+                    "path": "index",
+                    "style": {
+                        "navigationBarTitleText": "积分商城",
+                        "enablePullDownRefresh": true
+                    }
+                },
+                {
+                    "path": "list",
+                    "style": {
+                        "navigationBarTitleText": "积分商品列表",
+                        "enablePullDownRefresh": false
+                    }
+                },
+                {
+                    "path": "detail",
+                    "style": {
+                        "navigationBarTitleText": "商品详情",
+                        "enablePullDownRefresh": false
+                    }
+                }
+            ]
+        }
     ],
     "globalStyle": {
         "navigationBarTextStyle": "black",

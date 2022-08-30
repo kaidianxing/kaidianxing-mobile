@@ -78,6 +78,7 @@
     import {
         getCommissionPoster, //分销海报生成
         getGoodsPosters, //商品海报生成
+        getCreditGoodsPosters, // 积分商品海报
     } from './getUrl.js'
     // #ifdef H5
     import {
@@ -124,6 +125,7 @@
                 pageList: state => state.pageList
             }),
             ...mapState('posterData', ['posterData']),
+            ...mapState('creditShop', ['creditPosterData']),
             getSize() {
                 return uni.upx2px(120) * 4
             }
@@ -196,6 +198,13 @@
                         that.$toast('生成海报失败');
                     })
                     // #endif
+                } else if (this.posterType == 'creditGoods') {
+                    getCreditGoodsPosters(this.creditPosterData.id, that.getSize).then(poster => {
+                        that.loading = false;
+                        that.painterData = poster;
+                    }).catch((e) => {
+                        that.$toast('生成海报失败');
+                    })
                 }
             },
             copyLink() {

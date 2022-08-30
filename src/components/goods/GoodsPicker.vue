@@ -88,15 +88,15 @@
                                 <view class="btn btn-sure disabled" v-if="type == 'add' && goodsData.stock =='0'">已售罄</view>
                                 <btn style="flex:1" type="do" size="middle" classNames="theme-primary-bgcolor" v-if="type == 'add' && goodsData.stock > 0" @btn-click="addCart('cart')">确定</btn>
 
-                                <btn style="flex:1" type="do" size="middle" v-if="type == 'buy'" @btn-click="addCart('buy')" classNames="theme-primary-bgcolor" :classNames="commonActBuyDisabled ?'': 'theme-primary-bgcolor'" :disabled="commonActBuyDisabled">确定</btn>
+                                <btn style="flex:1" type="do" size="middle" v-if="type == 'buy'" @btn-click="addCart('buy')" classNames="theme-primary-bgcolor" :classNames="commonActBuyDisabled ?'': 'theme-primary-bgcolor'" :disabled="commonActBuyDisabled">{{from === 'creditShop'?'立即兑换':'确定'}}</btn>
                                 <!-- 实体商品才能加购 -->
                                 <button-group style="flex:1" v-if="type == 'spec'" :simple="goodsData.type === '0'">
                                     <btn classNames="theme-sub-bgcolor theme-primary-color" :class="{
-                                        group: goodsData.type === '0'
-                                    }" type="do" size="middle" v-if="goodsData.type === '0'"  @btn-click="addCart('cart')">加入购物车</btn>
+                                        group: from !== 'creditShop' && goodsData.type === '0'
+                                    }" type="do" size="middle" v-if="from !== 'creditShop' && goodsData.type === '0'"  @btn-click="addCart('cart')">加入购物车</btn>
                                     <btn :class="{
-                                        group: goodsData.type === '0'
-                                    }" classNames="theme-primary-bgcolor" style="flex: 1" type="do" size="middle" @btn-click="addCart('buy')">立即购买</btn>
+                                        group: from !== 'creditShop' && goodsData.type === '0'
+                                    }" classNames="theme-primary-bgcolor" style="flex: 1" type="do" size="middle" @btn-click="addCart('buy')">{{from === 'creditShop'?'立即兑换':'立即购买'}}</btn>
                                 </button-group>
                             </block>
                         </view>
@@ -222,9 +222,15 @@
                 credit_text: state => state.systemSetting.credit_text,
             }),
             goodsInfo() {
+                if (this.from === 'creditShop') {
+                    return this.$store.state.creditQuickPurchase.detailInfo
+                }
                 return this.$store.state.quickPurchase.detailInfo
             },
             optionsData() {
+                if (this.from === 'creditShop') {
+                    return this.$store.state.creditQuickPurchase.optionsInfo
+                }
                 return this.$store.state.quickPurchase.optionsInfo
             },
             buy_num() {
@@ -308,7 +314,7 @@
                 return this.isActiveBuy && this.commonActBuyNum <= 0;
             },
             showMemberLevel() {
-                return this.userInfo.level_name
+                return this.userInfo.level_name && this.from!=='creditShop'
             },
         },
         methods: {
@@ -397,6 +403,11 @@
                 } else {
                     this.handlePrice()
                 }
+
+                if (this.from === 'creditShop') {
+                    this.handleCreditShopLimit()
+                    return
+                }
             },
             // 处理活动库存
             handleActStock() {
@@ -407,6 +418,25 @@
                 let actStockHandle = actStockHandles[this.currentActName]
                 if (actStockHandle) {
                     actStockHandle.call(this, this.currentActInfo.goods_info, this.options)
+                }
+
+                if (this.from === 'creditShop') {
+                    this.handleCreditShopDisabled(this.options)
+                }
+            },
+            // 积分商品禁选
+            handleCreditShopDisabled(options) {
+                for (let i in options) {
+                    if (!options[i]?.activity?.credit_shop) {
+                        options[i].activity.credit_shop = {
+                            credit_shop_price: '0',
+                            credit_shop_credit: '0',
+                            credit_shop_stock: 0
+                        };
+                        options[i].stock = 0
+                    } else {
+                        options[i].stock = Math.min(options[i].activity.credit_shop.credit_shop_stock, options[i].stock)
+                    }
                 }
             },
             // 处理公共活动库存
@@ -429,6 +459,15 @@
                 }
             },
 
+            // 积分商城限购
+            handleCreditShopLimit() {
+                let {goods_limit_type: limit_type, goods_limit_num: limit_num } = this.goodsInfo.credit_shop;
+                let maxNum = Math.min(limit_num, limit_num-this.goodsInfo.data.buy_num);
+
+                if (limit_type !== '0') {
+                    this.$set(this.changeNum, 'total', Math.min(maxNum, this.changeNum.total))
+                }
+            },
             /**
              * 选中规格
              * id 规格id
@@ -570,8 +609,20 @@
                     optsInfo = {...optsInfo, ...result}
                 }
 
+                if (this.from === 'creditShop') {
+                    let result2 = this.handleCreditShopPrice();
+                    optsInfo = {...optsInfo, ...result2}
+                }
                 this.optionPrice = optsInfo
 
+            },
+
+            // 处理积分商城价格
+            handleCreditShopPrice() {
+                let {min_price, min_price_credit, credit_shop_stock} = this.goodsInfo.credit_shop;
+                return {
+                    price: `${min_price_credit}${this.credit_text}+${min_price}元`, stock: credit_shop_stock
+                }
             },
 
             // 处理秒杀价格
@@ -616,9 +667,23 @@
                     optsInfo = {...optsInfo, ...result}
                 }
 
+                if (this.from === 'creditShop') {
+                    let result2 = this.handleCreditShopOptPrice(data, this.options[data]);
+                    optsInfo = {...optsInfo, ...result2}
+                }
+
                 this.optionPrice = optsInfo
             },
 
+            handleCreditShopOptPrice(data, currentOptData) {
+                let {id, credit_shop_price, credit_shop_credit, credit_shop_stock} = currentOptData.activity.credit_shop;
+
+                return {
+                    price: `${credit_shop_credit}${this.credit_text}+${credit_shop_price}元`,
+                    stock: credit_shop_stock,
+                    credit_option_id: id
+                }
+            },
 
             // 秒杀处理规格价
             handleSeckillOptsPrice(data, currentOptData) {
@@ -676,6 +741,11 @@
                     this.$emit('changeNum', res)
                 })
 
+                if (this.from === 'creditShop') {
+                    this.editCreditShopLimit(num)
+                    return
+                }
+
             },
             // 修改限制
             editTotalLimit(num) {
@@ -689,6 +759,70 @@
                     }, 0)
                 })
             },
+            
+
+            // 积分商城限购
+            editCreditShopLimit(num) {
+                let {goods_limit_type: limit_type, goods_limit_num: limit_num, credit_shop_stock, type} = this.goodsInfo.credit_shop;
+                let result = num;
+                let goodsStock, activity_stock;
+                if (limit_type !== '0' && Number(this.goodsInfo.data.buy_num) >= Number(limit_num)) {
+                    this.$toast('已达到最多购买个数');
+                    return
+                }
+                let maxNum = Math.min(limit_num, limit_num-this.goodsInfo.data.buy_num);
+
+                if (+type === 0) {
+                    // 适配快速购买单规格
+                    if (this.goodsData.has_option == '0') {
+                        goodsStock = this.goodsData.stock;
+                        activity_stock = credit_shop_stock;
+                    } else {
+                        goodsStock = this.options[this.choose.join(',')]?.stock;
+                        activity_stock = this.options[this.choose.join(',')]?.activity?.credit_shop.credit_shop_stock;
+                    }
+                } else {
+                    // 优惠券限购
+                    if (+this.goodsData.stock_type === 0) {
+                        activity_stock = credit_shop_stock
+                        goodsStock = credit_shop_stock++
+                    } else {
+                        goodsStock = this.goodsData.stock;
+                        activity_stock = credit_shop_stock;
+                    }
+                }
+
+                let stock = Math.min(goodsStock, activity_stock);
+                // 限购
+                if (limit_type !== '0') {
+                    // 购买数量大于库存时
+                    if (num <= limit_num && stock && num > stock) {
+                        this.$toast('库存不足');
+                        result = stock;
+                    } else {
+                        // 超出数量时
+                        if (num > maxNum) {
+                            this.$toast('限购' + maxNum + '件');
+                        }
+                        result = Math.min(maxNum, num)
+                    }
+                } else {
+                    // 不限购
+                    if (stock && num > stock) {
+                        result = stock;
+                        this.$toast('库存不足')
+                    }
+                }
+                this.changeNum.total = result;
+                this.$emit('custom-event', {
+                    type: 'changeNum',
+                    data: {
+                        total: result
+                    }
+                });
+                this.$emit('changeNum', result);
+            },
+
             editCommonActLimit(num) {
                 let result = num
                 let {limit_type, limit_num} = this.currentActInfo?.rules;

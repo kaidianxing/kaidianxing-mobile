@@ -136,6 +136,45 @@ export function getWxGoodPoster(id) {
 }
 
 
+export function getCreditShopQrcode(id) {
+    return new Promise((resolve, reject) => {
+        if (qrcode) {
+            resolve(qrcode)
+        } else {
+            api.creditShopApi.getWxQrcode({id}).then(path => {
+                if (path?.error == 0 && path.patch) {
+                    uni.getImageInfo({
+                        src: path.patch,
+                        success: img => {
+                            qrcode = img.path;
+                            resolve(img.path)
+                        },
+                        fail(){
+                            uni.showToast({
+                                title: '加载商品二维码失败1',
+                                icon: 'none',
+                            })
+                            resolve()
+                        }
+                    })
+                } else {
+                    uni.showToast({
+                        title: '加载商品二维码失败2',
+                        icon: 'none',
+                    })
+                    resolve()
+                }
+            }).catch(()=>{
+                resolve()
+                uni.showToast({
+                    title: '加载商品二维码失败3',
+                    icon: 'none',
+                })
+            });
+        }
+    })
+}
+
 export function getAvatar(url) {
     return new Promise((resolve, reject) => {
         if (avatar) {
@@ -284,6 +323,41 @@ export function getGoodsPosters(id, size) {
 
 }
 
+// 积分商品
+export function getCreditGoodsPosters(id, size) {
+    qrcode = ''
+    let posterUrl = store.state.creditShop?.creditPosterData?.poster_url
+    return new Promise((resolve, reject) => {
+        $decorator.getModule('poster').getPoster('creditGoods').then(async poster => {
+            // #ifdef MP-WEIXIN
+            let qrcodeUrl = await getCreditShopQrcode(id);
+            // #endif
+            // #ifdef H5
+            let qrcodeUrl = poster.filter(item => item.id == 'poster_qrcode')[0];
+            if (qrcodeUrl) {
+                qrcodeUrl = await getH5Qrcode(posterUrl, size);
+            }
+            // #endif
+            let list = utils.deepCopy(poster)
+            list.forEach(async item => {
+                if (item.id == 'poster_qrcode') {
+                    item.params.imgurl = qrcodeUrl;
+                    qrcode = qrcodeUrl
+                }
+                return item
+            })
+            resolve(getJson(list))
+        }).catch((err) => {
+            uni.showToast({
+                title: '生成海报失败',
+                icon: 'none',
+            })
+            reject(err)
+            uni.hideLoading();
+        })
+    })
+
+}
 
 // #ifdef H5
 export function getFollowPosters(size) {

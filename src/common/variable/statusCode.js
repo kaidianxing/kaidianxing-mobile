@@ -18,3 +18,7 @@ export const MEMBER_DELETE_CODE = [211237,211247,211294]; // 会员被删除
 export const NO_TOAST = [333201];  // 无需提示状态码
 
 export const INVALID_GOODS_CODE = 200420; // 失效商品状态码
+
+// 积分商城相关code
+export const CREDIT_GOODS_INVALID_CODE = 520005; // 积分商品失效 商品不存在，删除 下架，或者是id错误
+export const CREDIT_STATUS_CODE = 520006; // 积分商城未开启

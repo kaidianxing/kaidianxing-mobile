@@ -5,9 +5,6 @@ import {
 } from '@/common/util.js'
 import $store from '@/store'
 
-function showCommissionPerm(){//分销应用插件权限
-    return $store.state.setting.pluginsPerms.commission
-}
 function px2rpx(val) {
     // #ifdef H5
     return val * 0.936 + 'px'
@@ -413,9 +410,6 @@ export default function getStyle(list) {
     for (let index = 0; index < list.length; index++) {
         item = list[index];
         tmp = posterItem[item.id](item, index)
-        if(item.id=='poster_commission'&&!showCommissionPerm()){//是否有分销插件权限
-            continue;
-        }
         if (Array.isArray(tmp)) {
             views = views.concat(tmp)
         } else {

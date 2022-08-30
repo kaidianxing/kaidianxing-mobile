@@ -128,7 +128,7 @@ export default {
 
         // #ifdef APP-PLUS
         wapUrl(){
-            return `${this.$utils.getWapUrl()}/pagesOrder/deliveryInfo?order_id=${this.order_id}&status=${this.status}&dispatch_type=${this.dispatch_type}`
+            return `${this.$utils.getWapUrl()}/kdxOrder/deliveryInfo?order_id=${this.order_id}&status=${this.status}&dispatch_type=${this.dispatch_type}`
         }
         // #endif
     },

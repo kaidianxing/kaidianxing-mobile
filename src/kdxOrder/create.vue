@@ -174,6 +174,13 @@
                 this.goodsType = '1'
             }
 
+            if(plugin == 'creditShop'){
+                this.pendingActiveName = plugin
+
+                if(query.credit_good_type == 1){
+                    this.dispatch_type = '0'
+                }
+            }
             this.getData();
             // #ifdef MP-WEIXIN
             this.getMsgIds()

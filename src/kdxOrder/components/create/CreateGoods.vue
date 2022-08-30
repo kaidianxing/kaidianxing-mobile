@@ -113,6 +113,8 @@
                 switch (this.activityType) {
                     case 2:
                         return this.getSeckillMax
+                    case 5:
+                        return this.creditShopMax
                 }
             },
             getSeckillMax(){
@@ -122,6 +124,13 @@
                     return limit_type != 0? Number(limit_num - buy_count) : ''
                 }
 
+            },
+            creditShopMax(){
+                if(this.activityType == 5){
+                    let credit_shop = this.orderData.activity_return_data.credit_shop || {}
+                    let {buy_count,goods_limit_num: limit_num,goods_limit_type:limit_type} = credit_shop
+                    return limit_type != 0? Number(limit_num - buy_count) : ''
+                }
             },
             // 获取配送、自提时间开启状态
             getDeliveryTimeStatus() {
@@ -149,6 +158,15 @@
         },
         methods: {
             detail(id) {
+                if (+this.activityType === 5) {
+                    this.$Router.auto({
+                        path: '/kdxCreditShop/detail',
+                        query: {
+                            id
+                        }
+                    });
+                    return
+                }
                 this.$Router.auto({
                     path: '/kdxGoods/detail/index',
                     query: {
@@ -161,6 +179,11 @@
             // 秒杀处理限购
             if(this.activityType == 2){
                 this.seckillActLimit(index,e)
+                return
+            }
+            // 积分商品
+            if(this.activityType ==5){
+                this.creditShopActLimit(index, e)
                 return
             }
             // 活动限购处理
@@ -260,6 +283,15 @@
             let stock = Math.min(goodsStock,activeStock)
             let {buy_count,rules: {limit_num,limit_type}} = activityData
 
+            this.commonActLimit({index,e,type}, {stock,buy_count,limit_num,limit_type})
+        },
+        // 积分商城限购
+        creditShopActLimit(index,e, type = 'click'){
+            let credit_shop = this.orderData.activity_return_data.credit_shop || {}
+            let goodsStock = this.goodsData[index].stock;
+            let activeStock = credit_shop.credit_shop_stock
+            let stock = Math.min(goodsStock,activeStock)
+            let {buy_count,goods_limit_num: limit_num,goods_limit_type:limit_type} = credit_shop
             this.commonActLimit({index,e,type}, {stock,buy_count,limit_num,limit_type})
         },
         commonActLimit({index,e,type}, {stock,buy_count,limit_num,limit_type}){

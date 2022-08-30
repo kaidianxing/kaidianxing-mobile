@@ -222,7 +222,7 @@
                     this.copyLinkUrl = this.posterUrl
                 } else if (this.posterType === 'join') {
                     // 推广管理 海报复制链接
-                    this.copyLinkUrl = `${config.wap_url}/pagesMerchant/join/index/index?invite_code=${this.$store.state.login.userInfo.id}`
+                    this.copyLinkUrl = `${config.wap_url}/kdxMerchant/join/index/index?invite_code=${this.$store.state.login.userInfo.id}`
                 } else if (this.posterType === 'group') {
                     // 拼团海报
                     this.copyLinkUrl = this?.groupPosterData?.invite_url

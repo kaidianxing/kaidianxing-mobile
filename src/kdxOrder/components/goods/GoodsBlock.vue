@@ -98,10 +98,17 @@
             backgroundImage() {
                 return `background-image:url(${this.$utils.staticMediaUrl('decorate/goods_col2.png')})`
             },
+            isCreditCoupon(){
+                return this.goodsData.ext_field?.is_credit_shop_coupon
+            },
             goodsOptionTitle(){
                 return this.goodsData?.option_id ? this.goodsData.option_title: ''
             },
             getGoodsThumb(){
+                if(this.isCreditCoupon){
+                    let name =  this.goodsData.ext_field?.coupon_sale_type == '2'? 'creditShop/discount.png': 'creditShop/full.png'
+                    return this.$utils.staticMediaUrl(name)
+                }
                 return this.$utils.mediaUrl(this.goodsData.thumb)
             }
         },

@@ -283,6 +283,7 @@ export default {
     },
     data() {
         return {
+            is_credit_shop: 0, // 积分优惠券商品
             modalShowFlag: false,
             modalType: 'pay',
             modalTitle: '确定购买优惠券吗？',
@@ -301,6 +302,7 @@ export default {
             linkReceive: '', // 链接领取 1：是
             subTemplateId: [], //公众号订阅模板
             showSubscribe: true, //公众号订阅按钮
+            credit_shop: {}, // 积分信息
         }
     },
     filters: {
@@ -352,14 +354,32 @@ export default {
             return url
         },
         limit_text() {
+            if (this.is_credit_shop) {
+                return +this.credit_shop.goods_limit_type === 0?'不限制':+this.credit_shop.goods_limit_type === 1?`${this.credit_shop.goods_limit_num}张/人`:`每${this.credit_shop.goods_limit_day}天${this.credit_shop.goods_limit_num}张/人`
+            }
             return this.couponData.get_max_type === '0'? '不限制': `${this.couponData.get_max}张/人`
         },
         limit_member() {
+            if (this.is_credit_shop) {
+                let level_type = +this.credit_shop.member_level_limit_type,
+                    group_type = +this.credit_shop.member_group_limit_type,
+                    level_result = '',
+                    group_result = '';
+                if (level_type) {
+                    level_result = level_type===1?this.credit_shop.member_level_name.join('、'):`${this.credit_shop.member_level_name.join('、')}不可购买`
+                } else if (group_type) {
+                    group_result = group_type===1?this.credit_shop.member_group_name.join('、'):`${this.credit_shop.member_group_name.join('、')}不可购买`
+                } else {
+                    level_result = '不限制'
+                }
+                return `${level_result} ${group_result}`
+            }
             return this.couponData.limit_member.length === 0? '不限制': this.couponData.limit_member.join('、')
         },
     },
     async mounted() {
         this.couponId = this.$Route.query.id
+        this.is_credit_shop = this.$Route.query?.is_credit_shop||0
         this.linkReceive = this.$Route.query.linkReceive
         if (this.linkReceive && this.linkReceive === '1') {
             // 判断登录
@@ -381,6 +401,9 @@ export default {
             let params = {
                 id: this.couponId,
             };
+            if (this.is_credit_shop) {
+                params.is_credit_shop = 1
+            }
             this.$api.memberApi
                 .getCouponDetail(params)
                 .then((res) => {
@@ -390,6 +413,11 @@ export default {
                                 ? []
                                 : res.data.limit_member
                         this.couponData = { ...res.data }
+                        if (this.is_credit_shop) {
+                            this.credit_shop = res.data.credit_shop
+                            this.couponData.balance = res.data.credit_shop.min_price
+                            this.couponData.credit = res.data.credit_shop.min_price_credit
+                        }
                     } else {
                         this.$toast(res.message)
                     }
@@ -428,6 +456,11 @@ export default {
             if (!loginStatus) {
                 // 未登录
                 return this.$store.commit('login/setModal', true)
+            }
+            // 积分商品优惠券-购买
+            if (this.is_credit_shop) {
+                this.createCouponOrder()
+                return
             }
             this.modalType = 'pay'
             this.modalTitle = '确定购买优惠券吗？'
@@ -707,6 +740,27 @@ export default {
             }
             // #endif
             return content
+        },
+        createCouponOrder() {
+            if (!this.credit_shop.perm.buy) {
+                return this.$message('您暂时没有购买权限!')
+            }
+            if (+this.credit_shop.credit_shop_stock === 0) {
+                this.$message('商品已售罄');
+                return
+            }
+            let query = {
+                goods_id: this.credit_shop.id,
+                option_id: 0,
+                total: 1,
+                type: '-1', // 原商品type，优惠券-1
+                credit_good_type: this.credit_shop.type,
+                plugin: 'creditShop'
+            };
+            this.$Router.auto({
+                path: '/kdxOrder/create',
+                query
+            })
         },
         // 小程序订阅消息
         //订阅

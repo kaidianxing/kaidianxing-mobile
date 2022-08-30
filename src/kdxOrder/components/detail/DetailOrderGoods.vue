@@ -168,8 +168,13 @@
             },
             toGoodsDetail(id, type) {
                 let path, query = ''
-                path = '/kdxGoods/detail/index'
-                query = {goods_id :id}
+                if (type === '5'){
+                    path = '/kdxCreditShop/detail',
+                    query = {id :id}
+                } else {
+                    path = '/kdxGoods/detail/index'
+                    query = {goods_id :id}
+                }
                 this.$Router.auto({
                     path,
                     query

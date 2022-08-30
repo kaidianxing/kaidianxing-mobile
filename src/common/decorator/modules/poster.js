@@ -105,6 +105,35 @@ const getGoodInfo = detailInfo => {
 
 }
 
+const getCreditGoodInfo = detailInfo => {
+    return {
+        poster_goodimg: item => {
+            item.params.imgurl = detailInfo.thumb
+            return item
+        },
+        poster_goodname: item => {
+            item.params.content = detailInfo.title
+            return item
+        },
+        // poster_sellprice: item => { // 售卖价
+        //     item.params.content = detailInfo.price
+        //     return item
+        // },
+        poster_price: item => {
+            item.params.content = detailInfo.price
+            return item
+        },
+        poster_delprice: item => {
+            item.params.content = detailInfo.original_price
+            return item
+        },
+        poster_commission: item => {
+            item.params.commission = 0
+            return item
+        }
+    }
+}
+
 const getUserInfo = userInfo => ({
     poster_avatar: item => {
         item.params.imgurl = userInfo.avatar
@@ -397,6 +426,31 @@ class Poster extends ModuleMixin {
         })
     }
 
+    getCreditGoodPosterDetail(data) {
+        let that = this;
+        return new Promise((resolve, reject) => {
+            Promise.all([that.getUserInfo(), that.getGoodPoster()]).then(async res => {
+                let detail = store.state.creditShop.creditPosterData;
+                let goodInfo = {};
+                if (detail) {
+                    goodInfo = getCreditGoodInfo(detail)
+                }
+                let info = {};
+                let shopInfo = store.state.setting.systemSetting.basic || {};
+                if (that.userInfo) {
+                    info = {
+                        ...getShopInfo(shopInfo),
+                        ...getUserInfo(that.userInfo),
+                    }
+                }
+                resolve({
+                    ...info,
+                    ...goodInfo
+                })
+            })
+        })
+    }
+
     async getPoster(posterType) {
         let that = this;
         return new Promise(async (resolve, reject) => {
@@ -418,6 +472,10 @@ class Poster extends ModuleMixin {
                 case 'group': // 拼团
                     requester = await that.getGroupsPosterDetail();
                     list = that.poster.groupsPoster;
+                    break;
+                case 'creditGoods': // 积分商品
+                    requester = await that.getCreditGoodPosterDetail();
+                    list = that.poster.goodsPoster.content;
                     break;
 
             }
