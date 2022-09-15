@@ -902,6 +902,21 @@ const goLiver = (broadId, status, liverId) => {
     }
 }
 
+export const getRect = function (selector, all) {
+    return new Promise(resolve => {
+        uni.createSelectorQuery().in(this)[all ? 'selectAll' : 'select'](selector)
+            .boundingClientRect(rect => {
+                if (all && Array.isArray(rect) && rect.length) {
+                    resolve(rect)
+                }
+                if (!all && rect) {
+                    resolve(rect)
+                }
+            })
+            .exec()
+    })
+}
+
 //1. 防抖
 export function debounce(func, ms = 1000) {
     let timer;
@@ -1077,3 +1092,11 @@ export const sendWxappMsg = (type_code, callback) => {
 
 export const isArray = (arr) =>  Object.prototype.toString.call(arr) == "[object Array]"
 
+export function createQueryParams(params) {
+    let string = '';
+    for (let item in params) {
+        string += item + '=' + params[item] + '&'
+    }
+    string = string.replace(/&$/, '')
+    return string
+}

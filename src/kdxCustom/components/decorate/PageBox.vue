@@ -1,80 +1,71 @@
-/**
- * 开店星新零售管理系统
- * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
- * @author 青岛开店星信息技术有限公司
- * @link https://www.kaidianxing.com
- * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
- * @copyright 版权归青岛开店星信息技术有限公司所有
- * @warning Unauthorized deletion of copyright information is prohibited.
- * @warning 未经许可禁止私自删除版权信息
- */
 <template>
-<theme-content :navbarBg="navbarBg">
-    <loading-box>
-        <div class="page-bg decorate-page" :style="{paddingTop:getPagePaddingTop,paddingBottom: areaBottom+'px'}">
-        <login-modal @custom-event='eventHandler' v-if='showLoginModal'></login-modal>
-        <!-- #ifdef MP-WEIXIN -->
-        <phone-modal v-if='phoneVisible'></phone-modal>
-        <!-- #endif -->
-         <div class="grace-sbody" :style="{
+    <theme-content :navbarBg="navbarBg">
+        <loading-box>
+            <div class="page-bg decorate-page" :style="{paddingTop:getPagePaddingTop,paddingBottom: areaBottom+'px'}">
+                <login-modal @custom-event='eventHandler' v-if='showLoginModal'></login-modal>
+                <!-- #ifdef MP-WEIXIN -->
+                <phone-modal v-if='phoneVisible'></phone-modal>
+                <!-- #endif -->
+                <div class="grace-sbody" :style="{
             minHeight: windowHeight
         }">
-            
-            <!-- 页面顶部固定 -->
-            <div class="my-istop" :class="maskStatus?'highIndex':''" :style="{top:headerHeight+'px'}" v-if='customIsTop.length'>
-                <div class="fixedtop" style="width:100%;z-index:9999;">
-                    <decorater :componentData="item" :pageInfo="customPageInfo" :key="item._comIndex_" v-for="(item,index) in customIsTop" @custom-event="eventHandler"></decorater>
-                </div>
-            </div>
-            <!-- 页面主体 -->
-            <div class="grace-page-body" >
-                <div class="gBody" id='gBody' @click="clickBody" :style="{minHeight:`calc(100% - ${headerHeight}px)`}">
-                    <!-- 防止手机横向滚动 -->
-                    <div class="gBody-container" v-if='customPageList.length'>
-                        <decorater v-for='(item,index) in customPageList' :pageInfo='customPageInfo' :componentData='item' :key="item._comIndex_" @custom-event='eventHandler'></decorater>
+
+                    <!-- 页面顶部固定 -->
+                    <div class="my-istop" :class="maskStatus?'highIndex':''" :style="{top:headerHeight+'px'}" v-if='customIsTop.length'>
+                        <div class="fixedtop" style="width:100%;z-index:9999;">
+                            <decorater :componentData="item" :pageInfo="customPageInfo" :key="item._comIndex_" v-for="(item,index) in customIsTop" @custom-event="eventHandler"></decorater>
+                        </div>
                     </div>
-                    <slot></slot>
-                    <div class='bottom-loading' v-if='loadTip'>
-                        <copy-right v-if="isShowCopyRight===true"></copy-right>
-                        <div v-else>{{loadTip}}</div>
+                    <!-- 页面主体 -->
+                    <div class="grace-page-body" >
+                        <div class="gBody" id='gBody' @click="clickBody" :style="{minHeight:`calc(100% - ${headerHeight}px)`}">
+                            <!-- 防止手机横向滚动 -->
+                            <div class="gBody-container" v-if='customPageList.length'>
+                                <decorater v-for='(item,index) in customPageList' :pageInfo='customPageInfo' :componentData='item' :key="item._comIndex_" @custom-event='eventHandler'></decorater>
+                            </div>
+                            <slot></slot>
+                            <div class='bottom-loading' v-if='loadTip'>
+                                <copy-right v-if="isShowCopyRight===true"></copy-right>
+                                <div v-else>{{loadTip}}</div>
+                            </div>
+                            <div class="isbottom" :style="{height:(isDecoratePage?customPageBottom:pageBottomHeight)+'rpx',background:pageSettings?pageSettings.background_color:setting.background}" v-if='showDiymenu'></div>
+                        </div>
                     </div>
-                    <div class="isbottom" :style="{height:(isDecoratePage?customPageBottom:pageBottomHeight)+'rpx',background:pageSettings?pageSettings.background_color:setting.background}" v-if='showDiymenu'></div>
+
+                    <!-- 页面底部 -->
+                    <div class="grace-page-footer" :style="{'z-index':footerIndex, background:footerBg,paddingBottom: areaBottom+'px'}">
+                        <!-- 置底装修组件 -->
+                        <slot name="foot"></slot>
+                        <decorater :componentData="item" :pageInfo="customPageInfo" :key="item._comIndex_" v-for="item in customIsBottom" @custom-event="eventHandler"></decorater>
+                        <template v-if="getIsBottom.length">
+                            <decorater
+                                :componentData="item"
+                                :pageInfo="getPageInfo"
+                                :key="item._comIndex_"
+                                v-for="(item, index) in getIsBottom"
+                                @custom-event="eventHandler"
+                            ></decorater>
+                        </template>
+                    </div>
                 </div>
+                <!-- 悬浮组件插槽 -->
+                <slot name="fixed"></slot>
+                <decorater :componentData="item" :pageInfo="customPageInfo" v-for="(item,index) in customIsFixed" :key="index" @custom-event="eventHandler"></decorater>
+                <wxapp-code :visible="isCurrentPage && liverCode.visible" :liver-id="liverCode.liverId" :broad-id="liverCode.broadId" v-if='isCurrentPage && liverCode.visible'></wxapp-code>
+                <wx-code :visible="isCurrentPage && showWxCode" v-if='isCurrentPage && showWxCode'></wx-code>
             </div>
-            
-            <!-- 页面底部 -->
-            <div class="grace-page-footer" :style="{'z-index':footerIndex, background:footerBg,paddingBottom: areaBottom+'px'}">
-                <!-- 置底装修组件 -->
-                <slot name="foot"></slot>
-                <decorater :componentData="item" :pageInfo="customPageInfo" :key="item._comIndex_" v-for="item in customIsBottom" @custom-event="eventHandler"></decorater>
-                <template v-if="getIsBottom.length">
-                    <decorater
-                        :componentData="item"
-                        :pageInfo="getPageInfo"
-                        :key="item._comIndex_"
-                        v-for="(item, index) in getIsBottom"
-                        @custom-event="eventHandler"
-                    ></decorater>
-                </template>
-		</div>
-	</div>
-        <!-- 悬浮组件插槽 -->
-        <slot name="fixed"></slot>
-        <decorater :componentData="item" :pageInfo="customPageInfo" v-for="(item,index) in customIsFixed" :key="index" @custom-event="eventHandler"></decorater>
-        <wxapp-code :visible="isCurrentPage && liverCode.visible" :liver-id="liverCode.liverId" :broad-id="liverCode.broadId" v-if='isCurrentPage && liverCode.visible'></wxapp-code>
-        <wx-code :visible="isCurrentPage && showWxCode" v-if='isCurrentPage && showWxCode'></wx-code>
-    </div>
-        <toast></toast>
-    </loading-box>
-</theme-content>
+            <toast></toast>
+        </loading-box>
+    </theme-content>
 </template>
 <script>
-import WxappCode from './components/WxappCode'
 import Decorater from './index'
-import LoginModal from './LoginModal'
-import PhoneModal from './PhoneModal'
-import WxCode from './components/WxCode'
-import CopyRight from "./components/CopyRight";
+import LoginModal from '@/components/decorate/LoginModal.vue'
+import PhoneModal from '@/components/decorate/PhoneModal.vue'
+import WxCode from '@/components/decorate/components/WxCode'
+import CopyRight from "@/components/decorate/components/CopyRight"
+import WxappCode from '@/components/decorate/components/WxappCode'
+
 import {
     mapState,
     mapMutations,
@@ -91,58 +82,60 @@ import {
 
 let navThrottleBar = null;
 
-    /**
-     * 页面类型
-     */
-    export const decoratePageType = {
-        '/kdxCustom/index/index': 0,
-        '/kdxMember/index/index': 12,
-        '/kdxGoods/detail/index': 11,
-        '/pages/index/index': 10,
-        '/kdxCommission/index/index': 20,
-    }
-    import {
-        deepCopy
-    } from '@/common/util.js'
-    import getSessionId from '@/common/request/getSessionId'
-import {handler} from "../../kdxCommission/index/eventHandler";
-    export default {
-        components: {
-            Decorater,
-            LoginModal,
-            PhoneModal,
-            WxappCode,
-            WxCode,
-            CopyRight,
+/**
+ * 页面类型
+ */
+export const decoratePageType = {
+    '/kdxCustom/index/index': 0,
+    '/kdxMember/index/index': 12,
+    '/kdxGoods/detail/index': 11,
+    '/pages/index/index': 10,
+    '/kdxCommission/index/index': 20,
+}
+import {
+    deepCopy
+} from '@/common/util.js'
+import getSessionId from '@/common/request/getSessionId'
+export default {
+    components: {
+        Decorater,
+        LoginModal,
+        PhoneModal,
+        WxappCode,
+        WxCode,
+        CopyRight,
+    },
+    computed: {
+        ...mapGetters('login', ['isSkip', 'isLogin', 'isBind']),
+        ...mapState('login', {
+            loginVisible:state=> state.loginVisible,
+            phoneVisible: state=>state.phoneVisible
+        }),
+        ...mapGetters({
+            getRequestInfo: 'getRequestInfo',
+            liverCode: 'liverCode',
+            showWxCode: 'showWxCode'
+        }),
+        ...mapState(['areaBottom','windowHeight']),
+        ...mapState('decorate', {
+            maskStatus:state => state.maskStatus
+        }),
+        ...mapState('decorate/othersPage', {
+            pageBottomHeight: state => state.pageBottomHeight,
+            pageInfo: state => deepCopy(state.pageInfo), //非装修页面共享的数据
+            isBottom: state => state.isBottom,
+        }),
+        ...mapState('setting',{
+            copyright: state => state.systemSetting?.core_settings?.copyright
+        }),
+        getPagePaddingTop(){
+            return this.pageTop+'rpx';
         },
-        computed: {
-            ...mapGetters('login', ['isSkip', 'isLogin', 'isBind']),
-            ...mapState('login', {
-                loginVisible:state=> state.loginVisible,
-                phoneVisible: state=>state.phoneVisible
-            }),
-            ...mapGetters({
-                getRequestInfo: 'getRequestInfo',
-                liverCode: 'liverCode',
-                showWxCode: 'showWxCode'
-            }),
-            ...mapState(['areaBottom','windowHeight']),
-            ...mapState('decorate', {
-                maskStatus:state => state.maskStatus
-            }),
-            ...mapState('decorate/othersPage', {
-                pageBottomHeight: state => state.pageBottomHeight,
-                pageInfo: state => deepCopy(state.pageInfo), //非装修页面共享的数据
-                isBottom: state => state.isBottom,
-            }),
-            getPagePaddingTop(){
-                return this.pageTop+'rpx';
-            },
-            routePath() {
-                if(this.loaded){
-                    return this.$Route ?.path ?? '';
-                }
-            },
+        routePath() {
+            if(this.loaded){
+                return this.$Route ?.path ?? '';
+            }
+        },
         getIsBottom() {
             this.footerBg = '#fff';
             if (this.customIsBottom.length) { //装修页面单独传入组件，不需要这里渲染
@@ -169,14 +162,14 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             return list
         },
         isDecoratePage() { //是否装修页面
-                if(this.loaded){
-                    return this.$decorator.getPageType(this.$Route.path)!=-1
-                }
+            if(this.loaded){
+                return this.$decorator.getPageType(this.$Route.path)!=-1
+            }
         },
         isCurrentPage() {
-                if(this.loaded){
-                    return this.getRoute.path === this.getRequestInfo ?.routeInfo ?.path
-                }
+            if(this.loaded){
+                return this.getRoute.path === this.getRequestInfo ?.routeInfo ?.path
+            }
         },
         getPageInfo() {
             return this.customPageInfo || this.pageInfo
@@ -185,7 +178,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
         isShowCopyRight() {
             let pageType = this.$decorator.getPageType(this.getRoute.path)
             let hasCopyRight = [10,12].includes(pageType)
-            return hasCopyRight
+            return hasCopyRight && this.copyright?.open === '1';
         },
         getRoute(){
             if(this.loaded){
@@ -194,7 +187,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             return  {}
         },
         showLoginModal(){
-           return (!this.noLogin && this.loginVisible)
+            return this.articleShowLoginModal || (!this.noLogin && this.loginVisible)
         },
     },
     props: {
@@ -211,7 +204,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             type: Boolean,
             default: false
         },
-        
+
         customPageBottom: {
             type: Number,
             default: 0
@@ -250,7 +243,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             type: String,
             default: ''
         },
-        noLogin: { 
+        noLogin: {
             type: Boolean,
             default: false
         },
@@ -262,13 +255,18 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             type: Boolean,
             default: false,
         },
+        // 店铺笔记登录弹窗展示
+        articleModalStatue: {
+            type: Boolean,
+            default: false
+        }
     },
-     mounted(){
+    mounted(){
         // console.error('tttttt======.....>>>>', '')
         // this.$loading.hideLoading();
         // this.$loading.hideLoading();
         this.loaded = true
-     },
+    },
     data() {
         return {
             footerBg: '#fff',
@@ -277,6 +275,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             codeVisible: true,
             isRequeseSession: false,
             loaded: false,
+            articleShowLoginModal: false,
         }
     },
     created(){
@@ -284,6 +283,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
             this.$loading.setOtherData();
             this.loaded = true;
         }
+        this.articleShowLoginModal = this.articleModalStatue
     },
     beforeMount() {
         this.closeLiverCode()
@@ -319,6 +319,9 @@ import {handler} from "../../kdxCommission/index/eventHandler";
         },
         eventHandler(e) {
             this.$emit('custom-event', e);
+            if(e.target === "loginModal/closeModal") {
+                this.articleShowLoginModal = false
+            }
         },
         redirectBindTel() {
             if (this.manualBind) {
@@ -396,7 +399,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
         },
         // 没有浏览权限
         handleNoViewPerm(message) {
-             if (!navThrottleBar) {
+            if (!navThrottleBar) {
                 message && this.$toast(message)
                 navThrottleBar = setTimeout(() => {
                     navThrottleBar = null;
@@ -439,7 +442,7 @@ import {handler} from "../../kdxCommission/index/eventHandler";
                     this.setBind(false)
                     this.setModal(true)
                 } else if (MALL_CLOSE_CODE.includes(error)) {
-                   this.handleMallClose(error,message)
+                    this.handleMallClose(error,message)
                 } else if (INVALID_CODE === error) {
                     this.setLogin(false)
                     this.setBind(false)
@@ -453,6 +456,9 @@ import {handler} from "../../kdxCommission/index/eventHandler";
                     this.handleOtherError(error,message)
                 }
             }
+        },
+        articleModalStatue() {
+            this.articleShowLoginModal = this.articleModalStatue
         },
         // #ifndef MP-WEIXIN
         phoneVisible: {
@@ -470,104 +476,104 @@ import {handler} from "../../kdxCommission/index/eventHandler";
 }
 </script>
 <style lang="scss" scoped>
-    .page-bg {
-        height: 100%;
-        min-height: 100vh;
-    }
-    .index-page {
-        background: #eee;
-    }
-    .gBody {
-        min-height: 100vh;
+.page-bg {
+    height: 100%;
+    min-height: 100vh;
+}
+.index-page {
+    background: #eee;
+}
+.gBody {
+    min-height: 100vh;
 
-        &-container {
-            overflow-x: hidden;
-            padding-bottom: px2rpx(5);
-        }
+    &-container {
+        overflow-x: hidden;
+        padding-bottom: px2rpx(5);
     }
-    .fixedBox {
-        height: 100vh;
-    }
-    page {
-		width: 100%;
-		height: 100vh;
-		display: flex;
-		flex-direction: column;
-	}
-	.grace-sbody {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		flex: 1;
-	}
-	.grace-page-header {
-		width: 100%;
-		position: fixed;
-		left: 0;
-		top: 0;
-		z-index: 99;
-	}
-	.grace-page-status-bar {
-		width: 100%;
-		height: 0;
-	}
-	.grace-page-header-nav {
-		width: 100%;
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		height: 44px;
-		align-items: center;
-	}
-	.grace-header-main {
-		width: 300rpx;
-		flex: auto;
-		overflow: hidden;
-	}
-	.grace-page-body {
-		width: 100%;
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-	.grace-page-footer {
-		width: 100%;
-		position: fixed;
-		left: 0;
-		bottom: 0;
-		z-index: 99;
-	}
-	.gui-page-rb-area {
-		width: 100rpx;
-		position: fixed;
-		right: 20rpx;
-		bottom: 100rpx;
-		z-index: 100;
-	}
-	.my-istop {
-		position: fixed;
-		top: 0;
-		width: 100%;
-		left: 0;
-		z-index: 9999997;
-	}
-	
-	.highIndex {
-		z-index: 9999999;
-	}
+}
+.fixedBox {
+    height: 100vh;
+}
+page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.grace-sbody {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+}
+.grace-page-header {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 99;
+}
+.grace-page-status-bar {
+    width: 100%;
+    height: 0;
+}
+.grace-page-header-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    height: 44px;
+    align-items: center;
+}
+.grace-header-main {
+    width: 300rpx;
+    flex: auto;
+    overflow: hidden;
+}
+.grace-page-body {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.grace-page-footer {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 99;
+}
+.gui-page-rb-area {
+    width: 100rpx;
+    position: fixed;
+    right: 20rpx;
+    bottom: 100rpx;
+    z-index: 100;
+}
+.my-istop {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    left: 0;
+    z-index: 9999997;
+}
 
-    /deep/ .grace-page-status-bar {
-        height: 0;
-    }
-    .bottom-loading{
-        width: 100%;
-        /*height: 100rpx;*/
-        padding-bottom: 32rpx;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        justify-content: center;
-        font-size:20rpx;
-        color: #aaa;
-    }
+.highIndex {
+    z-index: 9999999;
+}
+
+/deep/ .grace-page-status-bar {
+    height: 0;
+}
+.bottom-loading{
+    width: 100%;
+    /*height: 100rpx;*/
+    padding-bottom: 32rpx;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    font-size:20rpx;
+    color: #aaa;
+}
 </style>

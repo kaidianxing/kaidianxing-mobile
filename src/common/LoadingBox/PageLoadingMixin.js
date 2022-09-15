@@ -18,6 +18,7 @@ export default {
       // 黑名单因为目标页面有骨架屏
       const BLACK_LIST = [
         "/kdxGoods/goodList/index",
+        "/kdxCustom/index/index",
         "/kdxGoods/detail/index",
         "/kdxMember/index/index",
       ];

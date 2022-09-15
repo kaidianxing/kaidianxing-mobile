@@ -548,7 +548,13 @@
                     }
                 }
             ]
-        }
+        },
+        {
+			"root": "kdxCustom",
+			"pages": [{
+				"path": "index/index"
+			}]
+		}
     ],
     "globalStyle": {
         "navigationBarTextStyle": "black",

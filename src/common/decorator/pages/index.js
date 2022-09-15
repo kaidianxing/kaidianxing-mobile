@@ -135,8 +135,6 @@ class IndexPage extends PageMixin {
                         }
                     })
                     this.setData(['customPageList'])
-                } else {
-                    $decorator.getModule('advs').setShow(false)
                 }
                 this.setPageBackground(this.customPageSettings[key]?.background_color)
                 this.setPageList(this.customPageList[key], 'turnTab1', key)

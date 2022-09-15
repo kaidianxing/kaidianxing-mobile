@@ -96,6 +96,7 @@ let navThrottleBar = null;
  * 页面类型
  */
 export const decoratePageType = {
+    '/kdxCustom/index/index': 0,
     '/kdxMember/index/index': 12,
     '/kdxGoods/detail/index': 11,
     '/pages/index/index': 10,

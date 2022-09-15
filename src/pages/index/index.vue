@@ -329,20 +329,6 @@
             showNewGiftsWithPerm() {
                 return this.showNewGifts
             },
-            advsClosed() {
-                return this.advShow === false
-            },
-            advsList() {
-                if (this.isFixed) {
-                    return this.isFixed.filter(
-                        (v) =>
-                        (v.type == 'advs' && v.is_open == '1') ||
-                        v.type != 'advs'
-                    )
-                } else {
-                    return []
-                }
-            },
             // 是否显示过新人送礼弹窗
             showNewGiftsFlag() {
                 return this.$store.getters.showNewGiftsFlag

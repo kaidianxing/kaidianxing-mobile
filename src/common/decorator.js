@@ -154,7 +154,9 @@ class Decorator {
                 ...route.query,
                 ...query,
             }
-            delete routeQuery.pageId
+            if (pagePath != '/kdxCustom/index/index') {
+                delete routeQuery.pageId
+            }
             pageQuery = routeQuery
             // #endif
         } catch (e) {

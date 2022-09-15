@@ -335,4 +335,13 @@ export default class Calculater {
         console.log(height,'height')
         return height
     }
+    hot_area(data) {
+        let height = 0
+        if (data.style.imgheight > 0) {
+            let realWidth = 750 - data.style.marginleft * 2;
+            height = realWidth * data.style.imgheight / data.style.imgwidth + data.style.margintop + data.style.marginbottom;
+        }
+        return height
+    }
 }
+

@@ -99,6 +99,7 @@ Vue.prototype.$api = api;
 Vue.prototype.localStorage = localStorage;
 Vue.prototype.sessionStorage = sessionStorage;
 Vue.prototype.graceLazyload = graceLazyload;
+Vue.prototype.$getRect = utils.getRect;
 // Vue.prototype.$worker=new Worker()
 Vue.prototype.$decorator = decorator;
 // loading

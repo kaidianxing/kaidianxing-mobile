@@ -83,6 +83,7 @@ function getDecoratePageList({pagePath,type,query},noParams=false,forceRefresh=f
         if (type == 0 && pageQuery.pageId && !noParams) {
             params.id = pageQuery.pageId
         }
+        // params.id = 4
         pageListApi(type,params,forceRefresh).then((res) => {
             if (res.error == 0 && res.page && type != 20) {
                 $decorator.getPage(type).setPageList(createPageList(res, type),'firstLoad');

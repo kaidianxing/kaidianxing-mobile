@@ -1,0 +1,25 @@
+@import '@/components/decorate/templates-shim/common.scss';
+._i{
+    display: inline;
+}
+view{
+    box-sizing: border-box;
+}
+.def-pad{
+    padding:px2rpx(4) px2rpx(8);
+}
+*{
+    box-sizing: border-box;
+    margin:0; 
+    padding:0;
+    border:none;
+}
+li{
+    list-style:none;
+}
+ul{
+    padding:0; 
+}
+image{
+    height:auto;
+}

@@ -12,7 +12,7 @@
     <page-box showDiymenu>
         <view class="goods-category rr-page">
             <search-input></search-input>
-            <block v-if="list.length">
+            <block v-if="id == '0' && list.length">
                 <default-temp
                     ref="cateTemp"
                     :list="list"
@@ -20,6 +20,14 @@
                     :level="level"
                     @on-skip="getGoodsList"
                 ></default-temp>
+            </block>
+            <block v-if="id =='1' && list.length">
+                <cate-temp
+                    ref="cateTemp"
+                    :list="list"
+                    :level="level"
+                    @on-skip="getGoodsList"
+                ></cate-temp>
             </block>
         </view>
     </page-box>
@@ -30,11 +38,13 @@
 import DefaultTemp from '../components/category/default'
 import PageMixin from '@/common/PageMixin.js'
 import PageLoadingMixin from "@/common/LoadingBox/PageLoadingMixin"
+import CateTemp from '../components/category/cateTemp'
 export default {
     mixins: [PageMixin,PageLoadingMixin],
     components: {
         SearchInput,
         DefaultTemp,
+        CateTemp
     },
     data() {
         return {
@@ -69,11 +79,11 @@ export default {
                 this.$api.goodApi.categoryList().then(res => {
                     console.log('res', res)
                     if (res.error == 0) {
-                        let { level, style, list, title } = res
+                        let { level, style, list, title, template_type } = res
                         this.level = level
                         this.style = style
                         this.list = list
-                        this.id = '0'
+                        this.id = template_type
                         uni.setNavigationBarTitle({
                             title
                         })
