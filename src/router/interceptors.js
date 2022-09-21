@@ -179,14 +179,21 @@ export default function () {
                 // #ifndef H5
 
                 // 小程序判断微信客服
-                if (pathInfo.indexOf("work.weixin.qq.com") !== -1) {
-                    let queryArr = pathInfo.split("?")
-                    let corpId = queryArr[1].substring(queryArr[1].indexOf("=") + 1)
+                if(pathInfo.indexOf("work.weixin.qq.com") !== -1) {
+					let queryArr,corpId
+                   if(pathInfo.indexOf('?') != -1) {
+					    queryArr = pathInfo.split("?")
+					    corpId = queryArr[1].substring(queryArr[1].indexOf("=") + 1)
+				   }
+				   console.log('wx  info----------',pathInfo,corpId)
                     wx.openCustomerServiceChat({
                         extInfo: {
-                            url: queryArr[0]
+                            url: queryArr ? queryArr[0] : pathInfo
                         },
-                        corpId: corpId
+                        corpId: corpId||'',//ww57027b488e24380b
+						fail: (err) => {
+							console.error(err)
+						}
                     })
                     return
                 }
