@@ -17,6 +17,7 @@ import ThemeContext from '../components/theme/theme.js'
 export default {
     namespaced: true,
     state: {
+        signModelShow:false,
         systemSetting: {},
         cacheLoadingImg: '',
         channelStatus: {},
@@ -36,6 +37,9 @@ export default {
         noticeTemId: []
     },
     mutations: {
+        signModelShow(state,res) {
+            state.signModelShow = res
+        },
         setAvatar(state, url) {
             state.avatar = url
         },

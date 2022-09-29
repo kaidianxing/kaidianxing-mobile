@@ -174,7 +174,7 @@ export function detail_sale(goods, {
         // 运费模板
         if (goods.dispatch_type == '1') {
 
-            expressFee = (dispatch?.dispatch_price > 0 ? `运费${parseFloat(dispatch?.dispatch_price)}元` : freightText);
+            expressFee = (intracity?.dispatch_price > 0 ? `运费${parseFloat(intracity?.dispatch_price)}元` : freightText);
         }
 
         // 统一运费

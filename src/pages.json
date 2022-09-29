@@ -554,6 +554,25 @@
 			"pages": [{
 				"path": "index/index"
 			}]
+		},
+		{   /* 积分签到 */
+			"root": "kdxSignIn",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"enablePullDownRefresh": true,
+						"navigationBarTitleText": "积分签到"
+					}
+				},
+				{
+					"path": "signRule",
+					"style": {
+						"enablePullDownRefresh": true,
+						"navigationBarTitleText": "签到规则"
+					}
+				}
+			]
 		}
     ],
     "globalStyle": {

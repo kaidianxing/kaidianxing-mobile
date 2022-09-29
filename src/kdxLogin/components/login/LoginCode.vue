@@ -127,6 +127,13 @@ export default {
                             // 设置登录状态
                             this.setLogin(true)
                             this.setBind(true)
+                            this.$api.signInApi.getSignInfo({//先请求一个积分签到接口判断渠道
+                                uid: this.$store.state.login.userInfo.id || ''
+                            }, {errorToast: false}).then(res => {
+                                if (res.error === 0) {
+                                    this.$store.commit("setting/signModelShow", true)
+                                }
+                            })
                             await this.$api.memberApi.getUserInfo().then(res => {
                                 this.$store.commit('login/setUserInfo',res.data)
                             })

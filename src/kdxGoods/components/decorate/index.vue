@@ -43,7 +43,7 @@
         <!-- #ifdef MP-WEIXIN -->
         <WxTransaction :component-data='mergeData' v-else-if='componentData.id=="wxTransaction"' @custom-event='eventHandler'></WxTransaction>
         <!-- #endif -->
-        <Groups :component-data='mergeData' @custom-event='eventHandler'></Groups>
+        <Groups v-else-if='componentData.id=="groups"&&mergeData.data.length' :component-data='mergeData' @custom-event='eventHandler'></Groups>
         <slot></slot>
     </div>
 </template>

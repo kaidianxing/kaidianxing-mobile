@@ -38,6 +38,14 @@
                     <p class="username" :style="{
                         color: componentData.style.nickcolor
                     }">{{ componentData.info.nickname || '登录/注册' }}
+                    <i
+                        class="icon-right-btn"
+                        :class="componentData.params.seticon"
+                        :style="{
+                            color: componentData.style.setbtncolor
+                        }"
+                        @click.stop="clickIcon"
+                    ></i>
                 </p>
                     <p
                         class="level"
@@ -56,14 +64,21 @@
                         }}</span>
                     </p>
                 </div>
-                <i
-                    class="icon-right-btn"
-                    :class="componentData.params.seticon"
-                    :style="{
-                        color: componentData.style.setbtncolor
-                    }"
-                    @click.stop="clickIcon"
-                ></i>
+                <!-- 积分签到    -->
+                <div class="opne-contact-btn-wrap" @click.stop="toSignPage"
+                     v-if="componentData.params.signtext && componentData.params.signtext.length > 1 && signModelShow ">
+                    <div
+                        class="signBtn-right">
+                        <div class="signBtn" :style="{
+								color: componentData.style.signcolor,
+								background: componentData.style.signbgcolor,
+                                opacity: parseFloat(componentData.style.signbgopacity/100).toFixed(2)
+							}">{{ componentData.params.signtext || '' }}
+                        </div>
+                    </div>
+                    <button class="opne-contact-btn"
+                            :open-type="componentData.params.signlink=='wx_service' || componentData.params.signlink=='wechat'|| componentData.params.signlink=='wechat'?'contact':''"></button>
+                </div>
             </div>
             <div class="btns" v-if="getFinance.length">
                 <div class="btn" @click="clickBtn(finance.id)" :class="{
@@ -129,6 +144,14 @@
                                 }"
                             >
                                 {{ componentData.info.nickname || "登录/注册" }}
+                                <i
+                                    class="icon-right-btn"
+                                    :class="componentData.params.seticon"
+                                    :style="{
+                                    color: componentData.style.setbtncolor2,
+                                }"
+                                    @click.stop="clickIcon"
+                                ></i>
                             </p>
                             <p
                                     class="level"
@@ -151,14 +174,21 @@
                                 }}</span>
                             </p>
                         </div>
-                        <i
-                            class="icon-right-btn"
-                            :class="componentData.params.seticon"
-                            :style="{
-                            color: componentData.style.setbtncolor2,
-                        }"
-                            @click.stop="clickIcon"
-                        ></i>
+                        <!-- 积分签到-->
+                        <div class="opne-contact-btn-wrap" @click.stop="toSignPage"
+                             v-if="componentData.params.signtext && componentData.params.signtext.length > 1 && signModelShow ">
+                            <div
+                                class="signBtn-right">
+                                <div class="signBtn" :style="{
+								color: componentData.style.signcolor,
+								background: componentData.style.signbgcolor,
+                                opacity: parseFloat(componentData.style.signbgopacity/100).toFixed(2)
+							}">{{ componentData.params.signtext || '' }}
+                                </div>
+                            </div>
+                            <button class="opne-contact-btn"
+                                    :open-type="componentData.params.signlink=='wx_service' || componentData.params.signlink=='wechat'|| componentData.params.signlink=='wechat'?'contact':''"></button>
+                        </div>
                     </div>
                     <div class="btns" v-if="getFinance.length">
                         <div
@@ -209,7 +239,19 @@ export default {
             getAppPermMap: '',
         }
     },
+    watch: {
+        componentData: {
+            handler() {
+                this.signPermission()//签到权限
+            },
+            immediate: true
+
+        }
+    },
     computed: {
+        signModelShow() {
+            return this.$store.state.setting?.signModelShow
+        },
         canEnterMyShop(){
             if(this.$isPC){
                 return true
@@ -283,6 +325,25 @@ export default {
         
     },
     methods: {
+        signPermission() {//签到是否显示
+            this.$api.signInApi.getSignInfo({//先请求一个积分签到接口判断渠道
+                uid: this.$store.state.login.userInfo.id || ''
+            }, {errorToast: false}).then(res => {
+                if (res.error === 0) {
+                    console.log(121212)
+                    this.$store.commit("setting/signModelShow", true);
+                }
+            })
+        },
+        toSignPage() {
+            if (this.componentData.params.signlink == "wx_service") return
+            this.$emit('custom-event', {
+                target: 'member/clickToSignPage',
+                data: {
+                    value: this.componentData
+                }
+            })
+        },
         clickToMyShop(){
             this.$emit('custom-event', {
                 target: 'member/clickToMyShop',
@@ -422,6 +483,8 @@ export default {
             font-family: PingFang SC;
             font-style: normal;
             .username {
+                display: flex;
+                align-items: center;
                 font-size: px2rpx(16);
                 line-height: px2rpx(16);
                 padding: px2rpx(3) 0;
@@ -456,6 +519,29 @@ export default {
                     padding-right: px2rpx(2);
                     vertical-align: middle;
                 }
+            }
+        }
+
+        .opne-contact-btn-wrap {
+            position: relative;
+            margin-left: 16px;
+        }
+
+        .signBtn-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: px2rpx(50);
+
+            .signBtn {
+                //position: absolute;
+                //height: 27px;
+                //right: 12px;
+                //top: 27px;
+                padding: px2rpx(5) px2rpx(15);
+                white-space: nowrap;
+                background: #DF482A;
+                border-radius: px2rpx(14);
             }
         }
         .btn-right{

@@ -38,5 +38,9 @@ export default async function (e) {
             return
         }
         this.$Router.auto(`wxapp:${path}`, { wxappid }, { token })
+    } else if(e.target === 'member/clickToSignPage'){
+        // 判断登录
+        await this.$store.dispatch('quickPurchase/checkLoginStatus')
+        this.$Router.auto('/kdxSignIn/index')
     }
 }
