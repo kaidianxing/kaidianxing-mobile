@@ -427,6 +427,12 @@
                 if (is_origin == '1') {
                     paramsOrder.is_original_buy = '1'
                 }
+                // 添加文章营销分享者id
+                let article_id = this.sessionStorage.getItem("article_id");
+                if(article_id) {
+                    paramsOrder.article_id = article_id;
+                }
+
                 delete paramsOrder.dispatch_status;
                 delete paramsOrder.dispatch_express;
                 delete paramsOrder.express_enable;

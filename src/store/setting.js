@@ -34,7 +34,19 @@ export default {
         wapUrl: '', // h5地址
         theme_color: 'default', // 主题色
         wxSignUrl: '',
-        noticeTemId: []
+        noticeTemId: [],
+        articleSettings: { //文章营销设置项
+            banner: [],
+            title: "专题文章",
+            template_type: "1",
+            reward_time_limit: "",
+            bottom_menu: "0",
+            click_save_type: "0",
+            customer: "0",
+            customer_channel: "0",
+            customer_name: "",
+            link_url: "",
+        },
     },
     mutations: {
         signModelShow(state,res) {
@@ -96,6 +108,10 @@ export default {
         setNoticeTemId(state, data) {
             state.noticeTemId = data ?? []
         },
+        // 设置文章营销设置
+        setArticleSettings(state, res) {
+            state.articleSettings = res
+        },
     },
     actions: {
         getSysSetting(ctx) {
@@ -109,6 +125,8 @@ export default {
                         ctx.commit('setSystemSetting', res);
                         // 店铺独立存储
                         ctx.commit('setShopStorage', res)
+                        // 文章营销独立存储
+                        ctx.commit('setArticleSettings', res.article)
                         resolve(res)
                     } else {
                         // 当渠道没有权限时

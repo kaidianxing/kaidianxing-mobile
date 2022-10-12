@@ -265,7 +265,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        // 店铺笔记登录弹窗展示
+        // 文章营销登录弹窗展示
         articleModalStatue: {
             type: Boolean,
             default: false

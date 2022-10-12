@@ -140,8 +140,13 @@ export default {
                 return
             }
             let params = {
-                    id: item.id,
-                };
+                id: item.id,
+            };
+            // 添加文章营销分享者id
+            let article_id = this.sessionStorage.getItem("article_id");
+            if(article_id) {
+                params.article_id = article_id;
+            }
             this.$api.memberApi.getCoupon(params).then(res => {
                 if (res.error === 0) {
                     this.couponList[index].is_has = 1

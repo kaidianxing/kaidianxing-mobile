@@ -13,16 +13,16 @@
  * @describe 签到页
  */
 export const signInApi = {
-    /*积分签到*/
-    getSignInfo:{
-	    method: 'get',
-	    api: '/creditSign/index/list'
-	},
-    getRewards: {//连签奖励及状态
-        method: 'get',
-        api: '/creditSign/index/calculate-rewards',
-    },
-    getActivity: {//获取当前进行中的活动详情 标题
+        /*积分签到*/
+        getSignInfo:{
+            method: 'get',
+            api: '/creditSign/index/list'
+        },
+        getRewards: {//连签奖励及状态
+            method: 'get',
+            api: '/creditSign/index/calculate-rewards',
+        },
+        getActivity: {//获取当前进行中的活动详情 标题
         method: 'post',
         api: '/creditSign/index/activity-detail'
     },

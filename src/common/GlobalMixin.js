@@ -13,7 +13,8 @@ import * as utils from '@/common/util.js'
 export default {
     data() {
         return {
-            $utils: utils
+            $utils: utils,
+            scrollTopOffset:0
         }
     },
     methods: {
@@ -29,5 +30,10 @@ export default {
             // uni.hideLoading()
             uni.stopPullDownRefresh()
         },
+    },
+    onPageScroll(e){
+        if(e.scrollTop < 10){
+            this.scrollTopOffset = e.scrollTop
+        }
     }
 }

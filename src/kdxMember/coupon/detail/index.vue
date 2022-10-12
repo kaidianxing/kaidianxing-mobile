@@ -433,8 +433,13 @@ export default {
                 return this.$store.commit('login/setModal', true)
             }
 			let params = {
-                    id: this.couponId,
-                };
+                id: this.couponId,
+            };
+            // 添加文章营销分享者id
+            let article_id = this.sessionStorage.getItem("article_id");
+            if (article_id) {
+                params.article_id = article_id;
+            }
             this.$api.memberApi
                 .getCoupon(params)
                 .then((res) => {
@@ -513,8 +518,13 @@ export default {
         getCouponPayType() {
             return new Promise((resolve, reject) => {
                 let params = {
-                        id: this.couponId,
-                    };
+                    id: this.couponId,
+                };
+                // 添加文章营销分享者id
+                let article_id = this.sessionStorage.getItem("article_id");
+                if (article_id) {
+                    params.article_id = article_id;
+                }
                 this.$api.memberApi
                     .getCouponPayType(params)
                     .then((res) => {

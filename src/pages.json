@@ -573,8 +573,27 @@
 					}
 				}
 			]
+		},
+		{ /* 文章营销 */
+			"root": "kdxArticle",
+			"pages": [
+				{
+					"path": "list/index",
+					"style": {
+						"enablePullDownRefresh": true,
+						"navigationBarTitleText": "加载中..."
+					}
+				},
+				{
+					"path": "detail/index",
+					"style": {
+						"enablePullDownRefresh": true,
+						"navigationBarTitleText": "加载中..."
+					}
+				}
+			]
 		}
-    ],
+	],
     "globalStyle": {
         "navigationBarTextStyle": "black",
         "navigationBarTitleText": " ",
