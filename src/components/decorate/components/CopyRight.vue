@@ -13,7 +13,7 @@
     <div class="diyCopyright" >
         <div >
             <span></span>
-            <p>青岛开店星信息技术有限公司提供技术支持</p>
+            <p>开店星提供技术支持</p>
         </div>
     </div>
 </template>

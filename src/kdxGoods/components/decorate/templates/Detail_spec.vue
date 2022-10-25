@@ -13,7 +13,7 @@
         class="detail_spec"
         :style="{padding:`${px2rpx(componentData.style.margintop)} ${px2rpx(componentData.style.marginleft)}  ${px2rpx(componentData.style.marginbottom)}`}"
         @click="clickItem"
-        v-if='componentData&&componentData.id=="detail_spec"&&componentData.show!==false && (componentData.form_status == 1)'
+        v-if='componentData&&componentData.id=="detail_spec"&&componentData.show!==false'
     >
         <div style="overflow: hidden" :style="{'border-radius':`${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.topradius)} ${px2rpx(componentData.style.bottomradius)} ${px2rpx(componentData.style.bottomradius)}`}">
         <div class="container" :style="{background:componentData.style.background}">
