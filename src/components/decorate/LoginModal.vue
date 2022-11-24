@@ -46,12 +46,12 @@
                     <button class="btn" :class="{force: isForce, 'theme-primary-bgcolor': login_auth_setting.style=='1'}" @click="btnClick">立即登录</button>
                     <!--#endif -->
                     <!--#ifdef MP-WEIXIN -->
-                    <button v-if="!hasProfileApi" class="btn" :class="{force: isForce, 'theme-primary-bgcolor': login_auth_setting.style=='1'}"
+                    <button class="btn" :class="{force: isForce, 'theme-primary-bgcolor': login_auth_setting.style=='1'}"
                             lang="zh_CN"
                             open-type="getUserInfo"
                             @getuserinfo="getUserInfo($event.detail,'weixin')">立即登录
                     </button>
-                    <button v-else class="btn" :class="{'theme-primary-bgcolor': login_auth_setting.style=='1'}" @click="getWxUserInfo">立即登录</button>
+                    <!-- <button v-else class="btn" :class="{'theme-primary-bgcolor': login_auth_setting.style=='1'}" @click="getWxUserInfo">立即登录</button> -->
                     <!--#endif -->
                     <!--#ifdef MP-TOUTIAO -->
                     <button class="btn" :class="{force: isForce, 'theme-primary-bgcolor': login_auth_setting.style=='1'}" @click="getUserInfo($event,channer)">立即登录</button>
@@ -122,9 +122,9 @@
             // 当前基础库版本
             const sdkVersion  = uni.getSystemInfoSync().SDKVersion
             // 支持最低基础库版本
-            const apiMinVersion = '2.16.0';
-            const canIUse = this.$utils.compareVersion(sdkVersion, apiMinVersion)> -1
-            this.hasProfileApi = !!uni.getUserProfile && canIUse
+            // const apiMinVersion = '2.16.0';
+            // const canIUse = this.$utils.compareVersion(sdkVersion, apiMinVersion)> -1
+            this.hasProfileApi = false
             this.advanceWeiXinLogin()//窗口显示时预先激活一次登录状态
         },
         // #endif

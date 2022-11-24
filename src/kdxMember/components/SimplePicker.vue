@@ -31,14 +31,39 @@
                     >
                         {{ item.content }}
                     </p>
+                    <!-- #ifdef MP-WEIXIN -->
+                    <button
+                        v-if="item.id=='changeAvart'&&canIUse"
+                        class="avatar-wrapper"
+                        open-type="chooseAvatar"
+                        @chooseavatar="onChooseAvatar($event,item)">
+                        <img
+                            class="avart"
+                            lazy-load
+                            mode="aspectFill"
+                            :src="item.img"
+                            alt=""
+                        />
+                    </button>
                     <img
                         class="avart"
                         lazy-load
                         mode="aspectFill"
+                        v-else-if="item.id=='changeAvart'&&!canIUse"
                         :src="item.img"
                         alt=""
-                        v-else
                     />
+                    <!-- #endif -->
+                    <!-- #ifdef H5 -->
+                    <img
+                        class="avart"
+                        lazy-load
+                        mode="aspectFill"
+                        v-else
+                        :src="item.img"
+                        alt=""
+                    />
+                    <!-- #endif -->
                 </slot>
             </div>
             <div class="content" v-else>
@@ -59,6 +84,10 @@ export default {
         labelWidth: {
             type: [String, Number],
             default: 168
+        },
+        canIUse: {
+            type: Boolean,
+            default: false
         },
         info: {
             type: [Object, Array],
@@ -91,7 +120,21 @@ export default {
             this.$emit('change', val)
         },
         clickItem(item) {
-            this.$emit('click', item)
+            if(item.id=='changeAvart') {
+                if(!this.canIUse) {
+                    this.$emit("click", item);
+                }
+            }else {
+                this.$emit("click", item);
+            }
+        },
+        onChooseAvatar(e,item) {
+            const { avatarUrl } = e.detail;
+            this.$api.orderApi.uploadFile(avatarUrl).then(res => {
+                if (res.error == 0) {
+                    this.$emit('click',{...item, img: res.path})
+                }
+            });
         }
     }
 }
@@ -112,8 +155,21 @@ export default {
         padding: px2rpx(8) px2rpx(12) px2rpx(8) 0;
     }
     &.list ._li {
-        border-bottom: 1rpx solid #e6e7eb;
+        border-bottom: px2rpx(0.5) solid #e6e7eb;
         &:last-child {
+            border: none;
+        }
+    }
+    .avatar-wrapper {
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        &:after {
             border: none;
         }
     }
@@ -129,6 +185,7 @@ export default {
         width: px2rpx(84);
     }
     .content {
+        position: relative;
         width: 0;
         flex: 1;
         &.fix-height {

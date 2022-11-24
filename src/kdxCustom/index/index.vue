@@ -278,7 +278,7 @@
             let shareimg = this.pageSettings.params.shareimg   || this.shareLogo;
             return {
                 title:this.pageSettings.title,
-                imageUrl:shareimg?this.$utils.media(shareimg): '',
+                imageUrl:shareimg?this.$utils.mediaUrl(shareimg): '',
                 path: url,
                 success: function() {},
                 fail: function() {}
@@ -297,7 +297,7 @@
 
             return {
                 title:this.pageSettings.title,
-                imageUrl:shareimg?this.$utils.media(shareimg): '',
+                imageUrl:shareimg?this.$utils.mediaUrl(shareimg): '',
                 query: this.$utils.createQueryParams(shareParams)
             }
         },

@@ -106,7 +106,7 @@
                 if(this.componentData.params.temptype == 'color') {
                     return `linear-gradient(to bottom, ${this.componentData.style.tempcolor} 0%, ${this.componentData.style.tempcolor} ${this.px2rpx(332)}, transparent ${this.px2rpx(332)}, transparent 100%)`
                 } else {
-                    return `url(${this.$utils.media(this.componentData.params.tempimg)}) no-repeat`
+                    return `url(${this.$utils.mediaUrl(this.componentData.params.tempimg)}) no-repeat`
                 }
             },
             getBgSize() {
@@ -131,7 +131,7 @@
                     return this.componentData.style.cardcolor
                 } else {
                     if(this.componentData.params.cardimg) {
-                        return `url(${this.$utils.media(this.componentData.params.cardimg)})`
+                        return `url(${this.$utils.mediaUrl(this.componentData.params.cardimg)})`
                     } else {
                         return ''
                     }

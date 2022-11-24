@@ -12,7 +12,7 @@
     <page-box>
         <div class='member-info'>
             <p class="label">基本资料</p>
-            <simple-picker :info='memberInfo.basicInfo' @click='clickItem'></simple-picker>
+            <simple-picker :canIUse="canIUse" :info='memberInfo.basicInfo' @click='clickItem'></simple-picker>
             <p class="label">绑定手机</p>
             <simple-picker :info='memberInfo.bindMobile' @click='clickItem'></simple-picker>
             <p class="label">其他资料</p>
@@ -46,8 +46,19 @@
                 showCity: [],
                 chooseAddress: '',
                 addressList: [],
+                canIUse: false,
             }
         },
+        // #ifdef MP-WEIXIN
+        created(){
+            // 当前基础库版本
+            const sdkVersion  = uni.getSystemInfoSync().SDKVersion
+            // 支持最低基础库版本
+            const apiMinVersion = '2.21.2';
+            this.canIUse = this.$utils.compareVersion(sdkVersion, apiMinVersion)> -1
+            console.error(this.canIUse,'898989+++',sdkVersion,apiMinVersion);
+        },
+        // #endif
 
         computed: {
             ...mapState('member', {
@@ -94,19 +105,27 @@
                         query: val.query || {}
                     })
                 } else if (val.id == 'changeAvart') {
-                    uni.chooseImage({
-                        count: 1, //默认9
-                        sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-                        sourceType: ['album'], //从相册选择
-                        success(res) {
-                            that.$api.orderApi.uploadFile(res.tempFilePaths[0]).then(res => {
-                                if (res.error == 0) {
-                                    that.memberInfo.basicInfo[0].img =that.$utils.mediaUrl(res.path);
-                                }
-                                that.changeUserInfo()
-                            });
-                        }
-                    });
+                    if(!this.canIUse) {
+                        uni.chooseImage({
+                            count: 1, //默认9
+                            sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+                            sourceType: ['album'], //从相册选择
+                            success(res) {
+                                that.$api.orderApi.uploadFile(res.tempFilePaths[0]).then(res => {
+                                    if (res.error == 0) {
+                                        that.memberInfo.basicInfo[0].img =that.$utils.mediaUrl(res.path);
+                                    }
+                                    that.changeUserInfo()
+                                });
+                            }
+                        });
+                    }
+                   // #ifdef MP-WEIXIN
+                    if(this.canIUse) {
+                        that.memberInfo.basicInfo[0].img = that.$utils.mediaUrl(val.img);
+                        that.changeUserInfo()
+                    }
+                   // #endif
                 } else if (val.id == 'changeCity') {
                     // 打开地址picker
                     this.$refs.areaPicker.togglePicker();

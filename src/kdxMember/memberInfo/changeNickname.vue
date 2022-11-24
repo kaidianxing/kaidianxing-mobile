@@ -13,6 +13,7 @@
     <div class="my-name page">
         <view class="bg">
             <search
+                v-if="!canIUse"
                 :noSearch="true"
                 :value="name"
                 :maxlength="15"
@@ -21,6 +22,15 @@
                 :placeholder="placeholder"
                 @clear="clear"
             ></search>
+            <!-- #ifdef MP-WEIXIN -->
+            <input type="nickname"
+                   v-if="canIUse"
+                   :value="name"
+                   @input="changeName"
+                   :maxlength="15"
+                   class="weui-input"
+                   :placeholder="placeholder" />
+            <!-- #endif -->
         </view>
         <view class="margin200"></view>
         <div style="padding:0 24rpx;">
@@ -45,6 +55,7 @@ export default {
         return {
             name: '',
             placeholder: '请输入昵称',
+            canIUse: false,
         }
     },
     computed: {
@@ -58,6 +69,15 @@ export default {
     mounted() {
         this.name = this.$Route.query.nickname
     },
+    // #ifdef MP-WEIXIN
+    created(){
+        // 当前基础库版本
+        const sdkVersion  = uni.getSystemInfoSync().SDKVersion
+        // 支持最低基础库版本
+        const apiMinVersion = '2.21.2';
+        this.canIUse = this.$utils.compareVersion(sdkVersion, apiMinVersion)> -1
+    },
+    // #endif
     methods: {
         ...mapActions('member', ['changeUserInfo']),
         clear() {
@@ -66,6 +86,11 @@ export default {
         getInput(val) {
             this.name = val.value || ''
             this.memberInfo.basicInfo[1].content = this.name
+        },
+        changeName(e) {
+            this.name = e.detail.value || ''
+            this.memberInfo.basicInfo[1].content = this.name
+            console.log(this.name, 888)
         },
         saveName() {
             uni.showLoading({title:'保存中'})
@@ -95,6 +120,12 @@ export default {
         border-radius: 12rpx;
         background: #fff;
         padding: 8rpx 14rpx;
+    }
+    .weui-input {
+        width: 100%;
+        height: 80rpx;
+        padding: 0 10rpx;
+        background: #fff;
     }
 }
 </style>
