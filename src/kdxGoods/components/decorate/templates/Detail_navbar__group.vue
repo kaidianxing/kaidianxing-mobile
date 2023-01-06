@@ -69,7 +69,7 @@ export default {
             } else {
                 let { min_price } = this.groupData?.price_range
                 let price = `${this.formatMoney(min_price)}`
-                return this.$utils.formartOptPrice(price)
+                return this.$utils.formartPrice(price)
             }
         },
         btnDisabled() {

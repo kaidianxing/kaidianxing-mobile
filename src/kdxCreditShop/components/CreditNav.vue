@@ -11,7 +11,7 @@
 <template>
     <view class="goodsList-nav-bar">
         <view class="tab flex">
-            <div class="item" :class="chooseType == 'create_time'?'active':''" @click="changeType('create_time')">
+            <div class="item" :class="chooseType == 'created_at'?'active':''" @click="changeType('created_at')">
                 综合<span class="line"></span>
             </div>
             <view class="item flex" :class="chooseType == 'sales'?'active':''">
@@ -42,7 +42,7 @@ export default {
     },
     data() {
         return {
-            chooseType: 'create_time',
+            chooseType: 'created_at',
             sale_sort: 'desc',
         }
     },
@@ -50,7 +50,7 @@ export default {
         changeType(type) {
             let search = this.search;
             this.chooseType = type;
-            if (type == 'create_time') {
+            if (type == 'created_at') {
                 search.sale_sort = ''
             } else if (type == 'sales') {
                 search.sale_sort = search.sale_sort == 'desc' ? 'asc' : 'desc';

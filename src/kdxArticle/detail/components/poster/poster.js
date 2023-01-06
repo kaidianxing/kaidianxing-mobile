@@ -49,7 +49,7 @@ const getGoodInfo = detailInfo => {
                 } else {
                     // 多规格 会员价
                     price = `${goods.min_price}-${goods.max_price}`;
-                    price = utils.formartOptPrice(price)
+                    price = utils.formartPrice(price)
                 }
 
             } else {
@@ -85,7 +85,7 @@ const getGoodInfo = detailInfo => {
                 } else {
                     // 多规格 会员价
                   price = activity.member_price?`${activity.member_price.min_price}-${activity.member_price.max_price}`: `${goods.min_price}-${goods.max_price}`
-                  price = utils.formartOptPrice(price)
+                  price = utils.formartPrice(price)
                 }
 
             } else {

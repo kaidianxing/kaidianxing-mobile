@@ -346,6 +346,11 @@ class GoodDetailPage extends PageMixin {
                                 goods_id: data.goodId,
                                 activeName: 'seckill'
                             })
+                        } else if(activeName == 'groups' && hasOption) {
+                            this.getActiveGoodsOption({
+                                goods_id: data.goodId,
+                                activeName: 'groups'
+                            })
                         } else {
                             this.activeOptInfo = {
                                 options: [],

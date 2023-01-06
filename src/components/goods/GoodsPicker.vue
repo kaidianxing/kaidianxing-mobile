@@ -601,6 +601,7 @@
 
                 let handlePriceFns = {
                     seckill: this.isActiveBuy ? this.handleSeckillPrice : null,
+                    groups: this.isActiveBuy ? this.handleGroupsPrice : null,
                 }
 
                 let handlePriceFn = handlePriceFns[this.currentActName]
@@ -643,6 +644,31 @@
                     price, stock
                 }
             },
+            // 拼团处理价格
+            handleGroupsPrice() {
+                let stock;
+                let goodsStock = this.goodsData?.stock;
+                let { activity_stock = 0, price, price_range } = this.currentActInfo
+                if (this.goodsData.has_option == '0') {
+                    if (this.hasLevelGroups && this.groupsLevel !== 0) {
+                        price = this.currentActInfo?.every_ladder_min_price[this.groupsLevel]
+                    } else if (!this.hasLevelGroups) {
+                        // 表单情况下 单规格普通
+                        price = this.currentActInfo?.activity_price
+                    } else {
+                        price = `${price_range?.min_price}-${price_range?.max_price}`
+                        price = this.$utils.formartPrice(price)
+                    }
+                } else {
+
+                    price = `${price_range?.min_price}-${price_range?.max_price}`
+                    price = this.$utils.formartPrice(price)
+                }
+                stock = Math.min(goodsStock, activity_stock)
+                return {
+                    price, stock
+                }
+            },
             // 处理规格价
             handleOptionsPrice(data) {
                 let {price, stock, id, thumb, original_price, activity} = this.options[data]
@@ -658,7 +684,7 @@
 
                 let handleOptsFns = {
                     seckill: this.isActiveBuy ? this.handleSeckillOptsPrice : null,
-
+                    groups: this.isActiveBuy ? this.handleGroupsOptPrice : null,
                 }
 
                 let handleOptsFn = handleOptsFns[this.currentActName]
@@ -690,6 +716,34 @@
                 let goodsStock = currentOptData?.stock;
                 let {activity, stock} = currentOptData
                 let price = activity?.seckill?.activity_price
+                let activity_stock = this.currentActInfo?.activity_stock || 0
+                stock = Math.min(goodsStock, activity_stock)
+                return {
+                    price,
+                    stock
+                }
+            },
+            // 拼团处理规格价
+            handleGroupsOptPrice(data, currentOptData) {
+
+                let goodsStock = currentOptData?.stock;
+
+                let { activity, stock } = currentOptData
+                let price = activity?.groups?.price
+
+                // 阶梯拼
+                if (this.currentActInfo.inner_type == '1') {
+                    // 选中阶梯
+                    if (this.groupsLevel != 0) {
+                        price = activity.groups.ladder_price[this.groupsLevel]
+                    } else {
+                        // 未选中
+                        let { price_range } = this.currentActInfo
+                        price = `${price_range?.min_price}-${price_range?.max_price}`
+                        price = this.$utils.formartPrice(price)
+                    }
+                }
+
                 let activity_stock = this.currentActInfo?.activity_stock || 0
                 stock = Math.min(goodsStock, activity_stock)
                 return {
@@ -953,6 +1007,10 @@
                         is_origin
                     }
 
+                    if (this.buyType == 'groups') {
+                        opt = { ...opt, ...this.getGroupsParams() }
+                    }
+
                     this.$emit('custom-event', {
                         type: 'clickBtn',
                         data: {
@@ -962,6 +1020,25 @@
                     })
                     this.$emit('clickBtn', type, opt)
                 }, 0)
+            },
+            getGroupsParams() {
+                let is_join = this.optionsData.is_join == '1' ? '1' : '0'
+                let extend_params = {
+                    is_join,
+                    is_ladder: '0'
+                }
+                // 参团加入team_id
+                if (this.optionsData.team_id) {
+                    extend_params.team_id = this.optionsData.team_id
+                }
+                if (this.optionsData.activity_id) {
+                    extend_params.activity_id = this.optionsData.activity_id
+                }
+                if (this.hasLevelGroups) {
+                    extend_params.ladder = this.groupsLevel,
+                        extend_params.is_ladder = '1'
+                }
+                return { extend_params }
             },
             // 商品变更重置数据
             refreshOpt() {

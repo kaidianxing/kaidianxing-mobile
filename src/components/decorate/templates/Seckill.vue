@@ -332,10 +332,18 @@
                 return this.getFormatDate(end_time) <= this.timestamp
             },
             startCount(time, item){
-                item.countTime = this.$utils.countDown(time, false,true);
+                // item.countTime = this.$utils.countDown(time, false,true);
+                // let timer = setInterval(()=>{
+                //     item.countTime = this.$utils.countDown(time, false,true);
+                //     if(item.countTime === false) {
+                //         clearInterval(timer)
+                //         this.cutdownTime()
+                //     }
+                // },1000);
+                this.countTime = this.$utils.countDown(time, false,true);
                 let timer = setInterval(()=>{
-                    item.countTime = this.$utils.countDown(time, false,true);
-                    if(item.countTime === false) {
+                    this.countTime = this.$utils.countDown(time, false,true);
+                    if(this.countTime === false) {
                         clearInterval(timer)
                         this.cutdownTime()
                     }

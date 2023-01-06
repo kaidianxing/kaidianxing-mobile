@@ -19,7 +19,7 @@
         </view>
         <view class="user-info">
             <view class="user-name">{{item.nickname}}</view>
-            <view class="user-desc">{{item.create_time}} {{isLeader?'开团':'参团'}}</view>
+            <view class="user-desc">{{item.created_at}} {{isLeader?'开团':'参团'}}</view>
         </view>
     </view>
 </template>

@@ -13,8 +13,8 @@
         <swiper :current='value' touchable :autoplay="!setting.autoplay===false" :circular="!setting.loop===false" :interval="setting.autoplaySpeed" :duration="setting.duration||500" @change='change' :key='key'>
             <swiper-item v-for="(item,index) in list" :key='index'>
                 <slot :data='index' :item='item'>
-                    <img v-if="!isArticle" lazy-load :mode='imgMode' :style='(height?("height:"+height):"")+getImgStyle+(";border-radius:"+(height=="100vh"?"0":borderRadius))' :src="item.img ? item.img : item" alt="" class="swiper-img"/>
-                    <img v-else lazy-load :mode='imgMode' :style='(height?("height:"+height):"")+getImgStyle+(";border-radius:"+(height=="100vh"?"0":borderRadius))' :src="`${item.img ? item.img : item}?t=${new Date().getTime()}`" alt="" class="swiper-img"/>
+                    <img @click="click(index)" v-if="!isArticle" lazy-load :mode='imgMode' :style='(height?("height:"+height):"")+getImgStyle+(";border-radius:"+(height=="100vh"?"0":borderRadius))' :src="item.img ? item.img : item" alt="" class="swiper-img"/>
+                    <img @click="click(index)" v-else lazy-load :mode='imgMode' :style='(height?("height:"+height):"")+getImgStyle+(";border-radius:"+(height=="100vh"?"0":borderRadius))' :src="`${item.img ? item.img : item}?t=${new Date().getTime()}`" alt="" class="swiper-img"/>
                 </slot>
             </swiper-item>
         </swiper>
